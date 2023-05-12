@@ -18,6 +18,27 @@ internal class Explorer {
         VideoDirectory = rootVideoDirectory;
     }
 
+    public void GetFilesWithInFoldersAndSubFolders(string? mainPath){
+        
+        mainPath = @"H:\"; string []root; DirectoryInfo[] directories; var items = new List<string>();
+        
+        try
+        {
+            var directorie = new DirectoryInfo(mainPath);
+            var demo = directorie.GetDirectories("*", SearchOption.AllDirectories);
+            //root= Directory.GetDirectories(mainPath,"*", searchOption: SearchOption.AllDirectories);
+
+            foreach (var item in demo)
+            {
+                System.Console.WriteLine(item);
+            }
+        }
+        catch (UnauthorizedAccessException){}
+
+       System.Console.WriteLine("end script....");
+
+    }
+
     /*Get a list of item in a specific folder when items match each other*/
     public Dictionary<int, string> GetFullPath(string filePath, string videoDirectory) {
         if(String.IsNullOrEmpty(videoDirectory) || String.IsNullOrEmpty(filePath)) throw new ArgumentNullException();
