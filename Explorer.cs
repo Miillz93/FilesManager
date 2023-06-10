@@ -1,5 +1,7 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text;
 internal class Explorer {
 
 
@@ -12,10 +14,38 @@ internal class Explorer {
     private string [] ArrayVideoDirectory {get; set;}
     private Dictionary<int, string> ItemHeader {get;set;}
 
+    public Explorer(string filePath, string videoDirectory){
+        FilePath = filePath;
+        VideoDirectory = videoDirectory;
+    }
+    
+    //Get List item Matching from logs
+    public async Task<string> LogsDataFromOriginAfterMove(List<string> musics, string OldMusicFile){
+        
+        if(musics == null  || OldMusicFile ==  null) throw new ArgumentNullException();
+        string message = "";
+        string currentRootDirectory = Path.GetDirectoryName(OldMusicFile); 
+        RootLogDirectory = Path.Combine(currentRootDirectory, "logs");
+        
+        if(!Directory.Exists(RootLogDirectory)) Directory.CreateDirectory(RootLogDirectory);
+        LogFile = Path.Combine(RootLogDirectory, Path.GetFileName(OldMusicFile));
+        
+        LogFile = Path.ChangeExtension(LogFile, DateTime.Now.ToString("dd-MM-yyyy")+".txt");
 
-    public Explorer(string rootfilePath, string rootVideoDirectory){    
-        FilePath = rootfilePath;
-        VideoDirectory = rootVideoDirectory;
+        try
+        { 
+            File.WriteAllLines(LogFile, musics);
+
+            await Task.Delay(1000);
+            message = "*************Texts added to Log File successfully";
+            //File.Copy(OldMusicFile, fileDestination);
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+       
+        return  message;
     }
 
     public void GetFilesWithInFoldersAndSubFolders(string? mainPath){
@@ -42,14 +72,14 @@ internal class Explorer {
     /*Get a list of item in a specific folder when items match each other*/
     public Dictionary<int, string> GetFullPath(string filePath, string videoDirectory) {
         if(String.IsNullOrEmpty(videoDirectory) || String.IsNullOrEmpty(filePath)) throw new ArgumentNullException();
-        Dictionary<int, string> musicFullPath = new Dictionary<int, string>();
+        Dictionary<int, string> musicFullPath = new();
 
         if(Directory.Exists(videoDirectory)){
             var clips = Directory.GetFiles(videoDirectory);   
             for (int h = 0; h < ArrayFilePath.Length; h++){
                 for (int i = 0; i < clips.Length; i++){
                         string extension = Path.GetFileNameWithoutExtension(clips[i]);
-                        //System.Console.WriteLine("array 1------------------{0}-----{1}", arrays[i], arrays[i].Contains(extension, StringComparison.OrdinalIgnoreCase));
+ 
                         if(ArrayFilePath[h].Contains(extension, StringComparison.OrdinalIgnoreCase)){
                             musicFullPath.Add(h, Path.GetFullPath(clips[i])); 
                         }
