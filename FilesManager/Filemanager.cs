@@ -214,7 +214,7 @@ internal static class FileManager
                 items = new();
             }
         }
-        catch (UnauthorizedAccessException e) {System.Console.WriteLine(e.ToString());  }
+        catch (UnauthorizedAccessException e) { System.Console.WriteLine(e.ToString()); }
         catch (DirectoryNotFoundException e) { System.Console.WriteLine(e.ToString()); }
         
         await Task.Delay(100);
@@ -225,7 +225,7 @@ internal static class FileManager
 
     public static Dictionary<int, string> GetFullPath(string filePath, string videoDirectory, string[] arrayOfFullPath)
     {
-        if (String.IsNullOrEmpty(videoDirectory) || String.IsNullOrEmpty(filePath)) throw new ArgumentNullException();
+        if (string.IsNullOrEmpty(videoDirectory) || string.IsNullOrEmpty(filePath)) throw new ArgumentNullException();
         Dictionary<int, string> musicFullPath = new();
 
         if (Directory.Exists(videoDirectory))
