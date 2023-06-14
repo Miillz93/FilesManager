@@ -9,9 +9,5 @@
     "LogFileDestination":"", 
     "logFolderDestination":"",
     "NameCombined":["",""],
-    "FolderCombinedSource": [
-        "",
-        "",
-        ""
-    ]
+    "FolderCombinedSource": [""]
 }]
