@@ -157,6 +157,40 @@ internal static class FileManager
         return message;
     }
 
+    public static async Task ExportEmbeedFileFromFolderAsync(string folderSource, string fileDestination, string folderDestination){
+                
+        var (filecombined, fileItems) = await GetFilesWithInFoldersAndSubFolders(folderSource, fileDestination, folderDestination); 
+        //dataToExport.Item1, dataToExport.Item2;
+        try
+        {
+            if (File.Exists(filecombined))
+            {
+                using StreamWriter sw = File.AppendText(filecombined);
+                sw.WriteLine("");
+                sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
+                foreach (var item in fileItems)
+                {
+                    sw.WriteLine(item);
+                }
+                sw.WriteLine("");
+            }
+            else{
+                using StreamWriter sw = new(filecombined);
+                sw.WriteLine("");
+                sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
+                foreach (var item in fileItems)
+                {
+                    sw.WriteLine(item);
+                }
+                sw.WriteLine("");
+            }
+            await Task.Delay(1000);
+            System.Console.WriteLine("---------------------Texts added to Log File successfully");
+            //File.Copy(OldMusicFile, fileDestination);
+        }
+        catch (Exception) { throw; }
+    }
+
     public static async Task<(string, Dictionary<string, List<string>>)> GetFilesWithInFoldersAndSubFolders(string folderSource, string fileDestination, string folderDestination)
     {
         if (folderSource == null || fileDestination == null || folderDestination == null) throw new ArgumentNullException();
