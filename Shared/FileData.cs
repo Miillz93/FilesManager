@@ -1,4 +1,4 @@
-﻿namespace filesmanager;
+﻿namespace Shared;
 
 public class FileData
 {
@@ -10,10 +10,6 @@ public class FileData
     public string? LogFolderSource { get; set; }
     public string? LogFileDestination { get; set; }
     public string? LogFolderDestination { get; set; }
-    public Combined? Combined { get; set; }
+    public string[]? Combined { get; set; }
     public string[]? FolderCombinedSource {get; set;}
-}
-
-public record Combined{
-    public string? Name { get; set;}
 }
