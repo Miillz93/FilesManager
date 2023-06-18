@@ -1,0 +1,16 @@
+[
+    {
+    "FileSource" :"",
+    "FolderSource":"",
+    "FileDestination":"",
+    "FolderDestination":"",
+    "LogFileSource":"",
+    "logFolderSource":"",
+    "LogFileDestination":"", 
+    "logFolderDestination":"",
+    "PlaylistCombinedName":["",""],
+    "ExcludeFolder": ["",""],
+    "FolderCombinedSource": [""],
+    "EmbeedFolder" : ""
+    }
+]
