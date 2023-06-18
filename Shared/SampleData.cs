@@ -8,13 +8,10 @@ public class SampleData
     public string? FileDestination {get; set;}
     public string? PathDestination {get; set;}
     public string? VideoPath {get; set;}
-    public string? LogFileSource {get; set;}
-    public string? LogPathSource {get; set;}
+    public string? Action {get; set;}
+    public string? LogFileName {get; set;}
+    public string? LogPath {get; set;}
     public string? LogFileDestination  {get; set;}
     public string? LogPathDestination {get; set;}
-    public string? PlaylistName {get; set;}
-    public string[]? PathCombinedName {get; set;}
-    public string[]? ExcludeFolderName {get; set;}
-    public string []? PathCombinedSource {get; set;}
-
+    public Playlist? Playlist {get; set;}
 }
