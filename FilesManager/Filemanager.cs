@@ -7,7 +7,7 @@ using Shared;
 internal static class FileManager
 {
 
-    public static async Task CopyFileFromSourceFileAsync(SampleData data)
+    public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data)
     {
         string parent = "", child = "", parentFull = "";
         List<string> export = new();
