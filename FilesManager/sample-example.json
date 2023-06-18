@@ -17,9 +17,11 @@
                 "UniquePath":"",
                 "MixPathCombinedName":[""],
                 "PathCombinedSource": [""],
-                "ExcludeFolderName": ["light"],
+                "ExcludeFolderName": [""],
+                "IncludeOnly": [""],
                 "TrackFileUniquePath":"",
-                "TrackFileDuplicatePath":""
+                "TrackFileDuplicatePath":"",
+                "MaxCount": 50
             }
         ] 
     }
