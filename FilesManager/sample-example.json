@@ -1,16 +1,26 @@
 [
     {
-    "FileSource" :"",
-    "FolderSource":"",
-    "FileDestination":"",
-    "FolderDestination":"",
-    "LogFileSource":"",
-    "logFolderSource":"",
-    "LogFileDestination":"", 
-    "logFolderDestination":"",
-    "PlaylistCombinedName":["",""],
-    "ExcludeFolder": ["",""],
-    "FolderCombinedSource": [""],
-    "EmbeedFolder" : ""
+        "EmbeedPath" : "",
+        "FilePath" :"",
+        "PathSource":"",
+        "FileDestination":"",
+        "PathDestination":"",
+        "VideoPath":"",
+        "Action":"",
+        "LogFileName":"",
+        "logPath":"",
+        "LogFileDestination":"", 
+        "logPathDestination":"",
+        "Playlist":[
+            {
+                "Name":"",
+                "UniquePath":"",
+                "MixPathCombinedName":[""],
+                "PathCombinedSource": [""],
+                "ExcludeFolderName": ["light"],
+                "TrackFileUniquePath":"",
+                "TrackFileDuplicatePath":""
+            }
+        ] 
     }
 ]
