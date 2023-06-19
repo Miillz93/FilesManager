@@ -1,11 +1,11 @@
 ﻿using Shared;
 using System.Text.Json;
 
-namespace filesmanager;
+namespace Manager;
 
-internal static class Helpers
+public static class Helpers
 {
-    private static readonly string JsonPath = Path.Combine(Environment.CurrentDirectory, "sample.json");
+    private static string JsonPath = Path.Combine(Directory.GetCurrentDirectory(), "sample.json");
     private static DateTime OldTracking { get; set; }
     private static DateTime JsonFileTracking { get; set; }
 
@@ -53,6 +53,7 @@ internal static class Helpers
 
         while (check) {
             var data = ReloadJson();
+            System.Console.WriteLine(Environment.NewLine);
             Menu.MainMenu(data);
             Console.WriteLine(Environment.NewLine);
         }
