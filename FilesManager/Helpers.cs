@@ -17,4 +17,14 @@ internal static class Helpers
 
     }
 
+    public static SampleData DeserializeJson (string jsonPath){
+        SampleData? sampleData;
+
+        string jsonString = File.ReadAllText(jsonPath);        
+        sampleData = JsonSerializer.Deserialize<SampleData>(jsonString);
+
+        return sampleData ?? throw new NullReferenceException() ;
+    }
+
+    
 }
