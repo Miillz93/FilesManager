@@ -1,11 +1,8 @@
-﻿using Shared;
+﻿using Manager;
 
+Console.WriteLine("Start Program......................🛩️");
+Console.WriteLine(Environment.NewLine);
 
-Console.WriteLine("Start Program.................................");
+Helpers.LoadApplication();
 
-SampleData sampleData= new();
-
-Menu.MainMenu(sampleData);
-
-Console.WriteLine("End  Program................................");
 Console.ReadKey();
