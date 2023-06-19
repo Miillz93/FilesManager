@@ -30,10 +30,10 @@ public static class Helpers
         SampleData data;
 
         OldTracking = JsonFileTracking;
-        Console.WriteLine("Old------------------- {0}", JsonFileTracking);
+        // Console.WriteLine("Old------------------- {0}", JsonFileTracking);
 
         JsonFileTracking = GetFileLastChange();
-        Console.WriteLine("newest------------------- {0}", JsonFileTracking);
+        // Console.WriteLine("newest------------------- {0}", JsonFileTracking);
 
         if (JsonFileTracking != OldTracking)
         {
@@ -48,15 +48,18 @@ public static class Helpers
 
     }
 
-    public static void LoadApplication(){
+    public static async Task LoadApplicationAsync(){
         bool check = true;
 
-        while (check) {
+        //while (check) {
             var data = ReloadJson();
-            System.Console.WriteLine(Environment.NewLine);
-            Menu.MainMenu(data);
             Console.WriteLine(Environment.NewLine);
-        }
+
+            await FileManager.CopyOrMoveFileFromSourceFileAsync(data);
+            //var index = await Menu.MainMenuAsync(data);
+            //if(index == 0) check = false;
+            // Console.WriteLine(Environment.NewLine);
+       // }
 
     }
 }

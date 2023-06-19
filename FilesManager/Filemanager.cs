@@ -4,30 +4,40 @@ using System.Linq;
 using System.Text;
 using Shared;
 
-internal static class FileManager
+
+namespace Manager;
+
+public static class FileManager
 {
 
     public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data)
     {
-        string parent = "", child = "", parentFull = "";
-        List<string> export = new();
+        string parent = "", child = "", parentFull = ""; string message = "Finished................";
+        List<string> musicsToExport = new();
         string[] arrayOfListElementFromFile = Array.Empty<string>();
 
         var sw = new Stopwatch();
 
-        if (!Directory.Exists(data.VideoPath) || !File.Exists(data.FilePath)) throw new Exception();
+        string FilePath = Path.Combine(data.PathSource, data.FilePath);
+
+        if (!Directory.Exists(data.VideoPath) || !File.Exists(FilePath)) 
+            throw new FileNotFoundException() ?? throw new DirectoryNotFoundException();
 
         var itemForHeader = new Dictionary<int, string>();
         int counterMusic = 0, count = 1;
 
-        try { arrayOfListElementFromFile = File.ReadAllLines(data.FilePath); }
-        catch (System.Exception) { throw; }
+        try { arrayOfListElementFromFile = File.ReadAllLines(FilePath) ; }  // Ok var
+        catch (Exception) { throw; }
 
-        itemForHeader = GetItemHeaderHashFromFile(arrayOfListElementFromFile.ToArray());
-        int number = itemForHeader.Count;
+        itemForHeader = GetItemHeaderHashFromFile(arrayOfListElementFromFile); // ok
+        int number = itemForHeader.Count; // ok
 
-        var musicFullPath = GetFullPath(data.FilePath, data.VideoPath, arrayOfListElementFromFile);
+        var musicFullPath = GetFullPath(data.VideoPath, arrayOfListElementFromFile);
         //this.LogsDataFromOriginAfterMove(musicFullPath, ItemHeader,  FilePath);
+
+        // foreach (var item in musicFullPath){
+        //     Console.WriteLine("music matching item vkey {0} ----- value {1}",item.Key, item.Value);
+        // }
 
         for (int i = 0; i < number - 1; i++)
         {
@@ -50,28 +60,30 @@ internal static class FileManager
                             parent = headers.Value;
                             parent = parent.Replace('#', ' ').Trim();
                             parentFull = Path.Combine(data.VideoPath, parent);
-
-                            try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
-                            catch (Exception) { throw; }
-
+                            Console.WriteLine(counterMusic);
+                            /*try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
+                            catch (Exception) { throw; }*/
+/*
                             data.FileDestination = Path.Combine(parentFull, Path.GetFileName(unique.First().Value));
-                            Console.WriteLine("copy of ................. {0}", musicElement.Value);
+                            Console.WriteLine("copy of ................. {0}", musicElement.Value);*/
 
-                            export.Add($"{headers.Value}");
-                            export.Add($"{Path.GetFileName(musicElement.Value)}");
-                            try
+                            musicsToExport.Add($"{headers.Value}");
+                            musicsToExport.Add($"{Path.GetFileName(musicElement.Value)}");
+                            /*try
                             {
                                 sw.Start();
                                 await Task.Delay(2000);
-                                //File.Copy(musicElement.Value, FileDestination,false);   
-                                System.Console.WriteLine("copying  to--------------{0}  in {1} 's Elapsed time",data.FileDestination, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                //if(data.Action =="copy") File.Copy(musicElement.Value, data.FileDestination,false); 
+                                //if(data.Action =="move") File.Copy(musicElement.Value, data.FileDestination,false);   
+
+                                Console.WriteLine("copying  to--------------{0}  in {1} 's Elapsed time",data.FileDestination, sw.Elapsed.TotalSeconds.ToString("0:00"));
                                 sw.Stop();
                                 sw.Reset();
                             }
                             catch (Exception e)
                             {
                                 Console.WriteLine(e);
-                            }
+                            }*/
                         }
 
                         if (counterMusic == 4)
@@ -80,30 +92,31 @@ internal static class FileManager
                             child = headers.Value;
                             child = child.Replace('#', ' ').Trim();
                             parentFull = Path.Combine(data.VideoPath, parent, child);
+                            //Console.WriteLine(parentFull);
                             //System.Console.WriteLine("child ---------------{0}",parentFull);
-                            try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
-                            catch (System.Exception) { throw; }
-
+                            /*try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
+                            catch (Exception) { throw; }*/
+/*
                             data.FileDestination = Path.Combine(parentFull, Path.GetFileName(unique.First().Value));
-                            System.Console.WriteLine(headers.Value);
-                            System.Console.WriteLine("copy of--------------{0}", musicElement.Value);
+                            Console.WriteLine(headers.Value);
+                            Console.WriteLine("copy of--------------{0}", musicElement.Value);*/
 
-                            export.Add($"{headers.Value}");
-                            export.Add($"{Path.GetFileName(musicElement.Value)}");
-                            try
+                            // musicsToExport.Add($"{headers.Value}");
+                            // musicsToExport.Add($"{Path.GetFileName(musicElement.Value)}");
+                            /*try
                             {
                                 sw.Start();
-                                //File.Copy(musicElement.Value, FileDestination,false);  
+                                
+                                //if(data.Action =="copy") File.Copy(musicElement.Value, data.FileDestination,false);
+                                //if(data.Action =="move") File.Copy(musicElement.Value, data.FileDestination,false);
+                                //
                                 await Task.Delay(2000);
-                                System.Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", data.FileDestination, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", data.FileDestination, sw.Elapsed.TotalSeconds.ToString("0:00"));
                                 sw.Stop();
                                 sw.Restart();
 
                             }
-                            catch (Exception e)
-                            {
-                               Console.WriteLine(e);
-                            }
+                            catch (Exception e) { Console.WriteLine(e); };*/
                         }
 
                     }
@@ -113,45 +126,55 @@ internal static class FileManager
             count++;
 
         }
-        var message = await LogsDataFromOriginAfterCopy(export, data.FilePath, data.FileDestination);
+        // foreach (var item in musicsToExport)
+        // {
+        //     Console.WriteLine("item {0}", item);
+        // }
+        //var message = await LogsDataFromOriginAfterCopy(musicsToExport, data);
         await Task.Delay(1000);
-        System.Console.WriteLine(message);
+        Console.WriteLine(message);
     }
 
     //Get List item Matching from logs
-    public static async Task<string> LogsDataFromOriginAfterCopy(List<string> musics, string logSourceFile, string folderDestination)
+    public static async Task<string> LogsDataFromOriginAfterCopy(List<string> musicsToExport,  SampleData data)
     {
         string message;
 
-        if (musics == null || logSourceFile == null || folderDestination == null) throw new ArgumentNullException("data is null");
+        if (musicsToExport == null || data.LogFileDestination == null || data.LogPathDestination == null) 
+            throw new ArgumentNullException("data is null");
 
-        try { if (!Directory.Exists(folderDestination)) Directory.CreateDirectory(folderDestination); }
-        catch (System.Exception) { throw; }
+        try { if (!Directory.Exists(data.LogPathDestination)) Directory.CreateDirectory(data.LogPathDestination); }
+        catch (DirectoryNotFoundException e) { Console.WriteLine(e.ToString()); }
 
-        string currentLogDirectory = Path.GetFullPath(folderDestination);
-        var logFile = Path.Combine(currentLogDirectory, logSourceFile);
+        string currentLogDirectory = Path.GetFullPath(data.LogPathDestination);
+        var logFile = Path.Combine(currentLogDirectory, data.LogFileDestination);
 
         // logFile = Path.ChangeExtension(logFile, DateTime.Now.ToString("dd-MM-yyyy")+".txt");
 
         try
         {
-
+    
             if (File.Exists(logFile))
             {
-                using StreamWriter sw = File.AppendText(logFile);
-                sw.WriteLine("");
-                sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
-                foreach (var item in musics)
-                {
-                    sw.WriteLine(item);
+                var logFileListToCheckIfExisted = File.ReadAllLines(logFile).ToList();
+
+                if(logFileListToCheckIfExisted is not null && !logFileListToCheckIfExisted.Any(data => musicsToExport.Contains(data, StringComparer.OrdinalIgnoreCase))){
+                    using StreamWriter sw = File.AppendText(logFile);
+                    sw.WriteLine("");
+                    sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
+                    foreach (var item in musicsToExport)
+                    {
+                        sw.WriteLine(item);
+                    }
+                    sw.WriteLine("");
                 }
-                sw.WriteLine("");
+                
             }
             else
-                File.WriteAllLines(logFile, musics);
+                File.WriteAllLines(logFile, musicsToExport);
 
             await Task.Delay(100);
-            message = "*************Texts added to Log File successfully";
+            message = "---------------------------- Texts added to Log File successfully";
             //File.Copy(OldMusicFile, fileDestination);
         }
         catch (Exception) { throw; }
@@ -229,26 +252,25 @@ internal static class FileManager
     /// <summary>
     /// Get a list of item in a specific folder when items match each other
     /// </summary>
-    /// <param name="filePath"></param>
     /// <param name="videoDirectory"></param>
     /// <param name="arrayOfFullPath"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static Dictionary<int, string> GetFullPath(string filePath, string videoDirectory, string[] arrayOfFullPath)
+    public static Dictionary<int, string> GetFullPath(string videoDirectory, string[] arrayOfListElementFromFile)
     {
-        if (String.IsNullOrEmpty(videoDirectory) || String.IsNullOrEmpty(filePath)) throw new ArgumentNullException();
+        if (string.IsNullOrEmpty(videoDirectory)) throw new ArgumentNullException();
         Dictionary<int, string> musicFullPath = new();
 
         if (Directory.Exists(videoDirectory))
         {
             var clips = Directory.GetFiles(videoDirectory);
-            for (int h = 0; h < arrayOfFullPath.Length; h++)
+            for (int h = 0; h < arrayOfListElementFromFile.Length; h++)
             {
                 for (int i = 0; i < clips.Length; i++)
                 {
                     string extension = Path.GetFileNameWithoutExtension(clips[i]);
 
-                    if (arrayOfFullPath[h].Contains(extension, StringComparison.OrdinalIgnoreCase))
+                    if (arrayOfListElementFromFile[h].Contains(extension, StringComparison.OrdinalIgnoreCase))
                     {
                         musicFullPath.Add(h, Path.GetFullPath(clips[i]));
                     }
