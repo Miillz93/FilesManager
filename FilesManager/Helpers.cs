@@ -26,5 +26,27 @@ internal static class Helpers
         return sampleData ?? throw new NullReferenceException() ;
     }
 
-    
+    public static SampleData ReloadJson(){
+        SampleData data;
+
+        OldTracking = JsonFileTracking;
+        Console.WriteLine("Old------------------- {0}", JsonFileTracking);
+
+        JsonFileTracking = GetFileLastChange();
+        Console.WriteLine("newest------------------- {0}", JsonFileTracking);
+
+        if (JsonFileTracking != OldTracking)
+        {
+            data = DeserializeJson(JsonPath);
+            //Console.WriteLine("From reload {0}", data.Playlist?.Name);
+            return data;
+        }
+
+        data = DeserializeJson(JsonPath);
+
+        return data;
+
+    }
+
+
 }
