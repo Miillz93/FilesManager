@@ -3,22 +3,22 @@ using Shared;
 namespace Manager;
 public static class Menu{
 
-    private static readonly string Message = "Application exit successfully....................;";
+    private static readonly string Message = "Application exit successfully....................👍;";
     
-    public static void MainMenu(SampleData data){
+    public static async Task<int> MainMenuAsync(SampleData data){
         if (data == null) throw new ArgumentNullException();
 
-        bool continued = true;
+        int subIndex = 0;
+        bool continued = true; 
 
         while(continued)
         {        
             Console.WriteLine("Select one of the following");
-            Console.WriteLine("0) Exit from Console");
-            Console.WriteLine("1) Manage files ");
-            Console.WriteLine("2) Create playlists");
-            Console.WriteLine("3) Reload");
+            Console.WriteLine("0) Exit from Console ❌");
+            Console.WriteLine("1) Manage files 👜");
+            Console.WriteLine("2) Create playlists 💡");
+            Console.WriteLine("3) Reload 🟠");
 
-            int subIndex;
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out int selector);
 
@@ -27,66 +27,70 @@ public static class Menu{
             switch (selector)
             {
                 case 0:
-                    Console.WriteLine(Message);
                     Environment.Exit(0);
                     break;
                 case 1:
                     subIndex = 1;
 
-                    int check = SubMenuLevelOneFiles(data, subIndex);
+                    int check = await SubMenuLevelOneFilesAsync(data, subIndex);
 
                     if (check == 0) continued = false;
                     break;
                 case 2:
                     subIndex = 2;
-                    check = SubMenuLevelTwoPlayList(data, subIndex);
+                    check = await SubMenuLevelTwoPlayList(data, subIndex);
 
                     if (check == 0) continued = false;
                     break;
                 case 3:
-                    continued = false;
+                    continued = true;
                     break;
                 default:
-                    Console.WriteLine("--------------------- Invalid number selected {0}", selector);
+                    Console.WriteLine("--------------------- Invalid number selected {0} ❌", selector);
                     break;
             }
 
         };
+        Console.WriteLine(Message);
 
+        return subIndex;
     }
 
-    public static int SubMenuLevelOneFiles (SampleData data, int index){
+    public static async Task<int> SubMenuLevelOneFilesAsync (SampleData data, int index){
 
         bool continued = true;
         
         while(continued)
         {
+            Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Select one of the following action");
-            Console.WriteLine("0) Exit from Console");
-            Console.WriteLine("1) Copy Files");
-            Console.WriteLine("2) Move Files");
-            Console.WriteLine("3) Export");
-            Console.WriteLine("4) Back");
-            Console.WriteLine("5) Reload");
+            Console.WriteLine("0) Exit from Console ❌");
+            Console.WriteLine("1) Copy Files ✒️");
+            Console.WriteLine("2) Move Files 🧲");
+            Console.WriteLine("3) Export 📗");
+            Console.WriteLine("4) Back ⏪");
+            Console.WriteLine("5) Reload 🟠");
             
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out index);
 
             if(!success) index = -1;
 
-            System.Console.WriteLine(Environment.NewLine);
+            Console.WriteLine(Environment.NewLine);
+            await Task.Delay(100);
             data = Helpers.ReloadJson();
 
             switch(index){
                 case 0:
-                    Console.WriteLine(Message);
                     Environment.Exit(0);
 
                     break;
                 case 1:
                     Console.WriteLine("---------------------copying File");
+                    await FileManager.CopyOrMoveFileFromSourceFileAsync(data);      
+
                     Console.WriteLine(Environment.NewLine);
-                    _ = FileManager.CopyOrMoveFileFromSourceFileAsync(data);                              
+                    continued = false;
 
                     break;               
                 case 2:
@@ -118,30 +122,31 @@ public static class Menu{
         return index;
     }
 
-    public static int SubMenuLevelTwoPlayList (SampleData data, int index){
+    public static async Task<int> SubMenuLevelTwoPlayList (SampleData data, int index){
 
         
         bool continued = true;
 
         while (continued)
         {
+            Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Choice playlist type");
-            Console.WriteLine("0) Exit from Console");
-            Console.WriteLine("1) Normal");
-            Console.WriteLine("2) Mix");
-            Console.WriteLine("3) Random");
-            Console.WriteLine("4) Prev");
+            Console.WriteLine("0) Exit from Console ❌");
+            Console.WriteLine("1) Normal 🎞️");
+            Console.WriteLine("2) Mix 💎");
+            Console.WriteLine("3) Random ⌚");
+            Console.WriteLine("4) Back ⏪");
 
             string? strSelector = Console.ReadLine();
 
             bool success = int.TryParse(strSelector, out int selector);
             if(!success) selector = -1;
 
+            await Task.Delay(100);
             data = Helpers.ReloadJson();
 
             switch(selector){
                 case 0:
-                    Console.WriteLine(Message);
                     Environment.Exit(0);
                     break;
                 case 1:
