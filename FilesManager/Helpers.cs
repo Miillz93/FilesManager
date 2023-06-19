@@ -48,5 +48,14 @@ internal static class Helpers
 
     }
 
+    public static void LoadApplication(){
+        bool check = true;
 
+        while (check) {
+            var data = ReloadJson();
+            Menu.MainMenu(data);
+            Console.WriteLine(Environment.NewLine);
+        }
+
+    }
 }
