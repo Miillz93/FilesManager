@@ -35,9 +35,9 @@ public static class FileManager
         var musicFullPath = GetFullPath(data.VideoPath, arrayOfListElementFromFile);
         //this.LogsDataFromOriginAfterMove(musicFullPath, ItemHeader,  FilePath);
 
-        // foreach (var item in musicFullPath){
-        //     Console.WriteLine("music matching item vkey {0} ----- value {1}",item.Key, item.Value);
-        // }
+        foreach (var item in musicFullPath){
+            //Console.WriteLine("item vkey {0} ----- value {1}",item.Key, item.Value);
+        }
 
         for (int i = 0; i < number - 1; i++)
         {
@@ -50,26 +50,26 @@ public static class FileManager
                     counterMusic = headers.Value.Where(x => x == '#').Count();
                     KeyValuePair<int, string> musicElement = musicFullPath.ElementAt(j);
 
-                    if (musicElement.Key >= headers.Key && musicElement.Key <= itemForHeader.ElementAt(count).Key)
+                    if (headers.Key <= musicElement.Key  && musicElement.Key >= itemForHeader.ElementAt(count).Key)
                     {
                         int value = musicElement.Key;
                         var unique = musicFullPath.Where(x => x.Key == value);
 
                         if (counterMusic == 3)
                         {
+                            
                             parent = headers.Value;
                             parent = parent.Replace('#', ' ').Trim();
-                            parentFull = Path.Combine(data.VideoPath, parent);
-                            Console.WriteLine(counterMusic);
-                            /*try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
-                            catch (Exception) { throw; }*/
-/*
+                            parentFull = Path.Combine(data.PathDestination, parent);
+                            try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
+                            catch (Exception) { throw; }
+
                             data.FileDestination = Path.Combine(parentFull, Path.GetFileName(unique.First().Value));
-                            Console.WriteLine("copy of ................. {0}", musicElement.Value);*/
+                            Console.WriteLine("copy of ................. {0}", musicElement.Value);
 
                             musicsToExport.Add($"{headers.Value}");
                             musicsToExport.Add($"{Path.GetFileName(musicElement.Value)}");
-                            /*try
+                            try
                             {
                                 sw.Start();
                                 await Task.Delay(2000);
@@ -83,7 +83,7 @@ public static class FileManager
                             catch (Exception e)
                             {
                                 Console.WriteLine(e);
-                            }*/
+                            }
                         }
 
                         if (counterMusic == 4)
@@ -91,19 +91,19 @@ public static class FileManager
                             //System.Console.WriteLine(counter.Value[i]);
                             child = headers.Value;
                             child = child.Replace('#', ' ').Trim();
-                            parentFull = Path.Combine(data.VideoPath, parent, child);
-                            //Console.WriteLine(parentFull);
+                            parentFull = Path.Combine(data.PathDestination, parent, child);
+                            Console.WriteLine("child {0}",parentFull);
                             //System.Console.WriteLine("child ---------------{0}",parentFull);
-                            /*try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
-                            catch (Exception) { throw; }*/
-/*
+                            try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
+                            catch (Exception) { throw; }
+
                             data.FileDestination = Path.Combine(parentFull, Path.GetFileName(unique.First().Value));
                             Console.WriteLine(headers.Value);
-                            Console.WriteLine("copy of--------------{0}", musicElement.Value);*/
+                            Console.WriteLine("copy of--------------{0}", musicElement.Value);
 
                             // musicsToExport.Add($"{headers.Value}");
                             // musicsToExport.Add($"{Path.GetFileName(musicElement.Value)}");
-                            /*try
+                            try
                             {
                                 sw.Start();
                                 
@@ -116,7 +116,7 @@ public static class FileManager
                                 sw.Restart();
 
                             }
-                            catch (Exception e) { Console.WriteLine(e); };*/
+                            catch (Exception e) { Console.WriteLine(e); };
                         }
 
                     }
