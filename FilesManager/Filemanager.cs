@@ -10,6 +10,32 @@ namespace Manager;
 public static class FileManager
 {
 
+    public static async Task<(Dictionary<int, string>, Dictionary<int, string>)> ExtractData(SampleData data) {
+
+        string FilePath = Path.Combine(data.PathSource, data.FilePath);
+        string[] arrayOfListElementFromFile = new string[]{};
+
+        if (!File.Exists(FilePath)) throw new FileNotFoundException();
+
+
+        foreach (var item in data.VideoPath) {
+            if(!Directory.Exists(item)) throw new DirectoryNotFoundException(item);
+
+        }
+        var itemForHeader = new Dictionary<int, string>();
+
+        try { arrayOfListElementFromFile = File.ReadAllLines(FilePath) ; } 
+        catch (Exception) { throw; }
+
+
+
+        itemForHeader = GetItemHeaderHashFromFile(arrayOfListElementFromFile);
+
+        var musicFullPath = GetFullPath(data.VideoPath, arrayOfListElementFromFile);
+
+        return (itemForHeader, musicFullPath);
+    }
+
     public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data)
     {
         string parent = "", child = "", parentFull = ""; string message = "Finished................";
@@ -18,120 +44,81 @@ public static class FileManager
 
         var sw = new Stopwatch();
 
-        string FilePath = Path.Combine(data.PathSource, data.FilePath);
+        var item = await ExtractData(data);
+        var itemForHeader = item.Item1;
+        var musicFullPath = item.Item2;
 
-        if (!Directory.Exists(data.VideoPath) || !File.Exists(FilePath)) 
-            throw new FileNotFoundException() ?? throw new DirectoryNotFoundException();
+        int number = itemForHeader.Count;
+        int musicCounter = musicFullPath.Count;
+        int count = 0, counting = 1;
 
-        var itemForHeader = new Dictionary<int, string>();
-        int counterMusic = 0, count = 1;
+        foreach (var header in itemForHeader) {
+            if(count < number && counting < number){
+                var firstIndex = itemForHeader.ElementAt(count);
+                var lastIndex = itemForHeader.ElementAt(counting);
+                
+                int countMusic = firstIndex.Value.Where(x => x == '#').Count();
 
-        try { arrayOfListElementFromFile = File.ReadAllLines(FilePath) ; }  // Ok var
-        catch (Exception) { throw; }
+                if(countMusic == 3) {
+                    parent = firstIndex.Value.Replace('#', ' ').Trim();
+                    
+                    //Console.WriteLine($"{firstIndex.Key} - {firstIndex.Value}");
+                    parentFull = Path.Combine(data.PathDestination, parent);
 
-        itemForHeader = GetItemHeaderHashFromFile(arrayOfListElementFromFile); // ok
-        int number = itemForHeader.Count; // ok
+                    try{ if(Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
+                    catch (Exception) {throw;}
 
-        var musicFullPath = GetFullPath(data.VideoPath, arrayOfListElementFromFile);
-        //this.LogsDataFromOriginAfterMove(musicFullPath, ItemHeader,  FilePath);
-
-        foreach (var item in musicFullPath){
-            //Console.WriteLine("item vkey {0} ----- value {1}",item.Key, item.Value);
-        }
-
-        for (int i = 0; i < number - 1; i++)
-        {
-            if (count < number)
-            {
-                KeyValuePair<int, string> headers = itemForHeader.ElementAt(i);
-
-                for (int j = 0; j < musicFullPath.Count; j++)
-                {
-                    counterMusic = headers.Value.Where(x => x == '#').Count();
-                    KeyValuePair<int, string> musicElement = musicFullPath.ElementAt(j);
-
-                    if (headers.Key <= musicElement.Key  && musicElement.Key >= itemForHeader.ElementAt(count).Key)
+                    foreach (var musics in musicFullPath)
                     {
-                        int value = musicElement.Key;
-                        var unique = musicFullPath.Where(x => x.Key == value);
+                        parentFull = Path.Combine(data.PathDestination, parent, Path.GetFileName(musics.Value));
 
-                        if (counterMusic == 3)
-                        {
+                        if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
+                            //Console.WriteLine(musics.Value);
+                            Console.WriteLine(parentFull);
+
+                        }
                             
-                            parent = headers.Value;
-                            parent = parent.Replace('#', ' ').Trim();
-                            parentFull = Path.Combine(data.PathDestination, parent);
-                            try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
-                            catch (Exception) { throw; }
-
-                            data.FileDestination = Path.Combine(parentFull, Path.GetFileName(unique.First().Value));
-                            Console.WriteLine("copy of ................. {0}", musicElement.Value);
-
-                            musicsToExport.Add($"{headers.Value}");
-                            musicsToExport.Add($"{Path.GetFileName(musicElement.Value)}");
-                            try
-                            {
-                                sw.Start();
-                                await Task.Delay(2000);
-                                //if(data.Action =="copy") File.Copy(musicElement.Value, data.FileDestination,false); 
-                                //if(data.Action =="move") File.Copy(musicElement.Value, data.FileDestination,false);   
-
-                                Console.WriteLine("copying  to--------------{0}  in {1} 's Elapsed time",data.FileDestination, sw.Elapsed.TotalSeconds.ToString("0:00"));
-                                sw.Stop();
-                                sw.Reset();
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e);
-                            }
-                        }
-
-                        if (counterMusic == 4)
-                        {
-                            //System.Console.WriteLine(counter.Value[i]);
-                            child = headers.Value;
-                            child = child.Replace('#', ' ').Trim();
-                            parentFull = Path.Combine(data.PathDestination, parent, child);
-                            Console.WriteLine("child {0}",parentFull);
-                            //System.Console.WriteLine("child ---------------{0}",parentFull);
-                            try { if (!Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
-                            catch (Exception) { throw; }
-
-                            data.FileDestination = Path.Combine(parentFull, Path.GetFileName(unique.First().Value));
-                            Console.WriteLine(headers.Value);
-                            Console.WriteLine("copy of--------------{0}", musicElement.Value);
-
-                            // musicsToExport.Add($"{headers.Value}");
-                            // musicsToExport.Add($"{Path.GetFileName(musicElement.Value)}");
-                            try
-                            {
-                                sw.Start();
-                                
-                                //if(data.Action =="copy") File.Copy(musicElement.Value, data.FileDestination,false);
-                                //if(data.Action =="move") File.Copy(musicElement.Value, data.FileDestination,false);
-                                //
-                                await Task.Delay(2000);
-                                Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", data.FileDestination, sw.Elapsed.TotalSeconds.ToString("0:00"));
-                                sw.Stop();
-                                sw.Restart();
-
-                            }
-                            catch (Exception e) { Console.WriteLine(e); };
-                        }
-
                     }
+
+                }else{
+                    child = firstIndex.Value.Replace('#', ' ').Trim();
+                    parentFull = Path.Combine(parent, child);
+
+                    try{ if(Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
+                    catch (System.Exception) {throw;}
+                    
+                    Console.WriteLine($"{firstIndex.Key} - {firstIndex.Value}");
+
+                    foreach (KeyValuePair<int, string> musics in musicFullPath)
+                    {
+                        parentFull = Path.Combine(data.PathDestination, parent, child, Path.GetFileName(musics.Value));
+
+                        if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
+                            //Console.WriteLine(musics.Value);
+                            Console.WriteLine(parentFull);
+
+                        }
+                            
+                    }
+                    
                 }
 
             }
-            count++;
-
+            count++; counting++;
+            
         }
+
+        //System.Console.WriteLine($" header {number}   --   {musicCounter}");
+
+        throw new Exception();
+        //this.LogsDataFromOriginAfterMove(musicFullPath, ItemHeader,  FilePath);
+
         // foreach (var item in musicsToExport)
         // {
         //     Console.WriteLine("item {0}", item);
         // }
         //var message = await LogsDataFromOriginAfterCopy(musicsToExport, data);
-        await Task.Delay(1000);
+        await Task.Delay(100);
         Console.WriteLine(message);
     }
 
@@ -256,28 +243,43 @@ public static class FileManager
     /// <param name="arrayOfFullPath"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static Dictionary<int, string> GetFullPath(string videoDirectory, string[] arrayOfListElementFromFile)
+    public static Dictionary<int, string> GetFullPath(string[] videoDirectory, string[] arrayOfListElementFromFile)
     {
-        if (string.IsNullOrEmpty(videoDirectory)) throw new ArgumentNullException();
-        Dictionary<int, string> musicFullPath = new();
+        if (videoDirectory is null) throw new ArgumentNullException();
+        
+        Dictionary<int, string> musicFullPath = new(), musicFull = new();
+        HashSet<string> clips = new();  SortedDictionary<int, string> dict = new();
 
-        if (Directory.Exists(videoDirectory))
+        List<string> list = new List<string>(), musics =new List<string>();
+        
+        foreach (var item in videoDirectory.Where(item => !Directory.Exists(item)))
         {
-            var clips = Directory.GetFiles(videoDirectory);
-            for (int h = 0; h < arrayOfListElementFromFile.Length; h++)
-            {
-                for (int i = 0; i < clips.Length; i++)
-                {
-                    string extension = Path.GetFileNameWithoutExtension(clips[i]);
+            throw new DirectoryNotFoundException(item);
+        }
 
-                    if (arrayOfListElementFromFile[h].Contains(extension, StringComparison.OrdinalIgnoreCase))
-                    {
-                        musicFullPath.Add(h, Path.GetFullPath(clips[i]));
-                    }
-                }
-            }
+        //directories = directory.GetDirectories("*", SearchOption.AllDirectories);
+        foreach (var item in videoDirectory.ToList())
+        {
+            var data = Directory.GetFiles(item);
+
+            if(data.Length > 0) musics.AddRange(data); 
 
         }
+
+        for (int h = 0; h < arrayOfListElementFromFile.Length; h++)
+        {
+            for (int i = 0; i < musics.Count; i++)
+            {
+                string extension = Path.GetFileNameWithoutExtension(musics[i]);
+                 if (arrayOfListElementFromFile[h].Contains(extension, StringComparison.OrdinalIgnoreCase))
+                {
+                   var check= musicFullPath.TryAdd(h, Path.GetFullPath(musics[i]));
+                   
+                }
+            }
+   
+        }
+
         return musicFullPath;
     }
 
