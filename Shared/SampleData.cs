@@ -8,6 +8,7 @@ public class SampleData
     public string? PathSource {get; set;}
     public string? FileDestination {get; set;}
     public string? PathDestination {get; set;}
+    public string[]? SameSymbol {get; set;}
     public string[]? ExcludeItem {get;set;}
     public string[]? VideoPath {get; set;}
     public string? Action {get; set;}
