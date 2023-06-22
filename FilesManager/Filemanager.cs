@@ -15,6 +15,8 @@ public static class FileManager
         string FilePath = Path.Combine(data.PathSource, data.FilePath);
         string[] arrayOfListElementFromFile = new string[]{};
 
+        if(data.SameSymbol is null) throw new ArgumentNullException("SameSymbol is null");
+
         if (!File.Exists(FilePath)) throw new FileNotFoundException();
 
 
@@ -27,8 +29,6 @@ public static class FileManager
         try { arrayOfListElementFromFile = File.ReadAllLines(FilePath) ; } 
         catch (Exception) { throw; }
 
-
-
         itemForHeader = GetItemHeaderHashFromFile(arrayOfListElementFromFile);
 
         var musicFullPath = GetFullPath(data.VideoPath, arrayOfListElementFromFile);
@@ -38,7 +38,7 @@ public static class FileManager
 
     public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data)
     {
-        string parent = "", child = "", parentFull = ""; string message = "Finished................";
+        string parent = "", child = "", parentFull = "",  path = "",  message = "Finished................👍", pathFull ="";
         List<string> musicsToExport = new();
         string[] arrayOfListElementFromFile = Array.Empty<string>();
 
@@ -58,50 +58,88 @@ public static class FileManager
                 var lastIndex = itemForHeader.ElementAt(counting);
                 
                 int countMusic = firstIndex.Value.Where(x => x == '#').Count();
-
-                if(countMusic == 3) {
-                    parent = firstIndex.Value.Replace('#', ' ').Trim();
-                    
-                    //Console.WriteLine($"{firstIndex.Key} - {firstIndex.Value}");
-                    parentFull = Path.Combine(data.PathDestination, parent);
-
-                    try{ if(Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
-                    catch (Exception) {throw;}
-
-                    foreach (var musics in musicFullPath)
-                    {
-                        parentFull = Path.Combine(data.PathDestination, parent, Path.GetFileName(musics.Value));
-
-                        if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
-                            //Console.WriteLine(musics.Value);
-                            Console.WriteLine(parentFull);
-
+                
+                switch(countMusic){
+                    case 3: 
+                        parent = firstIndex.Value.Replace('#', ' ').Trim();
+                        pathFull = parent;
+                        
+                        if(data.SameSymbol.Any(symbol => parent.Contains(symbol, StringComparison.OrdinalIgnoreCase))) {
+                            pathFull = Path.Combine("FR", parent);
                         }
+
+                        foreach (var musics in from musics in musicFullPath
+                                               where firstIndex.Key < musics.Key && musics.Key < lastIndex.Key
+                                               select musics)
+                        {
+                            path = Path.Combine(data.PathDestination, pathFull);
+                            try { if (!Directory.Exists(path)) Directory.CreateDirectory(path); }
+                            catch (Exception) { throw; }
+
+                            parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
-                    }
-
-                }else{
-                    child = firstIndex.Value.Replace('#', ' ').Trim();
-                    parentFull = Path.Combine(parent, child);
-
-                    try{ if(Directory.Exists(parentFull)) Directory.CreateDirectory(parentFull); }
-                    catch (System.Exception) {throw;}
-                    
-                    Console.WriteLine($"{firstIndex.Key} - {firstIndex.Value}");
-
-                    foreach (KeyValuePair<int, string> musics in musicFullPath)
-                    {
-                        parentFull = Path.Combine(data.PathDestination, parent, child, Path.GetFileName(musics.Value));
-
-                        if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
-                            //Console.WriteLine(musics.Value);
-                            Console.WriteLine(parentFull);
-
+                            sw.Start();
+                            Console.WriteLine($"copy of ---------------------- {musics.Value}");
+                            if(data.Action.ToLower() == "copy") File.Copy(musics.Value, parentFull, false) ;
+                            if(data.Action.ToLower() == "move") File.Move(musics.Value, parentFull, true) ;
+                            Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                            sw.Stop();
+                            sw.Restart();
                         }
+
+                        break;
+                    case 4: 
+                        child = firstIndex.Value.Replace('#', ' ').Trim();
+
+                        foreach (KeyValuePair<int, string> musics in musicFullPath)
+                        {
                             
-                    }
-                    
-                }
+                            if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
+                                path = Path.Combine(data.PathDestination, pathFull, child);
+
+                                 try{ if(!Directory.Exists(path)) Directory.CreateDirectory(path); }
+                                 catch (System.Exception) {throw;}
+
+                                parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
+                                                                 
+                                sw.Start();
+                                Console.WriteLine($"copy of ---------------------- {musics.Value}");
+                                if(data.Action.ToLower() == "copy") File.Copy(musics.Value, parentFull, false) ;
+                                if(data.Action.ToLower() == "move") File.Move(musics.Value, parentFull, true) ;
+                                Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                sw.Stop();
+                                sw.Restart();
+                            }
+                                
+                        }
+                        break;
+                    case 5: 
+                        var SubChild = firstIndex.Value.Replace('#', ' ').Trim();
+
+                        foreach (KeyValuePair<int, string> musics in musicFullPath)
+                        {
+                            if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
+                                path = Path.Combine(data.PathDestination, pathFull, child, SubChild);
+
+                                try{ if(Directory.Exists(path)) Directory.CreateDirectory(path); }
+                                catch (Exception) {throw;}
+                        
+                                parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
+
+                                sw.Start();
+                                Console.WriteLine($"copy of ---------------------- {musics.Value}");
+                                 if(data.Action.ToLower() == "copy") File.Copy(musics.Value, parentFull, false) ;
+                                if(data.Action.ToLower() == "move") File.Move(musics.Value, parentFull, true) ;
+                                Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                sw.Stop();
+                                sw.Restart();
+                            }
+                                
+                        }
+                        break;
+                    default: break;
+                } 
+
 
             }
             count++; counting++;
