@@ -81,9 +81,17 @@ public static class FileManager
                             
                             sw.Start();
                             Console.WriteLine($"copy of ---------------------- {musics.Value}");
-                            if(data.Action.ToLower() == "copy") File.Copy(musics.Value, parentFull, false) ;
-                            if(data.Action.ToLower() == "move") File.Move(musics.Value, parentFull, true) ;
-                            Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                            if(data.Action.ToLower() == "copy"){
+                               
+                               if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
+                               else File.Copy(musics.Value, parentFull);                               
+                                 
+                            }else{
+                                if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
+                                else File.Move(musics.Value, parentFull); 
+                            }
+                            
+                            Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
                             sw.Stop();
                             sw.Restart();
                         }
@@ -105,9 +113,16 @@ public static class FileManager
                                                                  
                                 sw.Start();
                                 Console.WriteLine($"copy of ---------------------- {musics.Value}");
-                                if(data.Action.ToLower() == "copy") File.Copy(musics.Value, parentFull, false) ;
-                                if(data.Action.ToLower() == "move") File.Move(musics.Value, parentFull, true) ;
-                                Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                if(data.Action.ToLower() == "copy")
+                                {
+                                    if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
+                                    else File.Copy(musics.Value, parentFull);   
+                                }
+                                else {
+                                    if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
+                                    else File.Move(musics.Value, parentFull); 
+                                }
+                                Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
                                 sw.Stop();
                                 sw.Restart();
                             }
@@ -129,9 +144,16 @@ public static class FileManager
 
                                 sw.Start();
                                 Console.WriteLine($"copy of ---------------------- {musics.Value}");
-                                 if(data.Action.ToLower() == "copy") File.Copy(musics.Value, parentFull, false) ;
-                                if(data.Action.ToLower() == "move") File.Move(musics.Value, parentFull, true) ;
-                                Console.WriteLine("copying  to--------------{0} in {1} 's Elapsed time", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                 if(data.Action.ToLower() == "copy") {
+                                    if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
+                                    else File.Copy(musics.Value, parentFull);   
+                                    
+                                 }else {
+                                    if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
+                                    else File.Move(musics.Value, parentFull);   
+                                 }
+
+                                Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
                                 sw.Stop();
                                 sw.Restart();
                             }
