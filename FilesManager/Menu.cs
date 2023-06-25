@@ -12,8 +12,9 @@ public static class Menu{
         bool continued = true; 
 
         while(continued)
-        {        
-            Console.WriteLine("Select one of the following");
+        {   
+            Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("Select one of the following \n---------------------");
             Console.WriteLine("0) Exit from Console ❌");
             Console.WriteLine("1) Manage files 👜");
             Console.WriteLine("2) Create playlists 💡");
@@ -77,9 +78,8 @@ public static class Menu{
 
             if(!success) index = -1;
 
-            Console.WriteLine(Environment.NewLine);
-            await Task.Delay(100);
-            data = Helpers.ReloadJson();
+            await Task.Delay(500);
+            data = await Helpers.ReloadJson();
 
             switch(index){
                 case 0:
@@ -87,7 +87,6 @@ public static class Menu{
 
                     break;
                 case 1:
-                    Console.WriteLine("copying File ---------------------");
                     await FileManager.CopyOrMoveFileFromSourceFileAsync(data);      
 
                     Console.WriteLine(Environment.NewLine);
@@ -141,7 +140,7 @@ public static class Menu{
         while (continued)
         {
             Console.WriteLine(Environment.NewLine);
-            Console.WriteLine("Choice playlist type");
+            Console.WriteLine("Choice playlist type \n---------------------");
             Console.WriteLine("0) Exit from Console ❌");
             Console.WriteLine("1) Normal 🎞️");
             Console.WriteLine("2) Mix 💎");
@@ -153,8 +152,8 @@ public static class Menu{
             bool success = int.TryParse(strSelector, out int selector);
             if(!success) selector = -1;
 
-            await Task.Delay(100);
-            data = Helpers.ReloadJson();
+            await Task.Delay(500);
+            data = await Helpers.ReloadJson();
 
             switch(selector){
                 case 0:
