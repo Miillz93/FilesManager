@@ -87,6 +87,9 @@ public static class Menu{
 
                     break;
                 case 1:
+                    Console.WriteLine("Copying Files ------------------------\n");
+
+                    data.Action = "copy";
                     await FileManager.CopyOrMoveFileFromSourceFileAsync(data);      
 
                     Console.WriteLine(Environment.NewLine);
@@ -94,7 +97,9 @@ public static class Menu{
 
                     break;               
                 case 2:
-                    Console.WriteLine("Moving File ------------------------");
+                    Console.WriteLine("Moving Files ------------------------\n");
+                    data.Action = "move";
+                    await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
 
                     break;                
                 case 3:
