@@ -194,7 +194,7 @@ public static class FileManager
                 sw.WriteLine("");
             }
 
-            Console.WriteLine($"\nTexts added to: {FileDestination} successfully---------------------👍");
+            Console.WriteLine($"\nTexts added to: {FileDestination} successfully -------------------------- 👍");
         }
         catch (Exception) { throw; }
     }
