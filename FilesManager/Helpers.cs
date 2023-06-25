@@ -26,7 +26,7 @@ public static class Helpers
         return sampleData ?? throw new NullReferenceException() ;
     }
 
-    public static SampleData ReloadJson(){
+    public static async Task<SampleData> ReloadJson(){
         SampleData data;
 
         OldTracking = JsonFileTracking;
@@ -52,13 +52,13 @@ public static class Helpers
         bool check = true;
 
         //while (check) {
-            var data = ReloadJson();
+            var data = await ReloadJson();
             Console.WriteLine(Environment.NewLine);
 
-            await FileManager.CopyOrMoveFileFromSourceFileAsync(data);
-            //var index = await Menu.MainMenuAsync(data);
-            //if(index == 0) check = false;
-            // Console.WriteLine(Environment.NewLine);
+            //await FileManager.CopyOrMoveFileFromSourceFileAsync(data);
+            var index = await Menu.MainMenuAsync(data);
+            if(index == 0) check = false;
+            Console.WriteLine(Environment.NewLine);
        // }
 
     }
