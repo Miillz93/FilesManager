@@ -186,13 +186,15 @@ public static class FileManager
                 
                 foreach (var item in value)
                 {
+                    Console.WriteLine( $"\"{item}\" Added successfully");
+                    // Thread.Sleep(5);
                     sw.WriteLine(item);
                 }
                 
                 sw.WriteLine("");
             }
 
-            Console.WriteLine($"Texts added to: {FileDestination} file successfully---------------------👍");
+            Console.WriteLine($"\nTexts added to: {FileDestination} successfully---------------------👍");
         }
         catch (Exception) { throw; }
     }
