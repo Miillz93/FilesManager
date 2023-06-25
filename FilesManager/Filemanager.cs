@@ -75,7 +75,7 @@ public static class FileManager
                         {
                             path = Path.Combine(data.PathDestination, pathFull);
                             try { if (!Directory.Exists(path)) Directory.CreateDirectory(path); }
-                            catch (Exception) { throw; }
+                            catch (DirectoryNotFoundException) { throw; }
 
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
@@ -161,58 +161,6 @@ public static class FileManager
         Console.WriteLine(message);
     }
 
-    //Get List item Matching from logs
-    /*
-    public static async Task<string> LogsDataFromOriginAfterCopy(List<string> musicsToExport,  SampleData data)
-    {
-        string message;
-
-        if (musicsToExport == null || data.LogFileDestination == null || data.LogPathDestination == null) 
-            throw new ArgumentNullException("data is null");
-
-        try { if (!Directory.Exists(data.LogPathDestination)) Directory.CreateDirectory(data.LogPathDestination); }
-        catch (DirectoryNotFoundException e) { Console.WriteLine(e.ToString()); }
-
-        string currentLogDirectory = Path.GetFullPath(data.LogPathDestination);
-        var logFile = Path.Combine(currentLogDirectory, data.LogFileDestination);
-
-        // logFile = Path.ChangeExtension(logFile, DateTime.Now.ToString("dd-MM-yyyy")+".txt");
-
-        /* try
-        {
-    
-            if (File.Exists(logFile))
-            {
-                var logFileListToCheckIfExisted = File.ReadAllLines(logFile).ToList();
-
-                if(logFileListToCheckIfExisted is not null && !logFileListToCheckIfExisted.Any(data => musicsToExport.Contains(data, StringComparer.OrdinalIgnoreCase))){
-                    using StreamWriter sw = File.AppendText(logFile);
-                    sw.WriteLine("");
-                    sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
-                    foreach (var item in musicsToExport)
-                    {
-                        sw.WriteLine(item);
-                    }
-                    sw.WriteLine("");
-                }
-                
-            }
-            else
-                File.WriteAllLines(logFile, musicsToExport);
-
-            await Task.Delay(100);
-            message = "---------------------------- Texts added to Log File successfully";
-            //File.Copy(OldMusicFile, fileDestination);
-        }
-        catch (Exception) { throw; }
-
-        return message;
-    }*/
-
-    // public static async Task<string> FormatStringToFileOutput(string fullpath, string path){
-    //     string[] arr = fullpath.Replace(path, "").Split("\\");
-    //     System.Console.WriteLine(string.Join(",", arr));
-    // }
     public static async Task ExportEmbeedPathToFileAsync(SampleData data){
          string indexHeader = ""; 
 
@@ -273,11 +221,8 @@ public static class FileManager
             dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
              
          }
-        // foreach (var item in dict)
-        // {
-        //     System.Console.WriteLine(item);
-        // }
-         return dict;
+
+        return dict;
         
     }
 
