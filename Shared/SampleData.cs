@@ -3,7 +3,9 @@
 public class SampleData
 {
     public string? EmbeedPath {get; set;}
+    public string? EmbeedFileName {get; set;}
     public string? EmbeedDestination {get; set;}
+    public bool  EmbeedTypeShort {get; set;}
     public string? FilePath {get; set;}
     public string? PathSource {get; set;}
     public string? FileDestination {get; set;}

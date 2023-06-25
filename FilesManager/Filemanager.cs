@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Shared;
 
@@ -74,7 +75,7 @@ public static class FileManager
                         {
                             path = Path.Combine(data.PathDestination, pathFull);
                             try { if (!Directory.Exists(path)) Directory.CreateDirectory(path); }
-                            catch (Exception) { throw; }
+                            catch (DirectoryNotFoundException) { throw; }
 
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
@@ -160,118 +161,100 @@ public static class FileManager
         Console.WriteLine(message);
     }
 
-    //Get List item Matching from logs
-    public static async Task<string> LogsDataFromOriginAfterCopy(List<string> musicsToExport,  SampleData data)
-    {
-        string message;
+    public static async Task ExportEmbeedPathToFileAsync(SampleData data){
+         string indexHeader = ""; 
 
-        if (musicsToExport == null || data.LogFileDestination == null || data.LogPathDestination == null) 
-            throw new ArgumentNullException("data is null");
+        if(data is {EmbeedPath : null, EmbeedDestination: null, EmbeedFileName: null} ) 
+            throw new ArgumentNullException(nameof(data));  
 
-        try { if (!Directory.Exists(data.LogPathDestination)) Directory.CreateDirectory(data.LogPathDestination); }
-        catch (DirectoryNotFoundException e) { Console.WriteLine(e.ToString()); }
-
-        string currentLogDirectory = Path.GetFullPath(data.LogPathDestination);
-        var logFile = Path.Combine(currentLogDirectory, data.LogFileDestination);
-
-        // logFile = Path.ChangeExtension(logFile, DateTime.Now.ToString("dd-MM-yyyy")+".txt");
-
-        try
-        {
-    
-            if (File.Exists(logFile))
-            {
-                var logFileListToCheckIfExisted = File.ReadAllLines(logFile).ToList();
-
-                if(logFileListToCheckIfExisted is not null && !logFileListToCheckIfExisted.Any(data => musicsToExport.Contains(data, StringComparer.OrdinalIgnoreCase))){
-                    using StreamWriter sw = File.AppendText(logFile);
-                    sw.WriteLine("");
-                    sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
-                    foreach (var item in musicsToExport)
-                    {
-                        sw.WriteLine(item);
-                    }
-                    sw.WriteLine("");
-                }
-                
-            }
-            else
-                File.WriteAllLines(logFile, musicsToExport);
-
-            await Task.Delay(100);
-            message = "---------------------------- Texts added to Log File successfully";
-            //File.Copy(OldMusicFile, fileDestination);
-        }
-        catch (Exception) { throw; }
-
-        return message;
-    }
-
-    public static async Task ExportEmbeedFileFromFolderAsync(SampleData data){
-                
-        if(data is null || data.PathSource is null || data.FileDestination is null || data.PathDestination is null) throw new ArgumentNullException(nameof(data));  
+        var dataFormat = await FormatEmbeedPath(data);
         
-        var (filecombined, fileItems) = await GetFilesWithInFoldersAndSubFolders(data); 
-
         try
         {
-            if (File.Exists(filecombined))
+            string FileDestination = Path.Combine(data.EmbeedDestination, data.EmbeedFileName);
+            
+            using StreamWriter sw = new (FileDestination);
+            sw.WriteLine("");
+            sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
+            
+            foreach (var (header, value) in dataFormat)
             {
-                using StreamWriter sw = File.AppendText(filecombined);
+                indexHeader = string.Concat("###", header);
+                
+                sw.WriteLine(indexHeader);
                 sw.WriteLine("");
-                sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
-                foreach (var item in fileItems)
+                
+                foreach (var item in value)
                 {
+                    Console.WriteLine( $"\"{item}\" Added successfully");
+                    // Thread.Sleep(5);
                     sw.WriteLine(item);
                 }
+                
                 sw.WriteLine("");
             }
-            else{
-                using StreamWriter sw = new(filecombined);
-                sw.WriteLine("");
-                sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
-                foreach (var item in fileItems)
-                {
-                    sw.WriteLine(item);
-                }
-                sw.WriteLine("");
-            }
-            await Task.Delay(1000);
-            System.Console.WriteLine("---------------------Texts added to Log File successfully");
-            //File.Copy(OldMusicFile, fileDestination);
+
+            Console.WriteLine($"\nTexts added to: {FileDestination} successfully -------------------------- 👍");
         }
         catch (Exception) { throw; }
     }
+    public static async Task<Dictionary<string, List<string>>> FormatEmbeedPath(SampleData data){
+                
+        if(data is {EmbeedPath : null, EmbeedDestination: null} ) 
+            throw new ArgumentNullException(nameof(data));  
+        
+        var filecombined = Path.Combine(data.EmbeedDestination, data.FileDestination);
+        var fileItems = await GetFilesListFromSubFolders(data); string header;
 
-    public static async Task<(string, Dictionary<string, List<string>>)> GetFilesWithInFoldersAndSubFolders(SampleData data)
+        Dictionary<string, List<string>> dict = new();
+
+         foreach (var item in fileItems)
+         {
+            var fullPath = Directory.GetFiles(item);
+            var elements = new List<string>();
+            string message =""; 
+            foreach (var file in fullPath)
+            {
+                // header = item
+                if(data.EmbeedTypeShort == true)  elements.Add(Path.GetFileName(file));
+                else elements.Add(file); ;
+            }
+            
+            dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
+             
+         }
+
+        return dict;
+        
+    }
+
+    public static async Task<List<string>> GetFilesListFromSubFolders(SampleData data)
     {
-        if(data is null || data.PathSource is null || data.FileDestination is null || data.PathDestination is null) throw new ArgumentNullException(nameof(data));  
-
-        string filecombined ="";
-        DirectoryInfo[] directories; var items = new List<string>();
-        Dictionary<string, List<string>> fileItems = new();
+        if(data is { EmbeedDestination: null, EmbeedPath: null} ) 
+            throw new ArgumentNullException(nameof(data));  
+       
+        DirectoryInfo[] directories;
+        List<string> fileItems = new();
 
         try
         {
-            var directory = new DirectoryInfo(data.PathSource);
+            var directory = new DirectoryInfo(data.EmbeedPath);
             directories = directory.GetDirectories("*", SearchOption.AllDirectories);
             //root= Directory.GetDirectories(mainPath,"*", searchOption: SearchOption.AllDirectories);
-            if (!Directory.Exists(data.PathDestination)) Directory.CreateDirectory(data.PathDestination);
+            if (!Directory.Exists(data.EmbeedDestination)) Directory.CreateDirectory(data.EmbeedDestination);
 
-            filecombined = Path.Combine(data.PathDestination, data.FileDestination);
+            await Task.Delay(100);
 
-            foreach (var item in directories)
+            foreach (DirectoryInfo? item in directories)
             {
-                //System.Console.WriteLine(item.FullName);
-                fileItems.TryAdd(item.FullName, items);
-                items = new();
+                fileItems.Add(item.FullName);
             }
         }
-        catch (UnauthorizedAccessException e) {System.Console.WriteLine(e.ToString());  }
-        catch (DirectoryNotFoundException e) { System.Console.WriteLine(e.ToString()); }
+        catch (UnauthorizedAccessException) {throw;}
+        catch (DirectoryNotFoundException) { throw; }
         
-        await Task.Delay(100);
-        return (filecombined, fileItems);
+
+        return fileItems;
     }
 
     /// <summary>
@@ -335,6 +318,5 @@ public static class FileManager
 
         return itemHeader;
     }
-
 
 }
