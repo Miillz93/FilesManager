@@ -1,8 +1,8 @@
-﻿using Manager;
+﻿using Application;
 
 Console.WriteLine("Start Program......................🛩️");
 
-await Helpers.LoadApplicationAsync();
+await App.LoadApplicationAsync();
 
 Console.WriteLine("End Program......................🥺");
 Console.ReadKey();
