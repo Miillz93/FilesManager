@@ -63,13 +63,14 @@ public static class Menu{
         while(continued)
         {
             Console.WriteLine(Environment.NewLine);
-            Console.WriteLine("Select one of the following action");
+            Console.WriteLine("Manage files 👜 \n---------------------");
             Console.WriteLine("0) Exit from Console ❌");
             Console.WriteLine("1) Copy Files ✒️");
             Console.WriteLine("2) Move Files 🧲");
-            Console.WriteLine("3) Export 📗");
-            Console.WriteLine("4) Back ⏪");
-            Console.WriteLine("5) Reload 🟠");
+            Console.WriteLine("3) Export Files 📗");
+            Console.WriteLine("4) Delete Directory⚡");
+            Console.WriteLine("5) Back ⏪");
+            Console.WriteLine("6) Reload 🟠");
             
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out index);
@@ -86,7 +87,7 @@ public static class Menu{
 
                     break;
                 case 1:
-                    Console.WriteLine("---------------------copying File");
+                    Console.WriteLine("copying File ---------------------");
                     await FileManager.CopyOrMoveFileFromSourceFileAsync(data);      
 
                     Console.WriteLine(Environment.NewLine);
@@ -94,30 +95,40 @@ public static class Menu{
 
                     break;               
                 case 2:
-                    Console.WriteLine("------------------------Moving File");
+                    Console.WriteLine("Moving File ------------------------");
 
                     break;                
                 case 3:
-                    Console.WriteLine("--------------------------Export Data");
+                    Console.WriteLine("Export Data --------------------------\n");
+                    Thread.Sleep(1000);
+                    await FileManager.ExportEmbeedPathToFileAsync(data);
+                    
 
-                    break;
+                    break;                
                 case 4:
-                    continued = false; 
-
+                    // Console.WriteLine("--------------------------Delete Files \n");
+                    // Thread.Sleep(1000);
+                    // Console.WriteLine($""" "{data.EmbeedPath}" and all subdirectories ll'be deleted.""");
+                    // Thread.Sleep(1000);
+                    // Console.WriteLine("Are You Sure? Y/N");
+                    // string deleted = Console.ReadLine();
+                    // if(deleted != null && deleted == "Y".ToLower()) Console.WriteLine("Data deleted"); 
                     break;
                 case 5:
+                    continued = false; 
+                    // System.Console.Write("Exit--------------");
+
+                    break;
+                case 6:
                     continued = true; 
 
                     break;
                 default:
-                    Console.WriteLine("----------------- Invalid number selected {0}", index);
+                    Console.WriteLine("Invalid number selected {0} --------------------------", index);
                     break;
             }  
-            Console.WriteLine(Environment.NewLine); 
 
         }
-        
-        Console.WriteLine("One level {0}", index);
         
         return index;
     }
