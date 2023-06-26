@@ -90,6 +90,7 @@ public static class Menu{
                     Console.WriteLine("------------------------ Copying Files \n");
 
                     data.Action = "copy";
+
                     await FileManager.CopyOrMoveFileFromSourceFileAsync(data);      
 
                     Console.WriteLine(Environment.NewLine);

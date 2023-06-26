@@ -83,6 +83,7 @@ public static class FileManager
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
                             sw.Start();
+
                             if(data.Action.ToLower() == "copy"){
                                
                                 if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
@@ -125,6 +126,7 @@ public static class FileManager
                                 parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                                                                  
                                 sw.Start();
+
                                 if(data.Action.ToLower() == "copy")
                                 {
 
@@ -166,6 +168,7 @@ public static class FileManager
                                 parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
 
                                 sw.Start();
+                              
                                  if(data.Action.ToLower() == "copy") {
 
                                     if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
@@ -186,6 +189,7 @@ public static class FileManager
                                     else Console.WriteLine($"\"{parentFull}\" Already Exist");
 
                                  }
+
 
                                 sw.Stop();
                                 sw.Restart();
