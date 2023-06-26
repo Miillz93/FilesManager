@@ -10,7 +10,6 @@ namespace Manager;
 
 public static class FileManager
 {
-
     public static async Task<(Dictionary<int, string>, Dictionary<int, string>)> ExtractData(SampleData data) {
 
         string FilePath = Path.Combine(data.PathSource, data.FilePath);
@@ -21,7 +20,6 @@ public static class FileManager
 
         foreach (var item in data.VideoPath) {
             if(!Directory.Exists(item)) throw new DirectoryNotFoundException(item);
-
         }
 
         try { arrayOfListElementFromFile = File.ReadAllLines(FilePath) ; } 
@@ -102,8 +100,6 @@ public static class FileManager
 
                                     }
                                 else Console.WriteLine($"\"{parentFull}\" Already Exist");
-
-
                             }
                             
                             sw.Stop();
@@ -116,7 +112,6 @@ public static class FileManager
 
                         foreach (KeyValuePair<int, string> musics in musicFullPath)
                         {
-                            
                             if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
                                 path = Path.Combine(data.PathDestination, pathFull, child);
 
@@ -135,7 +130,6 @@ public static class FileManager
                                         Console.WriteLine($"copy of ---------------------- {musics.Value}");
                                         File.Copy(musics.Value, parentFull);
                                         Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
-
                                     }   
 
                                 }
@@ -178,7 +172,6 @@ public static class FileManager
                                         Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
                                     }  
                                     
-                                    
                                  }else {
 
                                     if(!File.Exists(parentFull)) {
@@ -187,7 +180,6 @@ public static class FileManager
                                         Console.WriteLine("moving  to--------------{0}", parentFull);
                                     } 
                                     else Console.WriteLine($"\"{parentFull}\" Already Exist");
-
                                  }
 
 
@@ -259,8 +251,6 @@ public static class FileManager
                 System.Console.WriteLine("The Folder is empty 😅 \n");
             }
 
-            
-
         }
         catch (Exception) { throw; }
     }
@@ -322,8 +312,6 @@ public static class FileManager
 
         try
         {
- 
-            //root= Directory.GetDirectories(mainPath,"*", searchOption: SearchOption.AllDirectories);
             if(!Directory.Exists(data.EmbeedPath)) throw new DirectoryNotFoundException();
             if (!Directory.Exists(data.EmbeedDestination)) Directory.CreateDirectory(data.EmbeedDestination);
             
@@ -353,7 +341,6 @@ public static class FileManager
         catch (UnauthorizedAccessException) {throw;}
         catch (DirectoryNotFoundException) { throw; }
         
-
         return fileItems;
     }
 

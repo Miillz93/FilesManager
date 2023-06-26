@@ -107,7 +107,6 @@ public static class Menu{
                     Console.WriteLine("-------------------------- Export Data \n");
                     Thread.Sleep(500);
                     await FileManager.ExportEmbeedPathToFileAsync(data);
-                    
 
                     break;                
                 case 4:
