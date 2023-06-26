@@ -10,27 +10,22 @@ namespace Manager;
 
 public static class FileManager
 {
-
     public static async Task<(Dictionary<int, string>, Dictionary<int, string>)> ExtractData(SampleData data) {
 
         string FilePath = Path.Combine(data.PathSource, data.FilePath);
         string[] arrayOfListElementFromFile = new string[]{};
 
-        if(data.SameSymbol is null) throw new ArgumentNullException("SameSymbol is null");
-
+        if(data.SameSymbol is null) throw new ArgumentNullException(null, nameof(data.SameSymbol));
         if (!File.Exists(FilePath)) throw new FileNotFoundException();
-
 
         foreach (var item in data.VideoPath) {
             if(!Directory.Exists(item)) throw new DirectoryNotFoundException(item);
-
         }
-        var itemForHeader = new Dictionary<int, string>();
 
         try { arrayOfListElementFromFile = File.ReadAllLines(FilePath) ; } 
         catch (Exception) { throw; }
 
-        itemForHeader = GetItemHeaderHashFromFile(arrayOfListElementFromFile);
+        var itemForHeader = GetItemHeaderHashFromFile(arrayOfListElementFromFile);
 
         var musicFullPath = GetFullPath(data.VideoPath, arrayOfListElementFromFile);
 
@@ -39,9 +34,13 @@ public static class FileManager
 
     public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data)
     {
-        string parent = "", child = "", parentFull = "",  path = "",  message = "Finished................👍", pathFull ="";
+        string parent = "", child = "", parentFull = "",  path = "",  message = "\nFinished................👍", pathFull ="";
+        if(data is {PathDestination: null}) throw new ArgumentNullException();
+        
         List<string> musicsToExport = new();
         string[] arrayOfListElementFromFile = Array.Empty<string>();
+
+        if(! Directory.Exists(data.PathDestination)) Directory.CreateDirectory(data.PathDestination);
 
         var sw = new Stopwatch();
 
@@ -65,8 +64,10 @@ public static class FileManager
                         parent = firstIndex.Value.Replace('#', ' ').Trim();
                         pathFull = parent;
                         
-                        if(data.SameSymbol.Any(symbol => parent.Contains(symbol, StringComparison.OrdinalIgnoreCase))) {
-                            pathFull = Path.Combine("FR", parent);
+                        if(data.SameSymbol.Length != 0 ){
+                            if(data.SameSymbol.Any(symbol => parent.Contains(symbol, StringComparison.OrdinalIgnoreCase))) {
+                                pathFull = Path.Combine("FR", parent);
+                            }
                         }
 
                         foreach (var musics in from musics in musicFullPath
@@ -80,18 +81,27 @@ public static class FileManager
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
                             sw.Start();
-                            Console.WriteLine($"copy of ---------------------- {musics.Value}");
+
                             if(data.Action.ToLower() == "copy"){
                                
-                               if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                               else File.Copy(musics.Value, parentFull);                               
+                                if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
+                                else {
+                                    Console.WriteLine($"copy of ---------------------- {musics.Value}");
+                                    File.Copy(musics.Value, parentFull);
+                                    Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                }
                                  
                             }else{
-                                if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                                else File.Move(musics.Value, parentFull); 
+
+                                if(!File.Exists(parentFull)) {
+                                    Console.WriteLine($"move of ---------------------- {musics.Value}");
+                                    File.Move(musics.Value, parentFull);
+                                    Console.WriteLine("moving  to--------------{0}", parentFull);
+
+                                    }
+                                else Console.WriteLine($"\"{parentFull}\" Already Exist");
                             }
                             
-                            Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
                             sw.Stop();
                             sw.Restart();
                         }
@@ -102,7 +112,6 @@ public static class FileManager
 
                         foreach (KeyValuePair<int, string> musics in musicFullPath)
                         {
-                            
                             if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
                                 path = Path.Combine(data.PathDestination, pathFull, child);
 
@@ -112,21 +121,31 @@ public static class FileManager
                                 parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                                                                  
                                 sw.Start();
-                                Console.WriteLine($"copy of ---------------------- {musics.Value}");
+
                                 if(data.Action.ToLower() == "copy")
                                 {
+
                                     if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                                    else File.Copy(musics.Value, parentFull);   
+                                    else {
+                                        Console.WriteLine($"copy of ---------------------- {musics.Value}");
+                                        File.Copy(musics.Value, parentFull);
+                                        Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                    }   
+
                                 }
                                 else {
-                                    if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                                    else File.Move(musics.Value, parentFull); 
+
+                                    if(!File.Exists(parentFull)) {
+                                        Console.WriteLine($"move of ---------------------- {musics.Value}");
+                                        File.Move(musics.Value, parentFull);
+                                        Console.WriteLine("moving  to--------------{0}", parentFull);
+                                    }
+                                    else  Console.WriteLine($"\"{parentFull}\" Already Exist");
+
                                 }
-                                Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
                                 sw.Stop();
                                 sw.Restart();
                             }
-                                
                         }
                         break;
                     case 5: 
@@ -137,23 +156,33 @@ public static class FileManager
                             if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
                                 path = Path.Combine(data.PathDestination, pathFull, child, SubChild);
 
-                                try{ if(Directory.Exists(path)) Directory.CreateDirectory(path); }
+                                try{ if(!Directory.Exists(path)) Directory.CreateDirectory(path); }
                                 catch (Exception) {throw;}
                         
                                 parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
 
                                 sw.Start();
-                                Console.WriteLine($"copy of ---------------------- {musics.Value}");
+                              
                                  if(data.Action.ToLower() == "copy") {
+
                                     if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                                    else File.Copy(musics.Value, parentFull);   
+                                    else {
+                                        Console.WriteLine($"copy of ---------------------- {musics.Value}");
+                                        File.Copy(musics.Value, parentFull); 
+                                        Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+                                    }  
                                     
                                  }else {
-                                    if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                                    else File.Move(musics.Value, parentFull);   
+
+                                    if(!File.Exists(parentFull)) {
+                                        Console.WriteLine($"move of ---------------------- {musics.Value}");
+                                        File.Move(musics.Value, parentFull);
+                                        Console.WriteLine("moving  to--------------{0}", parentFull);
+                                    } 
+                                    else Console.WriteLine($"\"{parentFull}\" Already Exist");
                                  }
 
-                                Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
+
                                 sw.Stop();
                                 sw.Restart();
                             }
@@ -163,22 +192,10 @@ public static class FileManager
                     default: break;
                 } 
 
-
             }
             count++; counting++;
-            
         }
 
-        //System.Console.WriteLine($" header {number}   --   {musicCounter}");
-
-        throw new Exception();
-        //this.LogsDataFromOriginAfterMove(musicFullPath, ItemHeader,  FilePath);
-
-        // foreach (var item in musicsToExport)
-        // {
-        //     Console.WriteLine("item {0}", item);
-        // }
-        //var message = await LogsDataFromOriginAfterCopy(musicsToExport, data);
         await Task.Delay(100);
         Console.WriteLine(message);
     }
@@ -189,64 +206,99 @@ public static class FileManager
         if(data is {EmbeedPath : null, EmbeedDestination: null, EmbeedFileName: null} ) 
             throw new ArgumentNullException(nameof(data));  
 
-        var dataFormat = await FormatEmbeedPath(data);
+        var (type, dataFormat) = await FormatEmbeedPath(data);
         
         try
         {
-            string FileDestination = Path.Combine(data.EmbeedDestination, data.EmbeedFileName);
+            string fileDestination = Path.Combine(data.EmbeedDestination, data.EmbeedFileName);
             
-            using StreamWriter sw = new (FileDestination);
-            sw.WriteLine("");
-            sw.WriteLine("----------------{0}-----------------", DateTime.Now.ToString("dd mm yyyy hh:mm:ss"));
+            TimeZoneInfo parisTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Romance Standard Time");
+            DateTime parisTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, parisTimeZone);
             
-            foreach (var (header, value) in dataFormat)
-            {
-                indexHeader = string.Concat("###", header);
-                
-                sw.WriteLine(indexHeader);
-                sw.WriteLine("");
-                
-                foreach (var item in value)
+            
+            if(dataFormat.Count != 0){
+                using StreamWriter sw = new (fileDestination);
+
+                sw.WriteLine("----------------{0}-----------------\n", parisTime.ToString("dd-mm-yyyy hh:mm:ss"));
+
+                foreach (var (header, value) in dataFormat)
                 {
-                    Console.WriteLine( $"\"{item}\" Added successfully");
-                    // Thread.Sleep(5);
-                    sw.WriteLine(item);
+                    indexHeader = string.Concat("###", header);
+
+                    if(type == "file") {
+                        indexHeader = header; 
+
+                        sw.WriteLine(value.FirstOrDefault());
+                        Console.WriteLine( $"\"{value.FirstOrDefault()}\" Added successfully");
+                        
+                    }else {
+                        sw.WriteLine($"{indexHeader} \n");
+
+                        foreach (var item in value)
+                        {
+                            sw.WriteLine(item);
+                            Console.WriteLine( $"\"{item}\" Added successfully");
+                        }
+                        sw.WriteLine("");
+
+                    }
+                    
                 }
-                
                 sw.WriteLine("");
+                Console.WriteLine($"\nTexts added to: {fileDestination} successfully -------------------------- 👍\n");
+
+            } else {
+                System.Console.WriteLine("The Folder is empty 😅 \n");
             }
 
-            Console.WriteLine($"\nTexts added to: {FileDestination} successfully -------------------------- 👍");
         }
         catch (Exception) { throw; }
     }
-    public static async Task<Dictionary<string, List<string>>> FormatEmbeedPath(SampleData data){
-                
+    public static async Task<(string, Dictionary<string, List<string>>)> FormatEmbeedPath(SampleData data){
+        string type ="";
         if(data is {EmbeedPath : null, EmbeedDestination: null} ) 
             throw new ArgumentNullException(nameof(data));  
         
-        var filecombined = Path.Combine(data.EmbeedDestination, data.FileDestination);
+        var filecombined = Path.Combine(data.EmbeedDestination, data.FileDestination); 
         var fileItems = await GetFilesListFromSubFolders(data); string header;
 
         Dictionary<string, List<string>> dict = new();
+        // foreach (var file in fileItems){
+        //     if(File.Exists(file)) Console.WriteLine(file);
+        //     else System.Console.WriteLine("Dont exist");
+        // }
 
-         foreach (var item in fileItems)
-         {
-            var fullPath = Directory.GetFiles(item);
-            var elements = new List<string>();
-            string message =""; 
-            foreach (var file in fullPath)
-            {
-                // header = item
-                if(data.EmbeedTypeShort == true)  elements.Add(Path.GetFileName(file));
-                else elements.Add(file); ;
-            }
+        foreach (var item in fileItems)
+        {
+            if(File.Exists(item)) {
+                var elements = new List<string>();
             
-            dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
-             
-         }
+                if(data.EmbeedTypeShort == true)  elements.Add(Path.GetFileNameWithoutExtension(item));
+                else elements.Add(item); 
+                
+                type="file";
+                dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
+            }
 
-        return dict;
+            if(Directory.Exists(item)) {
+                var fullPath = Directory.GetFiles(item);
+                var elements = new List<string>();
+            
+                foreach (var file in fullPath)
+                {
+                    if(File.Exists(file) ){
+                        if(data.EmbeedTypeShort == true)  elements.Add(Path.GetFileNameWithoutExtension(file));
+                        else elements.Add(file); 
+                    }
+
+                }
+                type="folder";
+                dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
+            }            
+            
+        }
+
+        return (type, dict);
         
     }
 
@@ -260,22 +312,35 @@ public static class FileManager
 
         try
         {
+            if(!Directory.Exists(data.EmbeedPath)) throw new DirectoryNotFoundException();
+            if (!Directory.Exists(data.EmbeedDestination)) Directory.CreateDirectory(data.EmbeedDestination);
+            
             var directory = new DirectoryInfo(data.EmbeedPath);
             directories = directory.GetDirectories("*", SearchOption.AllDirectories);
-            //root= Directory.GetDirectories(mainPath,"*", searchOption: SearchOption.AllDirectories);
-            if (!Directory.Exists(data.EmbeedDestination)) Directory.CreateDirectory(data.EmbeedDestination);
+            
+            if(directories.Length == 0) {
+                var fileCollections = Directory.GetFiles(data.EmbeedPath);
+                if(fileCollections.Length == 0) { return new List<string>{"No data Available"}; }
+                
+                foreach (var item in fileCollections)
+                {
+                    fileItems.Add(item);
+                }
 
-            await Task.Delay(100);
+            }else {
+                await Task.Delay(100);
 
-            foreach (DirectoryInfo? item in directories)
-            {
-                fileItems.Add(item.FullName);
+                foreach (DirectoryInfo? item in directories)
+                {
+                    fileItems.Add(item.FullName);
+                }
             }
+
+
         }
         catch (UnauthorizedAccessException) {throw;}
         catch (DirectoryNotFoundException) { throw; }
         
-
         return fileItems;
     }
 
