@@ -87,24 +87,24 @@ public static class Menu{
 
                     break;
                 case 1:
-                    Console.WriteLine("Copying Files ------------------------\n");
+                    Console.WriteLine("------------------------ Copying Files \n");
 
                     data.Action = "copy";
                     await FileManager.CopyOrMoveFileFromSourceFileAsync(data);      
 
                     Console.WriteLine(Environment.NewLine);
-                    continued = false;
+                    // continued = false;
 
                     break;               
                 case 2:
-                    Console.WriteLine("Moving Files ------------------------\n");
+                    Console.WriteLine("------------------------ Moving Files \n");
                     data.Action = "move";
                     await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
 
                     break;                
                 case 3:
-                    Console.WriteLine("Export Data --------------------------\n");
-                    Thread.Sleep(1000);
+                    Console.WriteLine("-------------------------- Export Data \n");
+                    Thread.Sleep(500);
                     await FileManager.ExportEmbeedPathToFileAsync(data);
                     
 
@@ -128,7 +128,7 @@ public static class Menu{
 
                     break;
                 default:
-                    Console.WriteLine("Invalid number selected {0} --------------------------", index);
+                    Console.WriteLine("-------------------------- Invalid number selected {0} ", index);
                     break;
             }  
 
