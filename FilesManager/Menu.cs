@@ -3,16 +3,16 @@ using Shared;
 namespace Manager;
 public static class Menu{
 
-    
     public static async Task<int> MainMenuAsync(SampleData data, int platformId){
         if (data == null) throw new ArgumentNullException();
-
 
         int subIndex = 0;
         bool continued = true; 
 
         while(continued)
         {   
+            Console.Clear();
+
             Helpers.GetWelcomePage(platformId);
 
             Console.WriteLine(Environment.NewLine);
@@ -20,8 +20,8 @@ public static class Menu{
             Console.WriteLine("0) Exit from Console ❌");
             Console.WriteLine("1) Manage files 👜");
             Console.WriteLine("2) Create playlists 💡");
-            Console.WriteLine("3) Back ⏪");
-            Console.WriteLine("4) Reload 🟠");
+            Console.WriteLine("3) Reload 🟠");
+            Console.WriteLine("4) Back ⏪");
 
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out int selector);
@@ -49,14 +49,16 @@ public static class Menu{
                     if (check == 0) continued = false;
                     break;                
                 case 3:
+                    continued = true;
+
+                    break;
+                case 4:
                     subIndex = 3;
                     continued = false;
                     break;
-                case 4:
-                    continued = true;
-                    break;
                 default:
                     Console.WriteLine("--------------------- Invalid number selected {0} ❌ \n", selector);
+                    Thread.Sleep(2500);
                     break;
             }
 
@@ -67,10 +69,12 @@ public static class Menu{
 
     public static async Task<int> SubMenuLevelOneFilesAsync (SampleData data, int index, int platformId){
 
-        bool continued = true;
-        
+        bool continued = true; 
         while(continued)
         {
+            Console.Clear();
+            Helpers.GetWelcomePage(platformId);
+
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Manage files 👜 \n---------------------");
             Console.WriteLine("0) Exit from Console ❌");
@@ -78,8 +82,8 @@ public static class Menu{
             Console.WriteLine("2) Move Files 🧲");
             Console.WriteLine("3) Export Files 📗");
             Console.WriteLine("4) Delete Directory ⚡");
-            Console.WriteLine("5) Back ⏪");
-            Console.WriteLine("6) Reload 🟠");
+            Console.WriteLine("5) Reload 🟠");
+            Console.WriteLine("6) Back ⏪");
             
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out index);
@@ -95,26 +99,33 @@ public static class Menu{
 
                     break;
                 case 1:
+                    
                     Console.WriteLine("------------------------ Copying Files \n");
 
                     data.Action = "copy";
 
-                    await FileManager.CopyOrMoveFileFromSourceFileAsync(data);      
+                    await FileManager.CopyOrMoveFileFromSourceFileAsync(data);   
+                    Thread.Sleep(2500);   
 
                     Console.WriteLine(Environment.NewLine);
                     // continued = false;
 
                     break;               
                 case 2:
-                    Console.WriteLine("------------------------ Moving Files \n");
                     data.Action = "move";
+
+                    Console.WriteLine("------------------------ Moving Files \n");
+                    
                     await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
+                    Thread.Sleep(2500);   
 
                     break;                
                 case 3:
+
                     Console.WriteLine("-------------------------- Export Data \n");
-                    await Task.Delay(500);
+                    await Task.Delay(50);
                     await FileManager.ExportEmbeedPathToFileAsync(data);
+                    Thread.Sleep(2500);   
 
                     break;                
                 case 4:
@@ -126,7 +137,7 @@ public static class Menu{
                     await Task.Delay(500);
                     Console.WriteLine("Do You Still Want To Remove The Folder ? Y/N");
                     var deleted = Console.ReadLine();
-
+        
                     switch (deleted.ToLower())
                     {
                         case "y":
@@ -138,21 +149,22 @@ public static class Menu{
                         break;
                         default: 
                             Console.WriteLine("--------------------- Invalid character {0} ❌", deleted);
-
                         break;
                     }
+                    Thread.Sleep(2500);
                 break;
                 case 5:
-                    continued = false; 
-                    // System.Console.Write("Exit--------------");
+                    continued = true; 
 
                     break;
                 case 6:
-                    continued = true; 
+                    continued = false; 
 
                     break;
                 default:
                     Console.WriteLine("-------------------------- Invalid number selected {0} ", index);
+                    Thread.Sleep(2500);
+
                     break;
             }  
 
@@ -168,6 +180,8 @@ public static class Menu{
 
         while (continued)
         {
+            Console.Clear();
+            Helpers.GetWelcomePage(platformId) ; 
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Choice playlist type \n---------------------");
             Console.WriteLine("0) Exit from Console ❌");
@@ -209,7 +223,6 @@ public static class Menu{
                     Console.WriteLine("----------------------- Invalid number selected {0}", selector);
                     break;
             }   
-            //Console.WriteLine(Environment.NewLine);
         }
 
         return index;

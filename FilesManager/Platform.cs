@@ -12,6 +12,7 @@ public static class Platform
         bool continued = true; 
         while (continued){
 
+            Console.Clear();
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Choose One Platform \n---------------------");
             Console.WriteLine("0 ► Exit");
@@ -43,6 +44,7 @@ public static class Platform
                     break;
                 default:
                     Console.WriteLine("--------------------- Invalid Platform indentifier {0} ❌", selector);
+                    Thread.Sleep(2500);
                     break;
             }
         }
@@ -61,6 +63,7 @@ public static class Platform
                     Id = id;
                     var data = await Helpers.ReloadJson();
                     int check = await Menu.MainMenuAsync(data, id);
+
                     if (check == 3) continued = false;
                     break;
                 case 2:
