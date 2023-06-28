@@ -3,25 +3,30 @@ using Shared;
 namespace Manager;
 public static class Menu{
 
-    private static readonly string Message = "Application exit successfully....................👍;";
     
-    public static async Task<int> MainMenuAsync(SampleData data){
+    public static async Task<int> MainMenuAsync(SampleData data, int platformId){
         if (data == null) throw new ArgumentNullException();
+
 
         int subIndex = 0;
         bool continued = true; 
 
         while(continued)
         {   
+            Helpers.GetWelcomePage(platformId);
+
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Select one of the following \n---------------------");
             Console.WriteLine("0) Exit from Console ❌");
             Console.WriteLine("1) Manage files 👜");
             Console.WriteLine("2) Create playlists 💡");
-            Console.WriteLine("3) Reload 🟠");
+            Console.WriteLine("3) Back ⏪");
+            Console.WriteLine("4) Reload 🟠");
 
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out int selector);
+            Console.WriteLine("");
+
 
             if (!success) selector = -1;
 
@@ -33,31 +38,33 @@ public static class Menu{
                 case 1:
                     subIndex = 1;
 
-                    int check = await SubMenuLevelOneFilesAsync(data, subIndex);
+                    int check = await SubMenuLevelOneFilesAsync(data, subIndex, platformId);
 
                     if (check == 0) continued = false;
                     break;
                 case 2:
                     subIndex = 2;
-                    check = await SubMenuLevelTwoPlayList(data, subIndex);
+                    check = await SubMenuLevelTwoPlayList(data, subIndex, platformId);
 
                     if (check == 0) continued = false;
-                    break;
+                    break;                
                 case 3:
+                    continued = false;
+                    break;
+                case 4:
                     continued = true;
                     break;
                 default:
-                    Console.WriteLine("--------------------- Invalid number selected {0} ❌", selector);
+                    Console.WriteLine("--------------------- Invalid number selected {0} ❌ \n", selector);
                     break;
             }
 
         };
-        Console.WriteLine(Message);
 
         return subIndex;
     }
 
-    public static async Task<int> SubMenuLevelOneFilesAsync (SampleData data, int index){
+    public static async Task<int> SubMenuLevelOneFilesAsync (SampleData data, int index, int platformId){
 
         bool continued = true;
         
@@ -153,7 +160,7 @@ public static class Menu{
         return index;
     }
 
-    public static async Task<int> SubMenuLevelTwoPlayList (SampleData data, int index){
+    public static async Task<int> SubMenuLevelTwoPlayList (SampleData data, int index, int platformId){
 
         
         bool continued = true;
