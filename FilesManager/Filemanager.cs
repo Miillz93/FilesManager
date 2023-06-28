@@ -200,7 +200,99 @@ public static class FileManager
         Console.WriteLine(message);
     }
 
-    
+    public static async Task DeleteDirectory(string path){
+
+        if(path is null ) throw new ArgumentNullException(nameof(path));
+        // _ = GetDirectories(path, true, true);
+
+        await Task.Delay(500);
+
+        if(Directory.Exists(path)){
+            Directory.Delete(path, true);
+            Console.WriteLine("Folder remove successfully❗");
+
+        }
+        else Console.WriteLine("The Folder u're trying to remove dont exist 🙂");
+
+    }
+
+    public static async Task<Dictionary<int, string>> GetFiles (Dictionary<int, string> folders){
+        if(folders is null) throw new ArgumentNullException("Invalid Folders", $"{nameof(folders.Keys)} - {nameof(folders.Values)}");
+
+        int counter = 0;
+        List<string> fileLists = new();
+        Dictionary<int, string> dict = new (); 
+
+        await Task.Delay(100);
+
+        foreach (var item in folders)
+        {
+            if(Directory.Exists(item.Value)) {
+                
+                var files =  Directory.GetFiles(item.Value);
+
+                if(files.Length == 0) {
+                    Console.WriteLine("The Folder dont contain Files");
+                }
+                else{
+
+                    foreach (var file in files)
+                    {
+                        dict.Add(counter, file);
+                        //Console.WriteLine(file);
+                        counter++;
+                    }
+                }
+            }
+        }
+
+        return dict;
+    }
+
+    public static async Task<Dictionary<int, string>> GetDirectories (string path, bool hideInfo, bool showFiles){
+
+        Dictionary<int, string> folders = new();
+
+        if(path is null) throw new ArgumentNullException("invalid Path", nameof(path));
+
+        var directories = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
+        var files = Directory.GetFiles(path, "*"); Dictionary<int, string> data = new();
+
+        if(directories.Length == 0) {
+
+            folders.Add(0, path);
+            data = await GetFiles(folders);
+
+            if(showFiles == true)
+                foreach (var item in data) Console.WriteLine(item.Value);
+            
+            if(hideInfo == false)
+                Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
+
+            return data;
+        } 
+            
+        foreach (var item in directories.Select((value, index) => new {value, index}))
+        {
+            if(showFiles == true)
+                Console.WriteLine($" {item.value}");
+            folders.Add(item.index, item.value);
+        }
+        Console.WriteLine(": \n");
+
+            //return folders;
+        data = await GetFiles(folders);
+
+        foreach (var item in data)
+        {
+            Console.WriteLine(item.Value);
+        }
+
+        if(hideInfo == false)
+            Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
+
+        return folders;
+    }
 
     public static async Task ExportEmbeedPathToFileAsync(SampleData data){
          string indexHeader; 
