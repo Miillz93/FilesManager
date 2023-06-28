@@ -69,7 +69,7 @@ public static class Menu{
             Console.WriteLine("1) Copy Files ✒️");
             Console.WriteLine("2) Move Files 🧲");
             Console.WriteLine("3) Export Files 📗");
-            Console.WriteLine("4) Delete Directory⚡");
+            Console.WriteLine("4) Delete Directory ⚡");
             Console.WriteLine("5) Back ⏪");
             Console.WriteLine("6) Reload 🟠");
             
@@ -105,19 +105,35 @@ public static class Menu{
                     break;                
                 case 3:
                     Console.WriteLine("-------------------------- Export Data \n");
-                    Thread.Sleep(500);
+                    await Task.Delay(500);
                     await FileManager.ExportEmbeedPathToFileAsync(data);
 
                     break;                
                 case 4:
-                    // Console.WriteLine("--------------------------Delete Files \n");
-                    // Thread.Sleep(1000);
-                    // Console.WriteLine($""" "{data.EmbeedPath}" and all subdirectories ll'be deleted.""");
-                    // Thread.Sleep(1000);
-                    // Console.WriteLine("Are You Sure? Y/N");
-                    // string deleted = Console.ReadLine();
-                    // if(deleted != null && deleted == "Y".ToLower()) Console.WriteLine("Data deleted"); 
-                    break;
+                    Console.WriteLine("--------------------------Delete Files \n");
+                    await Task.Delay(500);
+                    Console.WriteLine($" \"{data.EmbeedPath}\" and all subdirectories ll'be deleted. 🔴 \n");
+                    await Task.Delay(2000);
+                    _ = await FileManager.GetDirectories(data.EmbeedPath, false, true);
+                    await Task.Delay(500);
+                    Console.WriteLine("Do You Still Want To Remove The Folder ? Y/N");
+                    var deleted = Console.ReadLine();
+
+                    switch (deleted.ToLower())
+                    {
+                        case "y":
+                            await FileManager.DeleteDirectory(data.EmbeedPath);
+                        break;
+                        case "n":
+                            Thread.Sleep(1000);
+                            Console.WriteLine("--------------------- operation cancel ❌");
+                        break;
+                        default: 
+                            Console.WriteLine("--------------------- Invalid character {0} ❌", deleted);
+
+                        break;
+                    }
+                break;
                 case 5:
                     continued = false; 
                     // System.Console.Write("Exit--------------");
