@@ -17,6 +17,33 @@ public static class Helpers
 
     }
 
+    public static void GetWelcomePage(int id) {
+        string message;
+
+        if(id == 1) {
+                // message = "-----------------------------------------------------------";
+                // message += "|                      Music PLATFORM                      |";
+                // message +="-----------------------------------------------------------";
+                message = "------------------------------------------------------------ \n";
+                message += "|                      MUSIC PLATFORM                      | \n";
+                message +="------------------------------------------------------------";
+
+                System.Console.WriteLine(message);
+        }else {
+                // message = "-----------------------------------------------------------";
+                // message += "|                     GAMING PLATFORM                      |";
+                // message +="-----------------------------------------------------------";
+                message = "------------------------------------------------------------ \n";
+                message += "|                     GAMING PLATFORM                      | \n";
+                message +="------------------------------------------------------------";
+
+                System.Console.WriteLine(message);
+
+        }
+
+        
+    }
+
     public static void ShowSimplePercentage()
         {
             for (int i = 0; i <= 100; i++) {
