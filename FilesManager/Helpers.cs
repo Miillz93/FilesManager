@@ -17,6 +17,16 @@ public static class Helpers
 
     }
 
+    public static void ShowSimplePercentage()
+        {
+            for (int i = 0; i <= 100; i++) {
+                Console.Write($"\rProgress: {i}%   ");
+                Thread.Sleep(60);
+            }
+
+            Console.WriteLine("\rDone!          ");
+        }
+
     public static SampleData DeserializeJson (string jsonPath){
         SampleData? sampleData;
 
