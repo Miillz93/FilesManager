@@ -255,8 +255,15 @@ public static class FileManager
 
         if(path is null) throw new ArgumentNullException("invalid Path", nameof(path));
 
+        if(!Directory.Exists(path)) {
+            folders.Add(0, "The Directory Dont Exist");
+            return folders;
+        }
+
         var directories = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
-        var files = Directory.GetFiles(path, "*"); Dictionary<int, string> data = new();
+
+        Dictionary<int, string> data = new();
+        var files = Directory.GetFiles(path, "*"); 
 
         if(directories.Length == 0) {
 
