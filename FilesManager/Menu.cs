@@ -49,6 +49,7 @@ public static class Menu{
                     if (check == 0) continued = false;
                     break;                
                 case 3:
+                    subIndex = 3;
                     continued = false;
                     break;
                 case 4:

@@ -61,13 +61,13 @@ public static class Platform
                     Id = id;
                     var data = await Helpers.ReloadJson();
                     int check = await Menu.MainMenuAsync(data, id);
-                    if (check == 0) continued = false;
+                    if (check == 3) continued = false;
                     break;
                 case 2:
                     Id = id;
                     data = await Helpers.ReloadJson();
                     check = await Menu.MainMenuAsync(data, id); 
-                    if (check == 0) continued = false;
+                    if (check == 3) continued = false;
                     break;
                 default:
                     Console.WriteLine("--------------------- Invalid number selected {0} ❌ \n", id);
