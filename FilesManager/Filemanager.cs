@@ -200,8 +200,10 @@ public static class FileManager
         Console.WriteLine(message);
     }
 
+    
+
     public static async Task ExportEmbeedPathToFileAsync(SampleData data){
-         string indexHeader = ""; 
+         string indexHeader; 
 
         if(data is {EmbeedPath : null, EmbeedDestination: null, EmbeedFileName: null} ) 
             throw new ArgumentNullException(nameof(data));  
@@ -210,16 +212,19 @@ public static class FileManager
         
         try
         {
-            string fileDestination = Path.Combine(data.EmbeedDestination, data.EmbeedFileName);
-            
             TimeZoneInfo parisTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Romance Standard Time");
             DateTime parisTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, parisTimeZone);
             
+            string timer = parisTime.ToString("hh:mm").Replace(":","_");
+            string file = string.Concat(parisTime.ToString("dd-MM-yyyy") + $"_{timer}", $"_{data.EmbeedFileName}");
+            string fileDestination = Path.Combine(data.EmbeedDestination, file);   
             
+            Console.WriteLine($"{fileDestination} \n");
+
             if(dataFormat.Count != 0){
                 using StreamWriter sw = new (fileDestination);
 
-                sw.WriteLine("----------------{0}-----------------\n", parisTime.ToString("dd-mm-yyyy hh:mm:ss"));
+                sw.WriteLine("----------------{0}-----------------\n", parisTime.ToString("dd-MM-yyyy hh:mm:ss"));
 
                 foreach (var (header, value) in dataFormat)
                 {
@@ -245,7 +250,7 @@ public static class FileManager
                     
                 }
                 sw.WriteLine("");
-                Console.WriteLine($"\nTexts added to: {fileDestination} successfully -------------------------- 👍\n");
+                Console.WriteLine($"\nTexts added to: \"{fileDestination}\" successfully -------------------------- 👍\n");
 
             } else {
                 System.Console.WriteLine("The Folder is empty 😅 \n");
