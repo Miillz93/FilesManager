@@ -318,8 +318,6 @@ public static class FileManager
             string file = string.Concat(parisTime.ToString("dd-MM-yyyy") + $"_{timer}", $"_{data.EmbeedFileName}");
             string fileDestination = Path.Combine(data.EmbeedDestination, file);   
             
-            Console.WriteLine($"{fileDestination} \n");
-
             if(dataFormat.Count != 0){
                 using StreamWriter sw = new (fileDestination);
 
@@ -352,7 +350,7 @@ public static class FileManager
                 Console.WriteLine($"\nTexts added to: \"{fileDestination}\" successfully -------------------------- 👍\n");
 
             } else {
-                System.Console.WriteLine("The Folder is empty 😅 \n");
+                Console.WriteLine("The Folder is empty OR Dont Exist 😅 \n");
             }
 
         }
@@ -416,7 +414,7 @@ public static class FileManager
 
         try
         {
-            if(!Directory.Exists(data.EmbeedPath)) throw new DirectoryNotFoundException();
+            if(!Directory.Exists(data.EmbeedPath)) return new List<string>(){};
             if (!Directory.Exists(data.EmbeedDestination)) Directory.CreateDirectory(data.EmbeedDestination);
             
             var directory = new DirectoryInfo(data.EmbeedPath);
