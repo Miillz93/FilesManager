@@ -4,7 +4,7 @@ namespace Manager;
 public static class Platform
 {
     public static int Id { get; set; }
-    private static readonly string Message = "Application exit successfully....................👍 \n";
+    private static readonly string Message = "\nApplication exit successfully....................👍 \n";
 
     public static async Task<int> LoadPlatformAsync(){
         
