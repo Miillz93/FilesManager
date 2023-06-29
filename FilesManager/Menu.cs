@@ -104,7 +104,9 @@ public static class Menu{
 
                     data.Action = "copy";
 
-                    await FileManager.CopyOrMoveFileFromSourceFileAsync(data);   
+                    if(platformId == 1 ) await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
+                    else 
+                    
                     Thread.Sleep(2500);   
 
                     Console.WriteLine(Environment.NewLine);
@@ -116,7 +118,8 @@ public static class Menu{
 
                     Console.WriteLine("------------------------ Moving Files \n");
                     
-                    await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
+                    if(platformId == 1) await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
+                    else
                     Thread.Sleep(2500);   
 
                     break;                
@@ -124,7 +127,7 @@ public static class Menu{
 
                     Console.WriteLine("-------------------------- Export Data \n");
                     await Task.Delay(50);
-                    await FileManager.ExportEmbeedPathToFileAsync(data);
+                    await FileManager.ExportPathToFileAsync(data);
                     Thread.Sleep(2500);   
 
                     break;                
