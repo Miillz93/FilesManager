@@ -249,7 +249,7 @@ public static class FileManager
         return dict;
     }
 
-    public static async Task<Dictionary<int, string>> GetDirectories (string path, bool hideInfo, bool showFiles){
+    public static async Task<Dictionary<int, string>> GetDirectories (string path, bool hideMessageg, bool showFiles){
 
         Dictionary<int, string> folders = new();
 
@@ -273,7 +273,7 @@ public static class FileManager
             if(showFiles == true)
                 foreach (var item in data) Console.WriteLine(item.Value);
             
-            if(hideInfo == false)
+            if(hideMessageg == false)
                 Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
 
             return data;
@@ -295,19 +295,19 @@ public static class FileManager
             Console.WriteLine(item.Value);
         }
 
-        if(hideInfo == false)
+        if(hideMessageg == false)
             Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
 
         return folders;
     }
 
-    public static async Task ExportEmbeedPathToFileAsync(SampleData data){
+    public static async Task ExportPathToFileAsync(SampleData data){
          string indexHeader; 
 
         if(data is {EmbeedPath : null, EmbeedDestination: null, EmbeedFileName: null} ) 
             throw new ArgumentNullException(nameof(data));  
 
-        var (type, dataFormat) = await FormatEmbeedPath(data);
+        var (type, dataFormat) = await FormatPath(data);
         
         try
         {
@@ -356,19 +356,14 @@ public static class FileManager
         }
         catch (Exception) { throw; }
     }
-    public static async Task<(string, Dictionary<string, List<string>>)> FormatEmbeedPath(SampleData data){
+    public static async Task<(string, Dictionary<string, List<string>>)> FormatPath(SampleData data){
         string type ="";
         if(data is {EmbeedPath : null, EmbeedDestination: null} ) 
             throw new ArgumentNullException(nameof(data));  
         
-        var filecombined = Path.Combine(data.EmbeedDestination, data.FileDestination); 
-        var fileItems = await GetFilesListFromSubFolders(data); string header;
+        var fileItems = await GetFilesListFromSubFolders(data); 
 
         Dictionary<string, List<string>> dict = new();
-        // foreach (var file in fileItems){
-        //     if(File.Exists(file)) Console.WriteLine(file);
-        //     else System.Console.WriteLine("Dont exist");
-        // }
 
         foreach (var item in fileItems)
         {
