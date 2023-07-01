@@ -31,6 +31,41 @@ public static class FileManager
 
         return (itemForHeader, musicFullPath);
     }
+    public static async  Task CopyOrMoveFileAsync(SampleData data) {
+        var directories = GetDirectories(data.Playlist?.UniquePathSource, false, true);
+        throw new NotImplementedException();
+    }
+
+    public static async Task Move(string root, string destination) {
+        var sw = new Stopwatch();
+        sw.Start();
+        
+        if(File.Exists(destination)) Console.WriteLine($"\"{destination}\" Already Exist");
+        else {
+            Console.WriteLine($"copy of ---------------------- {root}");
+            File.Move(root, destination);
+            Console.WriteLine("copying  to--------------{0} in {1} 's", destination, sw.Elapsed.TotalSeconds.ToString("0:00"));
+        }
+
+        sw.Stop();
+        sw.Restart();
+    }
+
+    public static async  Task Copy(string root, string destination) {
+        var sw = new Stopwatch();
+        sw.Start();
+        
+        if(File.Exists(destination)) Console.WriteLine($"\"{destination}\" Already Exist");
+        else {
+            Console.WriteLine($"copy of ---------------------- {root}");
+            File.Copy(root, destination);
+            Console.WriteLine("copying  to--------------{0} in {1} 's", destination, sw.Elapsed.TotalSeconds.ToString("0:00"));
+        }
+
+        sw.Stop();
+        sw.Restart();
+}
+
 
     public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data)
     {
@@ -42,7 +77,6 @@ public static class FileManager
 
         if(! Directory.Exists(data.PathDestination)) Directory.CreateDirectory(data.PathDestination);
 
-        var sw = new Stopwatch();
 
         var item = await ExtractData(data);
         var itemForHeader = item.Item1;
@@ -80,30 +114,18 @@ public static class FileManager
 
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
-                            sw.Start();
+
 
                             if(data.Action.ToLower() == "copy"){
                                
-                                if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                                else {
-                                    Console.WriteLine($"copy of ---------------------- {musics.Value}");
-                                    File.Copy(musics.Value, parentFull);
-                                    Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
-                                }
+                                await Copy(musics.Value, parentFull);
                                  
                             }else{
 
-                                if(!File.Exists(parentFull)) {
-                                    Console.WriteLine($"move of ---------------------- {musics.Value}");
-                                    File.Move(musics.Value, parentFull);
-                                    Console.WriteLine("moving  to--------------{0}", parentFull);
-
-                                    }
-                                else Console.WriteLine($"\"{parentFull}\" Already Exist");
+                                await Move(musics.Value, parentFull);
                             }
                             
-                            sw.Stop();
-                            sw.Restart();
+
                         }
 
                         break;
@@ -120,31 +142,16 @@ public static class FileManager
 
                                 parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                                                                  
-                                sw.Start();
 
                                 if(data.Action.ToLower() == "copy")
                                 {
-
-                                    if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                                    else {
-                                        Console.WriteLine($"copy of ---------------------- {musics.Value}");
-                                        File.Copy(musics.Value, parentFull);
-                                        Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
-                                    }   
-
+                                    await Copy(musics.Value, parentFull);
                                 }
                                 else {
 
-                                    if(!File.Exists(parentFull)) {
-                                        Console.WriteLine($"move of ---------------------- {musics.Value}");
-                                        File.Move(musics.Value, parentFull);
-                                        Console.WriteLine("moving  to--------------{0}", parentFull);
-                                    }
-                                    else  Console.WriteLine($"\"{parentFull}\" Already Exist");
-
+                                    await Move(musics.Value, parentFull);
                                 }
-                                sw.Stop();
-                                sw.Restart();
+
                             }
                         }
                         break;
@@ -161,30 +168,15 @@ public static class FileManager
                         
                                 parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
 
-                                sw.Start();
-                              
                                  if(data.Action.ToLower() == "copy") {
-
-                                    if(File.Exists(parentFull)) Console.WriteLine($"\"{parentFull}\" Already Exist");
-                                    else {
-                                        Console.WriteLine($"copy of ---------------------- {musics.Value}");
-                                        File.Copy(musics.Value, parentFull); 
-                                        Console.WriteLine("copying  to--------------{0} in {1} 's", parentFull, sw.Elapsed.TotalSeconds.ToString("0:00"));
-                                    }  
                                     
+                                    await Copy(musics.Value, parentFull);
+
                                  }else {
 
-                                    if(!File.Exists(parentFull)) {
-                                        Console.WriteLine($"move of ---------------------- {musics.Value}");
-                                        File.Move(musics.Value, parentFull);
-                                        Console.WriteLine("moving  to--------------{0}", parentFull);
-                                    } 
-                                    else Console.WriteLine($"\"{parentFull}\" Already Exist");
+                                    await Move(musics.Value, parentFull);
                                  }
 
-
-                                sw.Stop();
-                                sw.Restart();
                             }
                                 
                         }

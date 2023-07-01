@@ -105,7 +105,6 @@ public static class Menu{
                     data.Action = "copy";
 
                     if(platformId == 1 ) await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
-                    else 
                     
                     Thread.Sleep(2500);   
 
@@ -119,7 +118,7 @@ public static class Menu{
                     Console.WriteLine("------------------------ Moving Files \n");
                     
                     if(platformId == 1) await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
-                    else
+
                     Thread.Sleep(2500);   
 
                     break;                
