@@ -36,6 +36,12 @@ public static class FileManager
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Move Files
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="destination"></param>
+    /// <returns></returns>
     public static async Task Move(string root, string destination) {
         var sw = new Stopwatch();
         sw.Start();
@@ -51,6 +57,12 @@ public static class FileManager
         sw.Restart();
     }
 
+    /// <summary>
+    /// Copy Files
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="destination"></param>
+    /// <returns></returns>
     public static async  Task Copy(string root, string destination) {
         var sw = new Stopwatch();
         sw.Start();
@@ -64,9 +76,14 @@ public static class FileManager
 
         sw.Stop();
         sw.Restart();
-}
+    }
 
-
+    /// <summary>
+    /// Manage Copy And Moving Files by Action
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data)
     {
         string parent = "", child = "", parentFull = "",  path = "",  message = "\nFinished................👍", pathFull ="";
@@ -76,7 +93,6 @@ public static class FileManager
         string[] arrayOfListElementFromFile = Array.Empty<string>();
 
         if(! Directory.Exists(data.PathDestination)) Directory.CreateDirectory(data.PathDestination);
-
 
         var item = await ExtractData(data);
         var itemForHeader = item.Item1;
@@ -113,8 +129,6 @@ public static class FileManager
                             catch (DirectoryNotFoundException) { throw; }
 
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
-                            
-
 
                             if(data.Action.ToLower() == "copy"){
                                
@@ -124,8 +138,6 @@ public static class FileManager
 
                                 await Move(musics.Value, parentFull);
                             }
-                            
-
                         }
 
                         break;
@@ -141,7 +153,6 @@ public static class FileManager
                                  catch (System.Exception) {throw;}
 
                                 parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
-                                                                 
 
                                 if(data.Action.ToLower() == "copy")
                                 {
@@ -151,7 +162,6 @@ public static class FileManager
 
                                     await Move(musics.Value, parentFull);
                                 }
-
                             }
                         }
                         break;
@@ -176,14 +186,11 @@ public static class FileManager
 
                                     await Move(musics.Value, parentFull);
                                  }
-
                             }
-                                
                         }
                         break;
                     default: break;
                 } 
-
             }
             count++; counting++;
         }
@@ -192,6 +199,12 @@ public static class FileManager
         Console.WriteLine(message);
     }
 
+    /// <summary>
+    /// Delete Directory And SubDirectories
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static async Task DeleteDirectory(string path){
 
         if(path is null ) throw new ArgumentNullException(nameof(path));
@@ -205,9 +218,14 @@ public static class FileManager
 
         }
         else Console.WriteLine("The Folder u're trying to remove dont exist 🙂");
-
     }
 
+    /// <summary>
+    /// Get Files List From A Directory
+    /// </summary>
+    /// <param name="folders"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static async Task<Dictionary<int, string>> GetFiles (Dictionary<int, string> folders){
         if(folders is null) throw new ArgumentNullException("Invalid Folders", $"{nameof(folders.Keys)} - {nameof(folders.Values)}");
 
@@ -231,7 +249,6 @@ public static class FileManager
                     foreach (var file in files)
                     {
                         dict.Add(counter, file);
-                        //Console.WriteLine(file);
                         counter++;
                     }
                 }
@@ -241,6 +258,14 @@ public static class FileManager
         return dict;
     }
 
+    /// <summary>
+    /// Get Directories, subDirectories and Includes Files 
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="hideMessageg"></param>
+    /// <param name="showFiles"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static async Task<Dictionary<int, string>> GetDirectories (string path, bool hideMessageg, bool showFiles){
 
         Dictionary<int, string> folders = new();
@@ -279,7 +304,6 @@ public static class FileManager
         }
         Console.WriteLine(": \n");
 
-            //return folders;
         data = await GetFiles(folders);
 
         foreach (var item in data)
@@ -293,6 +317,12 @@ public static class FileManager
         return folders;
     }
 
+    /// <summary>
+    /// Export Files And Directories If Exist To A Files
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static async Task ExportPathToFileAsync(SampleData data){
          string indexHeader; 
 
@@ -334,9 +364,7 @@ public static class FileManager
                             Console.WriteLine( $"\"{item}\" Added successfully");
                         }
                         sw.WriteLine("");
-
                     }
-                    
                 }
                 sw.WriteLine("");
                 Console.WriteLine($"\nTexts added to: \"{fileDestination}\" successfully -------------------------- 👍\n");
@@ -348,6 +376,14 @@ public static class FileManager
         }
         catch (Exception) { throw; }
     }
+
+
+    /// <summary>
+    /// Format A List By Files If A Directory Dont Include SubDirectory Or Return List Of  SubDirectories
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static async Task<(string, Dictionary<string, List<string>>)> FormatPath(SampleData data){
         string type ="";
         if(data is {EmbeedPath : null, EmbeedDestination: null} ) 
@@ -384,13 +420,17 @@ public static class FileManager
                 type="folder";
                 dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
             }            
-            
         }
 
         return (type, dict);
-        
     }
 
+    /// <summary>
+    /// Get Files List From a Directory If Exist Or Retun A list Of Directory
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static async Task<List<string>> GetFilesListFromSubFolders(SampleData data)
     {
         if(data is { EmbeedDestination: null, EmbeedPath: null} ) 
@@ -425,7 +465,6 @@ public static class FileManager
                 }
             }
 
-
         }
         catch (UnauthorizedAccessException) {throw;}
         catch (DirectoryNotFoundException) { throw; }
@@ -434,7 +473,8 @@ public static class FileManager
     }
 
     /// <summary>
-    /// Get a list of item in a specific folder when items match each other
+    /// Get A List Of Item In A Specific Folder When Items Match Each Other
+    /// Compare A MD File Which contain Elements with A Directory Which contain Videos OR Audios
     /// </summary>
     /// <param name="videoDirectory"></param>
     /// <param name="arrayOfFullPath"></param>
@@ -442,19 +482,14 @@ public static class FileManager
     /// <exception cref="ArgumentNullException"></exception>
     public static Dictionary<int, string> GetFullPath(string[] videoDirectory, string[] arrayOfListElementFromFile)
     {
-        if (videoDirectory is null) throw new ArgumentNullException();
+        if (videoDirectory is null) throw new ArgumentNullException(); //new Tuple<string, Dictionary<int, string>>("", new Dictionary<int, string>);
         
-        Dictionary<int, string> musicFullPath = new(), musicFull = new();
-        HashSet<string> clips = new();  SortedDictionary<int, string> dict = new();
+        Dictionary<int, string> musicFullPath = new();
 
         List<string> list = new List<string>(), musics =new List<string>();
         
-        foreach (var item in videoDirectory.Where(item => !Directory.Exists(item)))
-        {
-            throw new DirectoryNotFoundException(item);
-        }
+        foreach (var item in videoDirectory.Where(item => !Directory.Exists(item))) throw new DirectoryNotFoundException(item);
 
-        //directories = directory.GetDirectories("*", SearchOption.AllDirectories);
         foreach (var item in videoDirectory.ToList())
         {
             var data = Directory.GetFiles(item);
@@ -468,19 +503,22 @@ public static class FileManager
             for (int i = 0; i < musics.Count; i++)
             {
                 string extension = Path.GetFileNameWithoutExtension(musics[i]);
-                 if (arrayOfListElementFromFile[h].Contains(extension, StringComparison.OrdinalIgnoreCase))
+                if (arrayOfListElementFromFile[h].Contains(extension, StringComparison.OrdinalIgnoreCase))
                 {
                    var check= musicFullPath.TryAdd(h, Path.GetFullPath(musics[i]));
-                   
                 }
             }
-   
         }
 
         return musicFullPath;
     }
 
-    /*Get only headers from input file*/
+    /// <summary>
+    /// Get Only Headers And Index From Input File
+    /// </summary>
+    /// <param name="arrayFilePath"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     private static Dictionary<int, string> GetItemHeaderHashFromFile(string[] arrayFilePath)
     {
         Dictionary<int, string> itemHeader = new();
