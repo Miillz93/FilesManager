@@ -6,7 +6,7 @@ namespace Manager;
 
 public static class Helpers
 {
-    private static string JsonPath = Path.Combine(Directory.GetCurrentDirectory(), "sample.json");
+    private static string JsonPath = Path.Combine(Directory.GetCurrentDirectory(), "sample/sample.json");
     private static DateTime OldTracking { get; set; }
     private static DateTime JsonFileTracking { get; set; }
 
