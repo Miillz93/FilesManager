@@ -10,17 +10,37 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task CreateGenericPlaylist() {
-        
+    public static async Task CreateGenericPlaylist(string[] basePath, string uniquePathSource, int choiceType = 1) {
 
         throw new NotImplementedException();
 
     }
 
-    public static async Task<Dictionary<int, string>> GetPlaylist(string[] playlistPath){
+    public static async Task<Dictionary<int, string>> GePlaylist(string uniquePathSource){
+        
+        int counter = 0;
+        var filesDirectories = new Dictionary<int, string>();
+        
+        foreach (var files in await FileManager.GetDirectories(uniquePathSource, true, false))
+        {
+            FileAttributes attr = File.GetAttributes(files.Value);
+            
+            if ((attr & FileAttributes.Directory) != FileAttributes.Directory)
+                {
+                    filesDirectories.Add(counter, files.Value);
+                }
+            counter++;
+        }
+
+
+        return filesDirectories;
+    }
+    public static async Task<Dictionary<int, string>> GetPlaylist(string[] basePath, string uniquePathSource)
+    {
         var filesDirectories = new Dictionary<int, string>();
             int counter = 0;
-            foreach (var item in playlistPath)
+
+            foreach (var item in basePath)
             {
                 var directories = await FileManager.GetDirectories(item, true, false);
                 
@@ -35,8 +55,8 @@ public static class PlaylistManager
                     counter++;
                 }
             }
+                return filesDirectories;
 
-        return filesDirectories;
     }
 
     /// <summary>
