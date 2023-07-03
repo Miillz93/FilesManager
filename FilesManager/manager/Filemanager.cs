@@ -11,10 +11,10 @@ public static class FileManager
 
         string[] arrayOfListElementFromFile = new string[]{};
 
-        if(sameSymbol is null) throw new ArgumentNullException(null, nameof(sameSymbol));
+        if(sameSymbol is null) return new();
         if (!File.Exists(pathSource)) throw new FileNotFoundException();
         
-        foreach (var item in videoPath.Where(item => !Directory.Exists(item))) System.Console.WriteLine($" \"{item}\" Don't Exist");
+        foreach (var item in videoPath.Where(item => !Directory.Exists(item))) Console.WriteLine($" \"{item}\" Don't Exist");
 
         try { arrayOfListElementFromFile = File.ReadAllLines(pathSource) ; } 
         catch (Exception) { throw; }
@@ -25,8 +25,6 @@ public static class FileManager
         return (itemForHeader, musicFullPath);
     }
 
-
-
     /// <summary>
     /// Move Files
     /// </summary>
@@ -36,8 +34,9 @@ public static class FileManager
     public static async Task MoveAsync(string root, string destination) {
         var sw = new Stopwatch();
         sw.Start();
-        
 
+        await Task.Delay(100);
+        
         if(File.Exists(destination)) Console.WriteLine($"\"{destination}\" Already Exist");
         else {
             Console.Write($"\nmove of ---------------------- {root}    to-------------- {destination} \n");
@@ -63,7 +62,6 @@ public static class FileManager
         
         if(! File.Exists(destination))
         {
-
             Console.Write($"\ncopy of ---------------------- {root}    \nto-------------- {destination} \n");
 
             var task = Task.Run(Helpers.LoadSpinner);
@@ -82,12 +80,10 @@ public static class FileManager
 
             var task1 = CopyAsync(rootPath, destinationPath);
             await Task.Run(() =>task1);
-            
         } else {
 
             var task1 = MoveAsync(rootPath, destinationPath);
             await Task.Run(() => task1);
-
         }
         
     }
@@ -145,23 +141,24 @@ public static class FileManager
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data, params string[] CopyrightType)
+    public static async Task CopyOrMoveFileFromSourceFileAsync(string pathDestination, string[] fileMultiPath, string[]? videoPath, string[]? sameSymbol, string action)
     {
         string parent = "", child = "", parentFull = "",  path = "",  message = "\nFinished................👍", pathFull ="";
-        
-        if(data is {PathDestination: null, FileMultiPath: null}) System.Console.WriteLine("PathDestination OR FileMultiPath Was Not Set Correctly");
-        
-        if(! Directory.Exists(data.PathDestination)) Directory.CreateDirectory(data.PathDestination);
+        var fileMatching = new Dictionary<string, string>();
 
-        var fileMatching = await GetRootDirectoryWithFileMatching(data.PathDestination, data.FileMultiPath);
-
+        if(pathDestination is null ^ fileMultiPath is null) Console.WriteLine("PathDestination OR FileMultiPath Was Not Set Correctly");
         
+        if(! Directory.Exists(pathDestination)) Directory.CreateDirectory(pathDestination);
+        
+        if(fileMultiPath != null)
+            fileMatching = await GetRootDirectoryWithFileMatching(pathDestination, fileMultiPath);
+
         foreach (var (pathFile, pathSource) in fileMatching)
         {
-            var (itemForHeader, musicFullPath) = await ExtractData(pathFile, data.VideoPath, data.SameSymbol, CopyrightType);
+            var (itemForHeader, musicFullPath) = await ExtractData(pathFile, videoPath, sameSymbol);
 
             Console.WriteLine($"\nPath is {pathFile}");
-            int number = itemForHeader.Count; int breaker = 0;
+            int number = itemForHeader.Count;
             int musicLastKey =  musicFullPath.Keys.Last();
             int count = 0, counting = 1;
             //------------------
@@ -176,8 +173,8 @@ public static class FileManager
                         parent = firstIndex.Value.Replace('#', ' ').Trim();
                         pathFull = parent;
                         
-                        if(data.SameSymbol.Length != 0 ){
-                            if(data.SameSymbol.Any(symbol => parent.Contains(symbol, StringComparison.OrdinalIgnoreCase))) {
+                        if(sameSymbol.Length != 0 ){
+                            if(sameSymbol.Any(symbol => parent.Contains(symbol, StringComparison.OrdinalIgnoreCase))) {
                                 pathFull = Path.Combine("FR", parent);
                             }
                         }
@@ -192,7 +189,7 @@ public static class FileManager
 
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
-                            if(data.Action.ToLower() == "copy") 
+                            if(action.ToLower() == "copy") 
                                 await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
                             else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
                         }
@@ -210,7 +207,7 @@ public static class FileManager
 
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
-                            if (data.Action?.ToLower() == "copy") 
+                            if (action.ToLower() == "copy") 
                                 await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
                             else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
 
@@ -227,7 +224,7 @@ public static class FileManager
 
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
-                            if (data.Action?.ToLower() == "copy") 
+                            if (action.ToLower() == "copy") 
                                 await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
                             else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
                         }
@@ -270,7 +267,7 @@ public static class FileManager
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     public static async Task<Dictionary<int, string>> GetFiles (Dictionary<int, string> folders){
-        if(folders is null) throw new ArgumentNullException("Invalid Folders", $"{nameof(folders.Keys)} - {nameof(folders.Values)}");
+        if(folders is null) return new();
 
         int counter = 0;
         List<string> fileLists = new();
@@ -363,13 +360,12 @@ public static class FileManager
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ExportPathToFileAsync(SampleData data){
+    public static async Task ExportPathToFileAsync(string embeedPath, string embeedDestination, string embeedFileName){
          string indexHeader; 
 
-        if(data is {EmbeedPath : null, EmbeedDestination: null, EmbeedFileName: null} ) 
-            throw new ArgumentNullException(nameof(data));  
+        if(embeedPath is null ^ embeedDestination is null ^ embeedFileName is null) return;  
 
-        var (type, dataFormat) = await FormatPath(data);
+        var (type, dataFormat) = await FormatPath(embeedPath, embeedDestination, true);
         
         try
         {
@@ -377,8 +373,8 @@ public static class FileManager
             DateTime parisTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, parisTimeZone);
             
             string timer = parisTime.ToString("hh:mm").Replace(":","_");
-            string file = string.Concat(parisTime.ToString("dd-MM-yyyy") + $"_{timer}", $"_{data.EmbeedFileName}");
-            string fileDestination = Path.Combine(data.EmbeedDestination, file);   
+            string file = string.Concat(parisTime.ToString("dd-MM-yyyy") + $"_{timer}", $"_{embeedFileName}");
+            string fileDestination = Path.Combine(embeedDestination, file);   
             
             if(dataFormat.Count != 0){
                 using StreamWriter sw = new (fileDestination);
@@ -424,12 +420,11 @@ public static class FileManager
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task<(string, Dictionary<string, List<string>>)> FormatPath(SampleData data){
+    public static async Task<(string, Dictionary<string, List<string>>)> FormatPath(string embeedPath, string embeedDestination, bool embeedTypeShort){
         string type ="";
-        if(data is {EmbeedPath : null, EmbeedDestination: null} ) 
-            throw new ArgumentNullException(nameof(data));  
+        if(embeedPath is null ^ embeedDestination is null ) return new();
         
-        var fileItems = await GetFilesListFromSubFolders(data); 
+        var fileItems = await GetFilesListFromSubFolders(embeedDestination, embeedPath); 
 
         Dictionary<string, List<string>> dict = new();
 
@@ -438,11 +433,11 @@ public static class FileManager
             if(File.Exists(item)) {
                 var elements = new List<string>();
             
-                if(data.EmbeedTypeShort == true)  elements.Add(Path.GetFileNameWithoutExtension(item));
+                if(embeedTypeShort == true)  elements.Add(Path.GetFileNameWithoutExtension(item));
                 else elements.Add(item); 
                 
                 type="file";
-                dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
+                dict.Add(item.Replace(embeedPath+"\\",""), elements);
             }
 
             if(Directory.Exists(item)) {
@@ -451,12 +446,12 @@ public static class FileManager
                 
                 foreach (var file in fullPath.Where(file => File.Exists(file)))
                 {
-                    if (data.EmbeedTypeShort == true) elements.Add(Path.GetFileNameWithoutExtension(file));
+                    if (embeedTypeShort == true) elements.Add(Path.GetFileNameWithoutExtension(file));
                     else elements.Add(file);
                 }
 
                 type ="folder";
-                dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
+                dict.Add(item.Replace(embeedPath+"\\",""), elements);
             }            
         }
 
@@ -469,24 +464,23 @@ public static class FileManager
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task<List<string>> GetFilesListFromSubFolders(SampleData data)
+    public static async Task<List<string>> GetFilesListFromSubFolders(string embeedDestination, string embeedPath)
     {
-        if(data is { EmbeedDestination: null, EmbeedPath: null} ) 
-            throw new ArgumentNullException(nameof(data));  
+        if(embeedDestination is null ^ embeedPath is null ) return new();
        
         DirectoryInfo[] directories;
         List<string> fileItems = new();
 
         try
         {
-            if(!Directory.Exists(data.EmbeedPath)) return new List<string>(){};
-            if (!Directory.Exists(data.EmbeedDestination)) Directory.CreateDirectory(data.EmbeedDestination);
+            if(!Directory.Exists(embeedPath)) return new List<string>(){};
+            if (!Directory.Exists(embeedDestination)) Directory.CreateDirectory(embeedDestination);
             
-            var directory = new DirectoryInfo(data.EmbeedPath);
+            var directory = new DirectoryInfo(embeedPath);
             directories = directory.GetDirectories("*", SearchOption.AllDirectories);
             
             if(directories.Length == 0) {
-                var fileCollections = Directory.GetFiles(data.EmbeedPath);
+                var fileCollections = Directory.GetFiles(embeedPath);
                 if(fileCollections.Length == 0) { return new List<string>{"No data Available"}; }
                 fileItems.AddRange(fileCollections);
             }
@@ -513,13 +507,13 @@ public static class FileManager
     /// <exception cref="ArgumentNullException"></exception>
     public static Dictionary<int, string> GetFullPath(string[] videoDirectory, string[] arrayOfListElementFromFile, params string[] CopyrightType)
     {
-        if (videoDirectory is null) throw new ArgumentNullException(); //new Tuple<string, Dictionary<int, string>>("", new Dictionary<int, string>);
-        
+        if (videoDirectory is null) return new(); 
+
         Dictionary<int, string> musicFullPath = new();
 
         List<string> list = new List<string>(), musics =new List<string>();
         
-        foreach (var item in videoDirectory.Where(item => !Directory.Exists(item))) throw new DirectoryNotFoundException(item);
+        foreach (var item in videoDirectory.Where(item => !Directory.Exists(item)))Console.WriteLine($"\"{item}\" Don't Exist");
         
         foreach (var data in from item in videoDirectory.ToList()
                              let data = Directory.GetFiles(item)
@@ -555,7 +549,7 @@ public static class FileManager
     {
         Dictionary<int, string> itemHeader = new();
 
-        if (arrayFilePath is null || arrayFilePath.Length == 0) throw new ArgumentNullException("Array is null");
+        if (arrayFilePath is null || arrayFilePath.Length == 0) return new();
 
         for (int i = 0; i < arrayFilePath.Length; i++)
         {
