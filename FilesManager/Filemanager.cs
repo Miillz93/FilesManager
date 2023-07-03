@@ -92,7 +92,23 @@ public static class FileManager
         
     }
 
-    
+    public static async Task<bool> GenerateDirectory(string pathDestination) {
+        string[]? folders = new string[]{"JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
+        bool success = false;
+        await Task.Delay(100);
+        
+        foreach (var folder in folders)
+        {
+            string folderDated = string.Concat(folder,"_",DateTime.Now.Year);
+            if(!Directory.Exists(Path.Combine(pathDestination, folderDated))) {
+                Directory.CreateDirectory(Path.Combine(pathDestination, folderDated));
+                success = true;
+            }
+            // else System.Console.WriteLine($"Directory Already contains {Path.Combine(pathDestination, folderDated)}");
+        }
+
+        return success;
+    }
 
 
     /// <summary>
