@@ -76,7 +76,24 @@ public static class FileManager
         sw.Restart();
     }
 
+    public static async Task ExecuteParallelCopyOrMoveAsync(string action, string rootPath, string destinationPath){
+        
+        if(action == "copy"){
+
+            var task1 = CopyAsync(rootPath, destinationPath);
+            await Task.Run(() =>task1);
+            
+        } else {
+
+            var task1 = MoveAsync(rootPath, destinationPath);
+            await Task.Run(() => task1);
+
+        }
+        
+    }
+
     
+
 
     /// <summary>
     /// Manage Copy And Moving Files by Action
