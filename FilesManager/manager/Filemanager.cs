@@ -278,11 +278,7 @@ public static class FileManager
         foreach (var item in folders.Where(item => Directory.Exists(item.Value)))
         {
             var files = Directory.GetFiles(item.Value);
-            if (files.Length == 0)
-            {
-                Console.WriteLine("The Folder dont contain Files");
-            }
-            else
+            if (files.Length != 0)
             {
                 foreach (var file in files)
                 {
@@ -303,7 +299,7 @@ public static class FileManager
     /// <param name="showFiles"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task<Dictionary<int, string>> GetDirectories (string path, bool hideMessageg, bool showFiles){
+    public static async Task<Dictionary<int, string>> GetDirectories (string path, bool hideMessage, bool showFiles){
 
         Dictionary<int, string> folders = new();
 
@@ -327,7 +323,7 @@ public static class FileManager
             if(showFiles == true)
                 foreach (var item in data) Console.WriteLine(item.Value);
             
-            if(hideMessageg == false)
+            if(hideMessage == false) 
                 Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
 
             return data;
@@ -348,7 +344,7 @@ public static class FileManager
             Console.WriteLine(item.Value);
         }
 
-        if(hideMessageg == false)
+        if(hideMessage == false)
             Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
 
         return folders;
