@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using System.Runtime.InteropServices;
+using Shared;
 
 
 namespace Manager; 
@@ -9,11 +10,33 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static SampleData? CreatePlaylist(SampleData data) {
-        if(data == null) return null;
+    public static async Task CreateGenericPlaylist() {
+        
 
-        return data;
+        throw new NotImplementedException();
 
+    }
+
+    public static async Task<Dictionary<int, string>> GetPlaylist(string[] playlistPath){
+        var filesDirectories = new Dictionary<int, string>();
+            int counter = 0;
+            foreach (var item in playlistPath)
+            {
+                var directories = await FileManager.GetDirectories(item, true, false);
+                
+                foreach (var files in directories)
+                {
+                FileAttributes attr = File.GetAttributes(files.Value);
+                    
+                    if ((attr & FileAttributes.Directory) != FileAttributes.Directory)
+                        {
+                            filesDirectories.Add(counter, files.Value);
+                        }
+                    counter++;
+                }
+            }
+
+        return filesDirectories;
     }
 
     /// <summary>
