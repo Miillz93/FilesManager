@@ -1,8 +1,4 @@
-using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Shared;
 
 
@@ -10,31 +6,26 @@ namespace Manager;
 
 public static class FileManager
 {
-    public static async Task<(Dictionary<int, string>, Dictionary<int, string>)> ExtractData(SampleData data) {
 
-        string FilePath = Path.Combine(data.PathSource, data.FilePath);
+    public static async Task<(Dictionary<int, string>, Dictionary<int, string>)> ExtractData(string pathSource, string[]? videoPath, string[]? sameSymbol, params string[] CopyrightType) {
+
         string[] arrayOfListElementFromFile = new string[]{};
 
-        if(data.SameSymbol is null) throw new ArgumentNullException(null, nameof(data.SameSymbol));
-        if (!File.Exists(FilePath)) throw new FileNotFoundException();
+        if(sameSymbol is null) throw new ArgumentNullException(null, nameof(sameSymbol));
+        if (!File.Exists(pathSource)) throw new FileNotFoundException();
+        
+        foreach (var item in videoPath.Where(item => !Directory.Exists(item))) System.Console.WriteLine($" \"{item}\" Don't Exist");
 
-        foreach (var item in data.VideoPath) {
-            if(!Directory.Exists(item)) throw new DirectoryNotFoundException(item);
-        }
-
-        try { arrayOfListElementFromFile = File.ReadAllLines(FilePath) ; } 
+        try { arrayOfListElementFromFile = File.ReadAllLines(pathSource) ; } 
         catch (Exception) { throw; }
 
         var itemForHeader = GetItemHeaderHashFromFile(arrayOfListElementFromFile);
-
-        var musicFullPath = GetFullPath(data.VideoPath, arrayOfListElementFromFile);
+        var musicFullPath = GetFullPath(videoPath, arrayOfListElementFromFile, CopyrightType);
 
         return (itemForHeader, musicFullPath);
     }
-    public static async  Task CopyOrMoveFileAsync(SampleData data) {
-        var directories = GetDirectories(data.Playlist?.UniquePathSource, false, true);
-        throw new NotImplementedException();
-    }
+
+
 
     /// <summary>
     /// Move Files
@@ -42,15 +33,18 @@ public static class FileManager
     /// <param name="root"></param>
     /// <param name="destination"></param>
     /// <returns></returns>
-    public static async Task Move(string root, string destination) {
+    public static async Task MoveAsync(string root, string destination) {
         var sw = new Stopwatch();
         sw.Start();
         
+
         if(File.Exists(destination)) Console.WriteLine($"\"{destination}\" Already Exist");
         else {
-            Console.WriteLine($"copy of ---------------------- {root}");
+            Console.Write($"\nmove of ---------------------- {root}    to-------------- {destination} \n");
+            var task = Task.Run(Helpers.LoadSpinner);
             File.Move(root, destination);
-            Console.WriteLine("copying  to--------------{0} in {1} 's", destination, sw.Elapsed.TotalSeconds.ToString("0:00"));
+            Console.Write("\r Done!" );
+
         }
 
         sw.Stop();
@@ -63,20 +57,26 @@ public static class FileManager
     /// <param name="root"></param>
     /// <param name="destination"></param>
     /// <returns></returns>
-    public static async  Task Copy(string root, string destination) {
+    public static async  Task CopyAsync(string root, string destination) {
         var sw = new Stopwatch();
         sw.Start();
         
-        if(File.Exists(destination)) Console.WriteLine($"\"{destination}\" Already Exist");
-        else {
-            Console.WriteLine($"copy of ---------------------- {root}");
+        if(! File.Exists(destination))
+        {
+
+            Console.Write($"\ncopy of ---------------------- {root}    \nto-------------- {destination} \n");
+
+            var task = Task.Run(Helpers.LoadSpinner);
             File.Copy(root, destination);
-            Console.WriteLine("copying  to--------------{0} in {1} 's", destination, sw.Elapsed.TotalSeconds.ToString("0:00"));
-        }
+            Console.Write("\r Done!");
+            
+        }else  Console.WriteLine($"\"{destination}\" Already Exist");
 
         sw.Stop();
         sw.Restart();
     }
+
+    
 
     /// <summary>
     /// Manage Copy And Moving Files by Action
@@ -84,33 +84,34 @@ public static class FileManager
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data)
+    public static async Task CopyOrMoveFileFromSourceFileAsync(SampleData data, params string[] CopyrightType)
     {
         string parent = "", child = "", parentFull = "",  path = "",  message = "\nFinished................👍", pathFull ="";
-        if(data is {PathDestination: null}) throw new ArgumentNullException();
         
-        List<string> musicsToExport = new();
-        string[] arrayOfListElementFromFile = Array.Empty<string>();
-
+        if(data is {PathDestination: null, FileMultiPath: null}) System.Console.WriteLine("PathDestination OR FileMultiPath Was Not Set Correctly");
+        
         if(! Directory.Exists(data.PathDestination)) Directory.CreateDirectory(data.PathDestination);
 
-        var item = await ExtractData(data);
-        var itemForHeader = item.Item1;
-        var musicFullPath = item.Item2;
+        var fileMatching = await GetRootDirectoryWithFileMatching(data.PathDestination, data.FileMultiPath);
 
-        int number = itemForHeader.Count;
-        int musicCounter = musicFullPath.Count;
-        int count = 0, counting = 1;
+        
+        foreach (var (pathFile, pathSource) in fileMatching)
+        {
+            var (itemForHeader, musicFullPath) = await ExtractData(pathFile, data.VideoPath, data.SameSymbol, CopyrightType);
 
-        foreach (var header in itemForHeader) {
-            if(count < number && counting < number){
-                var firstIndex = itemForHeader.ElementAt(count);
-                var lastIndex = itemForHeader.ElementAt(counting);
-                
-                int countMusic = firstIndex.Value.Where(x => x == '#').Count();
-                
-                switch(countMusic){
-                    case 3: 
+            Console.WriteLine($"\nPath is {pathFile}");
+            int number = itemForHeader.Count; int breaker = 0;
+            int musicLastKey =  musicFullPath.Keys.Last();
+            int count = 0, counting = 1;
+            //------------------
+            foreach (var header in itemForHeader) {
+                if(count < number && counting < number) {
+                    var firstIndex = itemForHeader.ElementAt(count);
+                    var lastIndex = itemForHeader.ElementAt(counting);
+                    
+                    int countMusic = firstIndex.Value.Where(x => x == '#').Count();
+                    
+                    if(countMusic == 3) {
                         parent = firstIndex.Value.Replace('#', ' ').Trim();
                         pathFull = parent;
                         
@@ -121,79 +122,60 @@ public static class FileManager
                         }
 
                         foreach (var musics in from musics in musicFullPath
-                                               where firstIndex.Key < musics.Key && musics.Key < lastIndex.Key
-                                               select musics)
+                                            where firstIndex.Key < musics.Key && musics.Key < lastIndex.Key
+                                            select musics)
                         {
-                            path = Path.Combine(data.PathDestination, pathFull);
+                            path = Path.Combine(pathSource, pathFull);
                             try { if (!Directory.Exists(path)) Directory.CreateDirectory(path); }
                             catch (DirectoryNotFoundException) { throw; }
 
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
-
-                            if(data.Action.ToLower() == "copy"){
-                               
-                                await Copy(musics.Value, parentFull);
-                                 
-                            }else{
-
-                                await Move(musics.Value, parentFull);
-                            }
+                            
+                            if(data.Action.ToLower() == "copy") 
+                                await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
+                            else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
                         }
+                    }
 
-                        break;
-                    case 4: 
+                    if(countMusic == 4) {
                         child = firstIndex.Value.Replace('#', ' ').Trim();
-
-                        foreach (KeyValuePair<int, string> musics in musicFullPath)
+                        foreach (var musics in from KeyValuePair<int, string> musics in musicFullPath
+                                            where firstIndex.Key < musics.Key && musics.Key < lastIndex.Key
+                                            select musics)
                         {
-                            if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
-                                path = Path.Combine(data.PathDestination, pathFull, child);
+                            path = Path.Combine(pathSource, pathFull, child);
+                            try { if (!Directory.Exists(path)) Directory.CreateDirectory(path); }
+                            catch (System.Exception) { throw; }
 
-                                 try{ if(!Directory.Exists(path)) Directory.CreateDirectory(path); }
-                                 catch (System.Exception) {throw;}
+                            parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
+                            
+                            if (data.Action?.ToLower() == "copy") 
+                                await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
+                            else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
 
-                                parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
-
-                                if(data.Action.ToLower() == "copy")
-                                {
-                                    await Copy(musics.Value, parentFull);
-                                }
-                                else {
-
-                                    await Move(musics.Value, parentFull);
-                                }
-                            }
                         }
-                        break;
-                    case 5: 
+                    }
+
+                    if(countMusic== 5){ 
                         var SubChild = firstIndex.Value.Replace('#', ' ').Trim();
-
-                        foreach (KeyValuePair<int, string> musics in musicFullPath)
+                        foreach (var musics in musicFullPath.Where(musics => firstIndex.Key < musics.Key && musics.Key < lastIndex.Key))
                         {
-                            if(firstIndex.Key < musics.Key && musics.Key < lastIndex.Key){
-                                path = Path.Combine(data.PathDestination, pathFull, child, SubChild);
+                            path = Path.Combine(pathSource, pathFull, child, SubChild);
+                            try { if (!Directory.Exists(path)) Directory.CreateDirectory(path); }
+                            catch (Exception) { throw; }
 
-                                try{ if(!Directory.Exists(path)) Directory.CreateDirectory(path); }
-                                catch (Exception) {throw;}
-                        
-                                parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
-
-                                 if(data.Action.ToLower() == "copy") {
-                                    
-                                    await Copy(musics.Value, parentFull);
-
-                                 }else {
-
-                                    await Move(musics.Value, parentFull);
-                                 }
-                            }
+                            parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
+                            
+                            if (data.Action?.ToLower() == "copy") 
+                                await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
+                            else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
                         }
-                        break;
-                    default: break;
+                    }
                 } 
-            }
             count++; counting++;
+            } 
         }
+        //--------------------
 
         await Task.Delay(100);
         Console.WriteLine(message);
@@ -234,23 +216,20 @@ public static class FileManager
         Dictionary<int, string> dict = new (); 
 
         await Task.Delay(100);
-
-        foreach (var item in folders)
+        
+        foreach (var item in folders.Where(item => Directory.Exists(item.Value)))
         {
-            if(Directory.Exists(item.Value)) {
-                
-                var files =  Directory.GetFiles(item.Value);
-
-                if(files.Length == 0) {
-                    Console.WriteLine("The Folder dont contain Files");
-                }
-                else{
-
-                    foreach (var file in files)
-                    {
-                        dict.Add(counter, file);
-                        counter++;
-                    }
+            var files = Directory.GetFiles(item.Value);
+            if (files.Length == 0)
+            {
+                Console.WriteLine("The Folder dont contain Files");
+            }
+            else
+            {
+                foreach (var file in files)
+                {
+                    dict.Add(counter, file);
+                    counter++;
                 }
             }
         }
@@ -294,9 +273,9 @@ public static class FileManager
                 Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
 
             return data;
-        } 
-            
-        foreach (var item in directories.Select((value, index) => new {value, index}))
+        }
+
+        foreach (var item in directories.Select((value, index) => new { value, index }))
         {
             if(showFiles == true)
                 Console.WriteLine($" {item.value}");
@@ -408,16 +387,14 @@ public static class FileManager
             if(Directory.Exists(item)) {
                 var fullPath = Directory.GetFiles(item);
                 var elements = new List<string>();
-            
-                foreach (var file in fullPath)
+                
+                foreach (var file in fullPath.Where(file => File.Exists(file)))
                 {
-                    if(File.Exists(file) ){
-                        if(data.EmbeedTypeShort == true)  elements.Add(Path.GetFileNameWithoutExtension(file));
-                        else elements.Add(file); 
-                    }
-
+                    if (data.EmbeedTypeShort == true) elements.Add(Path.GetFileNameWithoutExtension(file));
+                    else elements.Add(file);
                 }
-                type="folder";
+
+                type ="folder";
                 dict.Add(item.Replace(data.EmbeedPath+"\\",""), elements);
             }            
         }
@@ -450,19 +427,12 @@ public static class FileManager
             if(directories.Length == 0) {
                 var fileCollections = Directory.GetFiles(data.EmbeedPath);
                 if(fileCollections.Length == 0) { return new List<string>{"No data Available"}; }
-                
-                foreach (var item in fileCollections)
-                {
-                    fileItems.Add(item);
-                }
-
-            }else {
+                fileItems.AddRange(fileCollections);
+            }
+            else {
                 await Task.Delay(100);
-
-                foreach (DirectoryInfo? item in directories)
-                {
-                    fileItems.Add(item.FullName);
-                }
+                fileItems.AddRange(from DirectoryInfo? item in directories
+                                   select item.FullName);
             }
 
         }
@@ -480,7 +450,7 @@ public static class FileManager
     /// <param name="arrayOfFullPath"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static Dictionary<int, string> GetFullPath(string[] videoDirectory, string[] arrayOfListElementFromFile)
+    public static Dictionary<int, string> GetFullPath(string[] videoDirectory, string[] arrayOfListElementFromFile, params string[] CopyrightType)
     {
         if (videoDirectory is null) throw new ArgumentNullException(); //new Tuple<string, Dictionary<int, string>>("", new Dictionary<int, string>);
         
@@ -489,13 +459,13 @@ public static class FileManager
         List<string> list = new List<string>(), musics =new List<string>();
         
         foreach (var item in videoDirectory.Where(item => !Directory.Exists(item))) throw new DirectoryNotFoundException(item);
-
-        foreach (var item in videoDirectory.ToList())
+        
+        foreach (var data in from item in videoDirectory.ToList()
+                             let data = Directory.GetFiles(item)
+                             where data.Length > 0
+                             select data)
         {
-            var data = Directory.GetFiles(item);
-
-            if(data.Length > 0) musics.AddRange(data); 
-
+            musics.AddRange(data);
         }
 
         for (int h = 0; h < arrayOfListElementFromFile.Length; h++)
@@ -503,9 +473,10 @@ public static class FileManager
             for (int i = 0; i < musics.Count; i++)
             {
                 string extension = Path.GetFileNameWithoutExtension(musics[i]);
+                
                 if (arrayOfListElementFromFile[h].Contains(extension, StringComparison.OrdinalIgnoreCase))
                 {
-                   var check= musicFullPath.TryAdd(h, Path.GetFullPath(musics[i]));
+                   musicFullPath.TryAdd(h, Path.GetFullPath(musics[i]));
                 }
             }
         }
