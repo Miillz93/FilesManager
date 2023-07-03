@@ -6,9 +6,8 @@ public class SampleData
     public string? EmbeedFileName {get; set;}
     public string? EmbeedDestination {get; set;}
     public bool  EmbeedTypeShort {get; set;}
-    public string? FilePath {get; set;}
     public string? PathSource {get; set;}
-    public string? FileDestination {get; set;}
+    public string[]? FileMultiPath {get; set;}
     public string? PathDestination {get; set;}
     public string[]? SameSymbol {get; set;}
     public string[]? ExcludeItem {get;set;}
