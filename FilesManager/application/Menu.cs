@@ -1,6 +1,7 @@
 using Shared;
+using Manager;
 
-namespace Manager;
+namespace Application;
 public static class Menu{
 
     public static async Task<int> MainMenuAsync(SampleData data, int platformId){
@@ -104,7 +105,8 @@ public static class Menu{
 
                     data.Action = "copy";
 
-                    if(platformId == 1 ) await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
+                    if(platformId == 1 ) 
+                        await FileManager.CopyOrMoveFileFromSourceFileAsync(data.PathDestination, data.FileMultiPath,data.VideoPath, data.SameSymbol, data.Action); 
                     
                     Thread.Sleep(2500);   
 
@@ -117,7 +119,8 @@ public static class Menu{
 
                     Console.WriteLine("------------------------ Moving Files \n");
                     
-                    if(platformId == 1) await FileManager.CopyOrMoveFileFromSourceFileAsync(data); 
+                    if(platformId == 1) 
+                        await FileManager.CopyOrMoveFileFromSourceFileAsync(data.PathDestination, data.FileMultiPath, data.VideoPath, data.SameSymbol, data.Action); 
 
                     Thread.Sleep(2500);   
 
@@ -126,7 +129,8 @@ public static class Menu{
 
                     Console.WriteLine("-------------------------- Export Data \n");
                     await Task.Delay(50);
-                    await FileManager.ExportPathToFileAsync(data);
+                    if(data is {EmbeedPath : not null, EmbeedDestination: not null, EmbeedFileName: not null})
+                        await FileManager.ExportPathToFileAsync(data.EmbeedPath, data.EmbeedDestination, data.EmbeedFileName);
                     Thread.Sleep(2500);   
 
                     break;                
@@ -135,7 +139,8 @@ public static class Menu{
                     await Task.Delay(500);
                     Console.WriteLine($" \"{data.EmbeedPath}\" and all subdirectories ll'be deleted. 🔴 \n");
                     await Task.Delay(2000);
-                    _ = await FileManager.GetDirectories(data.EmbeedPath, false, true);
+                    if(data is {EmbeedPath: not null})
+                        _ = await FileManager.GetDirectories(data.EmbeedPath, false, true);
                     await Task.Delay(500);
                     Console.WriteLine("Do You Still Want To Remove The Folder ? Y/N");
                     var deleted = Console.ReadLine();
