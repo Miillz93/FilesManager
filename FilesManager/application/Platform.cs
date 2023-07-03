@@ -1,5 +1,6 @@
-﻿
-namespace Manager;
+﻿using Manager;
+
+namespace Application;
 
 public static class Platform
 {
