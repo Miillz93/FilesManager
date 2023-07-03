@@ -1,4 +1,5 @@
 ﻿using Shared;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace Manager;
@@ -8,7 +9,6 @@ public static class Helpers
     private static string JsonPath = Path.Combine(Directory.GetCurrentDirectory(), "sample.json");
     private static DateTime OldTracking { get; set; }
     private static DateTime JsonFileTracking { get; set; }
-
 
     public static DateTime GetFileLastChange(){
         var jsonFileTracking = File.GetLastWriteTime(JsonPath);
@@ -21,38 +21,49 @@ public static class Helpers
         string message;
 
         if(id == 1) {
-                // message = "-----------------------------------------------------------";
-                // message += "|                      Music PLATFORM                      |";
-                // message +="-----------------------------------------------------------";
-                message = "------------------------------------------------------------ \n";
-                message += "|                      MUSIC PLATFORM                      | \n";
-                message +="------------------------------------------------------------";
+            // message = "-----------------------------------------------------------";
+            // message += "|                      Music PLATFORM                      |";
+            // message +="-----------------------------------------------------------";
+            message = "------------------------------------------------------------ \n";
+            message += "|                      MUSIC PLATFORM                      | \n";
+            message +="------------------------------------------------------------";
 
-                System.Console.WriteLine(message);
+            Console.WriteLine(message);
         }else {
-                // message = "-----------------------------------------------------------";
-                // message += "|                     GAMING PLATFORM                      |";
-                // message +="-----------------------------------------------------------";
-                message = "------------------------------------------------------------ \n";
-                message += "|                     GAMING PLATFORM                      | \n";
-                message +="------------------------------------------------------------";
+            // message = "-----------------------------------------------------------";
+            // message += "|                     GAMING PLATFORM                      |";
+            // message +="-----------------------------------------------------------";
+            message = "------------------------------------------------------------ \n";
+            message += "|                     GAMING PLATFORM                      | \n";
+            message +="------------------------------------------------------------";
 
-                System.Console.WriteLine(message);
-
+            Console.WriteLine(message);
         }
 
-        
     }
 
-    public static void ShowSimplePercentage()
-        {
-            for (int i = 0; i <= 100; i++) {
-                Console.Write($"\rProgress: {i}%   ");
-                Thread.Sleep(60);
+    public static async Task LoadSpinner(){
+
+        int counter = 0; 
+
+        var sw = new Stopwatch();
+        sw.Start();
+        
+        for (int i=0; i < 1000;i++) {
+
+            switch (counter % 4)
+            {
+                case 0:  Console.Write("\r/"); break;
+                case 1: Console.Write("\r-"); break;
+                case 2: Console.Write("\r\\"); break;
+                case 3: Console.Write("\r|"); break;
             }
 
-            Console.WriteLine("\rDone!          ");
+            counter++;
+            await Task.Delay(200);
+            //Console.SetCursorPosition(0, Console.CursorTop);
         }
+    }
 
     public static SampleData DeserializeJson (string jsonPath){
         SampleData? sampleData;
@@ -67,15 +78,12 @@ public static class Helpers
         SampleData data;
 
         OldTracking = JsonFileTracking;
-        // Console.WriteLine("Old------------------- {0}", JsonFileTracking);
 
         JsonFileTracking = GetFileLastChange();
-        // Console.WriteLine("newest------------------- {0}", JsonFileTracking);
 
         if (JsonFileTracking != OldTracking)
         {
             data = DeserializeJson(JsonPath);
-            //Console.WriteLine("From reload {0}", data.Playlist?.Name);
             return data;
         }
 
