@@ -110,6 +110,34 @@ public static class FileManager
         return success;
     }
 
+    /// <summary>
+    /// Create Destination Directories if Don't Exist
+    /// </summary>
+    /// <param name="pathDestination"></param>
+    /// <param name="fileMultiPath"></param>
+    /// <returns></returns>
+    public static async Task<Dictionary<string, string>> GetRootDirectoryWithFileMatching(string pathDestination, string[] fileMultiPath){
+
+        Dictionary<string, string> fileMatch = new();
+
+        _ = await GenerateDirectory(pathDestination);
+
+        foreach (var mdFile in fileMultiPath)
+        {
+            string filter = mdFile.Substring(mdFile.LastIndexOf("_") + 1,3);
+
+            foreach (var folderDestination in Directory.GetDirectories(pathDestination, "*", SearchOption.TopDirectoryOnly))
+            {
+                if(folderDestination.Contains(filter, StringComparison.OrdinalIgnoreCase)) 
+                {
+                    fileMatch.Add(mdFile, folderDestination);
+                }
+            }
+        }
+
+        return fileMatch;
+    }
+
 
     /// <summary>
     /// Manage Copy And Moving Files by Action
