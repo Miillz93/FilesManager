@@ -14,11 +14,35 @@ public static class PlaylistManager
     /// <returns></returns>
     public static async Task CreateGenericPlaylist(SampleData data, int choiceType = 1) {
 
-        
-        
-        throw new NotImplementedException();
+        if(data.Playlist?.BasePath is null ) return;
 
     }
+
+    /// <summary>
+    /// Looking for a file with a specific name
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="copyrightType"></param>
+    /// <returns></returns>
+    public static async Task<List<string>> GetFilesWithSpecificInfoAsync(string path, string[] copyrightType)
+    {
+        var fileInfo = new List<string>();
+
+        if(copyrightType is null) return new();
+
+        foreach (var item in copyrightType)
+        {
+            var directoryInfo = Directory.GetFiles(path, $"*{item}*", SearchOption.AllDirectories);
+
+            if(directoryInfo is null) return new();   
+            
+            fileInfo.AddRange(directoryInfo);
+        }
+
+        return fileInfo;
+    }
+
+
 
     public static async Task<List<string>> GetIncludedPlaylist(List<string> mainList, string[] IncludeOnly)
     {
