@@ -15,7 +15,6 @@ public static class PlaylistManager
     public static async Task CreateGenericPlaylist(SampleData data, int choiceType = 1) {
 
         
-        // playlist = await GetPlaylist(data.Playlist.UniquePathSource);        
         throw new NotImplementedException();
 
     }
@@ -23,7 +22,6 @@ public static class PlaylistManager
     public static async Task<List<string>> GetIncludedPlaylist(List<string> mainList, string[] IncludeOnly)
     {
         var includedPlaylist =  new List<string>();
-        int counter = 0;
         
         if(mainList.Count == 0 && IncludeOnly.Length == 0) return new();
         
@@ -32,6 +30,16 @@ public static class PlaylistManager
         return includedPlaylist;
     }
 
+    public static async Task<List<string>> GetExcludedPlaylist(List<string> mainPlaylist, string[] ExcludeFolderName)
+    {
+        var excludedPlaylist =  new List<string>();
+
+        excludedPlaylist.AddRange(mainPlaylist
+                        .Where(playlist => !ExcludeFolderName
+                        .Any(symbol => playlist.Contains(symbol,StringComparison.OrdinalIgnoreCase))));
+
+        return excludedPlaylist;
+    }
 
     /// <summary>
     /// Get A List Of Elements from One path
