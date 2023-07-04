@@ -548,4 +548,31 @@ public static class FileManager
         return itemHeader;
     }
 
+     /// <summary>
+    /// Looking for a file with a specific name
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="copyrightType"></param>
+    /// <returns></returns>
+    public static async Task<List<string>> GetFilesWithSpecificInfoAsync(string path, params string[] copyType)
+    {
+        var fileInfo = new List<string>();
+
+        if(copyType is null) {
+            var directoryInfo = Directory.GetFiles(path, "*.md", SearchOption.AllDirectories);
+            return directoryInfo.ToList();
+        }
+
+        foreach (var item in copyType)
+        {
+            var directoryInfo = Directory.GetFiles(path, $"*{item}*", SearchOption.AllDirectories);
+
+            if(directoryInfo is null) return new();   
+            
+            fileInfo.AddRange(directoryInfo);
+        }
+
+        return fileInfo;
+    }
+
 }

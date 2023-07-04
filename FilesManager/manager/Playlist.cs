@@ -16,39 +16,11 @@ public static class PlaylistManager
 
         if(data.Playlist?.BasePath is null ) return;
 
+        
 
         throw new NotImplementedException();
 
     }
-
-    /// <summary>
-    /// Looking for a file with a specific name
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="copyrightType"></param>
-    /// <returns></returns>
-    public static async Task<List<string>> GetFilesWithSpecificInfoAsync(string path, params string[] copyrightType)
-    {
-        var fileInfo = new List<string>();
-
-        if(copyrightType is null) {
-            var directoryInfo = Directory.GetFiles(path, "*.md", SearchOption.AllDirectories);
-            return directoryInfo.ToList();
-        }
-
-        foreach (var item in copyrightType)
-        {
-            var directoryInfo = Directory.GetFiles(path, $"*{item}*", SearchOption.AllDirectories);
-
-            if(directoryInfo is null) return new();   
-            
-            fileInfo.AddRange(directoryInfo);
-        }
-
-        return fileInfo;
-    }
-
-
 
     public static async Task<List<string>> GetIncludedPlaylist(List<string> mainList, string[] IncludeOnly)
     {
