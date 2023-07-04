@@ -470,7 +470,7 @@ public static class FileManager
             
             if(directories.Length == 0) {
                 var fileCollections = Directory.GetFiles(embeedPath);
-                if(fileCollections.Length == 0) { return new List<string>{"No data Available"}; }
+                if(fileCollections.Length == 0) return new();
                 fileItems.AddRange(fileCollections);
             }
             else {
