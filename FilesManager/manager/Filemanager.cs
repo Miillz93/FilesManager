@@ -303,12 +303,7 @@ public static class FileManager
 
         Dictionary<int, string> folders = new();
 
-        if(path is null) throw new ArgumentNullException("invalid Path", nameof(path));
-
-        if(!Directory.Exists(path)) {
-            folders.Add(0, "The Directory Dont Exist");
-            return folders;
-        }
+        if(path is null ^ !Directory.Exists(path)) return folders;
 
         var directories = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
 
@@ -331,17 +326,15 @@ public static class FileManager
 
         foreach (var item in directories.Select((value, index) => new { value, index }))
         {
-            if(showFiles == true)
-                Console.WriteLine($" {item.value}");
+            if(showFiles == true) Console.WriteLine($" {item.value}");
             folders.Add(item.index, item.value);
         }
-        Console.WriteLine(": \n");
 
         data = await GetFiles(folders);
 
         foreach (var item in data)
         {
-            Console.WriteLine(item.Value);
+           if(showFiles == true) Console.WriteLine(item.Value);
         }
 
         if(hideMessage == false)
