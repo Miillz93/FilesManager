@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Data;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Shared;
 
@@ -19,6 +20,25 @@ public static class PlaylistManager
 
     }
 
+    public static async Task<List<string>> GetIncludedPlaylist(List<string> mainList, string[] IncludeOnly)
+    {
+        var includedPlaylist =  new List<string>();
+        int counter = 0;
+
+        foreach (var playlist in mainList)
+        {
+
+            if(playlist.Length != 0  && IncludeOnly.Length != 0){
+
+                if(IncludeOnly.Any(symbol => playlist.Contains(symbol, StringComparison.OrdinalIgnoreCase))) {
+                    includedPlaylist.Add(playlist);
+                }
+            }
+            else includedPlaylist.Add(playlist);
+        }
+
+        return includedPlaylist;
+    }
 
     /// <summary>
     /// Get A List Of Elements from One path
