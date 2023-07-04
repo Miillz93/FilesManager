@@ -9,6 +9,7 @@ public class Playlist
     public string? TrackFileDuplicatePath {get;set;}
     public string? PlaylistPathDestination {get; set;}
     public string? TracklistPathDestination {get; set;}
+    public string[]? CopyType {get; set;}
     public string[]? ExcludeFolderName {get; set;}
     public string[]? IncludeOnly {get; set;} 
     public string[]? PlaylistMixName {get; set;}
