@@ -16,12 +16,18 @@ public static class PlaylistManager
 
         if(data.Playlist?.BasePath is null ) return;
 
-        
+       
 
         throw new NotImplementedException();
 
     }
 
+    /// <summary>
+    /// Add A Filter By Included Only Some Data
+    /// </summary>
+    /// <param name="mainList"></param>
+    /// <param name="IncludeOnly"></param>
+    /// <returns></returns>
     public static async Task<List<string>> GetIncludedPlaylist(List<string> mainList, string[] IncludeOnly)
     {
         var includedPlaylist =  new List<string>();
@@ -33,6 +39,12 @@ public static class PlaylistManager
         return includedPlaylist;
     }
 
+    /// <summary>
+    /// Add A Filter By Excluded Some Data
+    /// </summary>
+    /// <param name="mainPlaylist"></param>
+    /// <param name="ExcludeFolderName"></param>
+    /// <returns></returns>
     public static async Task<List<string>> GetExcludedPlaylist(List<string> mainPlaylist, string[] ExcludeFolderName)
     {
         var excludedPlaylist =  new List<string>();
