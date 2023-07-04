@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Shared;
-
+using System.Linq;
 
 namespace Manager; 
 public static class PlaylistManager
@@ -24,21 +24,14 @@ public static class PlaylistManager
     {
         var includedPlaylist =  new List<string>();
         int counter = 0;
-
-        foreach (var playlist in mainList)
-        {
-
-            if(playlist.Length != 0  && IncludeOnly.Length != 0){
-
-                if(IncludeOnly.Any(symbol => playlist.Contains(symbol, StringComparison.OrdinalIgnoreCase))) {
-                    includedPlaylist.Add(playlist);
-                }
-            }
-            else includedPlaylist.Add(playlist);
-        }
-
+        
+        if(mainList.Count == 0 && IncludeOnly.Length == 0) return new();
+        
+        includedPlaylist.AddRange(mainList.Where(playlist => IncludeOnly.Any(symbol => playlist.Contains(symbol, StringComparison.OrdinalIgnoreCase))));
+        
         return includedPlaylist;
     }
+
 
     /// <summary>
     /// Get A List Of Elements from One path
