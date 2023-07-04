@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using Shared;
 
 
@@ -10,53 +11,76 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task CreateGenericPlaylist(string[] basePath, string uniquePathSource, int choiceType = 1) {
+    public static async Task CreateGenericPlaylist(SampleData data, int choiceType = 1) {
 
+        
+        // playlist = await GetPlaylist(data.Playlist.UniquePathSource);        
         throw new NotImplementedException();
 
     }
 
-    public static async Task<Dictionary<int, string>> GePlaylist(string uniquePathSource){
+
+    /// <summary>
+    /// Get A List Of Elements from One path
+    /// </summary>
+    /// <param name="uniquePathSource"></param>
+    /// <returns></returns>
+    public static async Task<List<string>> GetPlaylist(string uniquePathSource){
         
-        int counter = 0;
-        var filesDirectories = new Dictionary<int, string>();
-        
-        foreach (var files in await FileManager.GetDirectories(uniquePathSource, true, false))
+        var listing = new List<string>();
+        var directories = await FileManager.GetDirectories(uniquePathSource, true, false);
+        var filesList =  GetFiles(directories);
+
+        foreach (var file in filesList)
         {
-            FileAttributes attr = File.GetAttributes(files.Value);
-            
-            if ((attr & FileAttributes.Directory) != FileAttributes.Directory)
-                {
-                    filesDirectories.Add(counter, files.Value);
-                }
-            counter++;
-        }
+            listing.Add(file);
+        }   
 
+        return listing;
 
-        return filesDirectories;
+        
     }
-    public static async Task<Dictionary<int, string>> GetPlaylist(string[] basePath, string uniquePathSource)
-    {
-        var filesDirectories = new Dictionary<int, string>();
-            int counter = 0;
 
-            foreach (var item in basePath)
+    /// <summary>
+    /// Get A List Of Elements based On multiple path
+    /// </summary>
+    /// <param name="basePath"></param>
+    /// <returns></returns>
+    public static async Task<List<string>> GetPlaylist(string[] basePath)
+    {
+        var listing = new List<string>();
+
+        foreach (var item in basePath)
+        {
+            var directories = await FileManager.GetDirectories(item, true, false);
+            var filesList =  GetFiles(directories);
+            foreach (var file in filesList)
             {
-                var directories = await FileManager.GetDirectories(item, true, false);
-                
-                foreach (var files in directories)
+                listing.Add(file);
+            }
+        }
+  
+        return listing;
+    }
+
+    private static List<string> GetFiles(Dictionary<int, string> directories)
+    {
+        var filesList = new List<string>(); 
+        var directory = new List<string>() ; 
+
+        foreach (var files in directories)
+        {
+            if (Directory.Exists(files.Value))
+            {
+                directory = Directory.GetFiles(files.Value).ToList();
+                foreach (var root in directory)
                 {
-                FileAttributes attr = File.GetAttributes(files.Value);
-                    
-                    if ((attr & FileAttributes.Directory) != FileAttributes.Directory)
-                        {
-                            filesDirectories.Add(counter, files.Value);
-                        }
-                    counter++;
+                    filesList.Add(root);
                 }
             }
-                return filesDirectories;
+        }
 
+        return filesList;
     }
 
     /// <summary>
