@@ -16,6 +16,9 @@ public static class PlaylistManager
 
         if(data.Playlist?.BasePath is null ) return;
 
+
+        throw new NotImplementedException();
+
     }
 
     /// <summary>
@@ -24,11 +27,14 @@ public static class PlaylistManager
     /// <param name="path"></param>
     /// <param name="copyrightType"></param>
     /// <returns></returns>
-    public static async Task<List<string>> GetFilesWithSpecificInfoAsync(string path, string[] copyrightType)
+    public static async Task<List<string>> GetFilesWithSpecificInfoAsync(string path, params string[] copyrightType)
     {
         var fileInfo = new List<string>();
 
-        if(copyrightType is null) return new();
+        if(copyrightType is null) {
+            var directoryInfo = Directory.GetFiles(path, "*.md", SearchOption.AllDirectories);
+            return directoryInfo.ToList();
+        }
 
         foreach (var item in copyrightType)
         {
