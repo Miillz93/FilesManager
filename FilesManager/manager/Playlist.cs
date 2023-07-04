@@ -15,6 +15,7 @@ public static class PlaylistManager
     public static async Task CreateGenericPlaylist(SampleData data, int choiceType = 1) {
 
         
+        
         throw new NotImplementedException();
 
     }
@@ -34,9 +35,7 @@ public static class PlaylistManager
     {
         var excludedPlaylist =  new List<string>();
 
-        excludedPlaylist.AddRange(mainPlaylist
-                        .Where(playlist => !ExcludeFolderName
-                        .Any(symbol => playlist.Contains(symbol,StringComparison.OrdinalIgnoreCase))));
+        excludedPlaylist.AddRange(mainPlaylist.Where(playlist => !ExcludeFolderName.Any(symbol => playlist.Contains(symbol,StringComparison.OrdinalIgnoreCase))));
 
         return excludedPlaylist;
     }
