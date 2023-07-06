@@ -18,7 +18,21 @@ public static class PlaylistManager
         
     }
 
-   
+    /// <summary>
+    /// Check If Datas Is Copyrighted
+    /// </summary>
+    /// <param name="elements"></param>
+    /// <param name="filesContent"></param>
+    /// <returns></returns>
+    public static async Task<List<string>> IsCopyrighted(List<string> elements, List<string> filesContent){
+        
+        var contentFilter = elements.Where(element => !filesContent.Any(item => element.Contains(item, StringComparison.OrdinalIgnoreCase))).ToList();
+
+        return contentFilter;
+    }
+
+
+    
 
     /// <summary>
     /// Add A Filter By Included Only Some Data
