@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Shared;
-
+using System.Linq;
 
 namespace Manager;
 
@@ -551,28 +551,43 @@ public static class FileManager
      /// <summary>
     /// Looking for a file with a specific name
     /// </summary>
-    /// <param name="path"></param>
-    /// <param name="copyrightType"></param>
+    /// <param name="logPathDestination"></param>
+    /// <param name="copyType"></param>
     /// <returns></returns>
-    public static async Task<List<string>> GetFilesWithSpecificInfoAsync(string path, params string[] copyType)
+    public static async Task<List<string>> GetFilesWithSpecificInfoAsync(string logPathDestination, params string[] copyType)
     {
         var fileInfo = new List<string>();
-
-        if(copyType is null) {
-            var directoryInfo = Directory.GetFiles(path, "*.md", SearchOption.AllDirectories);
-            return directoryInfo.ToList();
-        }
+                
+        if(logPathDestination is null ^ copyType is null) return new();
 
         foreach (var item in copyType)
         {
-            var directoryInfo = Directory.GetFiles(path, $"*{item}*", SearchOption.AllDirectories);
-
-            if(directoryInfo is null) return new();   
+            var directoryInfo = Directory.GetFiles(logPathDestination, $"*{item}*", SearchOption.AllDirectories);
             
+            if(directoryInfo is null) return new();
             fileInfo.AddRange(directoryInfo);
         }
 
         return fileInfo;
+    }
+
+    /// <summary>
+    /// Read Files Content get from pattern 
+    /// </summary>
+    /// <param name="elements"></param>
+    /// <returns></returns>
+    public static async Task<List<string>> ReadContentWithSpecificInfos(List<string> elements){
+        List<string> contents = new();
+
+        foreach (var item in elements)
+        {
+            string [] arrayOfElements = File.ReadAllLines(item);
+            if(arrayOfElements != null) contents.AddRange(arrayOfElements);
+           
+        }
+
+        
+        return contents;
     }
 
 }
