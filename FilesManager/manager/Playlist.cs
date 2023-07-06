@@ -12,15 +12,13 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task CreateGenericPlaylist(SampleData data, int choiceType = 1) {
+    public static async Task CreateGenericPlaylist(SampleData data, [Optional] int choiceType) {
 
-        if(data.Playlist?.BasePath is null ) return;
-
-       
-
-        throw new NotImplementedException();
-
+        
+        
     }
+
+   
 
     /// <summary>
     /// Add A Filter By Included Only Some Data
@@ -32,7 +30,7 @@ public static class PlaylistManager
     {
         var includedPlaylist =  new List<string>();
         
-        if(mainList.Count == 0 && IncludeOnly.Length == 0) return new();
+        if(IncludeOnly.Length == 0) return mainList;
         
         includedPlaylist.AddRange(mainList.Where(playlist => IncludeOnly.Any(symbol => playlist.Contains(symbol, StringComparison.OrdinalIgnoreCase))));
         
@@ -64,15 +62,9 @@ public static class PlaylistManager
         var listing = new List<string>();
         var directories = await FileManager.GetDirectories(uniquePathSource, true, false);
         var filesList =  GetFiles(directories);
-
-        foreach (var file in filesList)
-        {
-            listing.Add(file);
-        }   
-
-        return listing;
-
         
+        listing.AddRange(filesList);
+        return listing;
     }
 
     /// <summary>
@@ -99,44 +91,33 @@ public static class PlaylistManager
 
     private static List<string> GetFiles(Dictionary<int, string> directories)
     {
-        var filesList = new List<string>(); 
-        var directory = new List<string>() ; 
-
-        foreach (var files in directories)
+        var filesList = new List<string>();
+        
+        foreach (var files in directories.Where(files => Directory.Exists(files.Value)))
         {
-            if (Directory.Exists(files.Value))
-            {
-                directory = Directory.GetFiles(files.Value).ToList();
-                foreach (var root in directory)
-                {
-                    filesList.Add(root);
-                }
-            }
+            var directory = Directory.GetFiles(files.Value).ToList();
+            filesList.AddRange(directory);
         }
 
         return filesList;
     }
 
-    /// <summary>
-    /// Create A Mix Playlist Based On Base Path With OR Without A Filter
+     /// <summary>
+    /// Create A Directory For Playlist logs
     /// </summary>
-    /// <param name="data"></param>
+    /// <param name="logPathDestination"></param>
+    /// <param name="playlistName"></param>
     /// <returns></returns>
-    public static string? CreateMixPlaylist(SampleData data) {
-        if(data == null) return string.Empty;
+    public static async Task<string> CreateLogPathDirectory(string logPathDestination, string playlistName){
+        
+        await Task.Delay(100); 
+        
+        var path = Path.Combine(logPathDestination,playlistName);
+        if(!Directory.Exists(path)) Directory.CreateDirectory(path);
 
-        return string.Empty;
+        return path;
+
     }
 
-    public static async Task <string> CreateRandomPlaylist() {
-        throw new NotImplementedException();
-    }
 
-
-    public static async Task<string> CreateRandomPlaylist(SampleData data) {
-        throw new NotImplementedException();
-    }
-
-    //Random playlist using embeed file with exclude folder
-    //Create a mix with or without duplicate data in log
 }
