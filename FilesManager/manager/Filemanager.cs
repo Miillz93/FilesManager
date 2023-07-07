@@ -315,6 +315,16 @@ public static class FileManager
         if(!File.Exists(path)) File.Create(path);
      }
 
+     public static async Task GenerateDocuements(string logPath){
+        await CreateDirectory(logPath);
+
+        if(!File.Exists(Path.Combine(logPath, "playlist_copyright.md"))) File.Create(Path.Combine(logPath, "playlist_copyright.md"));
+        if(!File.Exists(Path.Combine(logPath, "playlist_copycat.md"))) File.Create(Path.Combine(logPath, "playlist_copycat.md"));
+        if(!File.Exists(Path.Combine(logPath, "tracklist_copyright.md"))) File.Create(Path.Combine(logPath, "tracklist_copyright.md"));
+        if(!File.Exists(Path.Combine(logPath, "'tracklist_copycat.md"))) File.Create(Path.Combine(logPath, "tracklist_copycat.md"));
+      
+    }
+
     /// <summary>
     /// Get Directories, subDirectories and Includes Files 
     /// </summary>
@@ -627,14 +637,14 @@ public static class FileManager
         else 
         {
             string pathNumber = name+"1";
-            var dict = await FileManager.GetDirectories(path, true, false);
+            var dict = await GetDirectories(path, true, false);
 
             string newPath;
             // Create sequence of directory type
             if (dict.Count == 0)
             {
                 newPath = Path.Combine(path, pathNumber ?? "");
-                await FileManager.CreateDirectory(newPath);
+                await CreateDirectory(newPath);
             }
 
             int number =  Convert.ToInt32(dict.Count+1);
@@ -643,7 +653,7 @@ public static class FileManager
             Console.WriteLine($"dict contains {dict.Count}");
 
             newPath = Path.Combine(path, name+$"{number}" ?? "");
-            await FileManager.CreateDirectory(newPath);
+            await CreateDirectory(newPath);
             
             return newPath;
         }
