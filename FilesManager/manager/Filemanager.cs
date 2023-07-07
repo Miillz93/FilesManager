@@ -413,7 +413,10 @@ public static class FileManager
         catch (Exception) { throw; }
     }
 
-
+    public static async Task ExportPathToDocumentAsync(string path, List<string> elements)
+    {
+        
+    }
 
 
     /// <summary>
