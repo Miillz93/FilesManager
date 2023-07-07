@@ -15,7 +15,7 @@ public static class PlaylistManager
     /// <returns></returns>
     public static async Task CreateGenericPlaylist(SampleData data, [Optional] int choiceType) {
 
-    
+        
     }
 
     /// <summary>
@@ -49,7 +49,22 @@ public static class PlaylistManager
 
     }
 
-    
+    public static async Task<List<string>> Reload(List<string> elements){
+
+        Random rand = new(); List<string> newElements = new();
+        var newEelements = elements.OrderBy(_ => rand.Next());
+        int count = 1;
+
+        foreach (var item in newEelements)
+        {
+            newElements.Add(item); 
+            Console.WriteLine($"{count}  ---- {item}");
+            count++;
+        }
+
+        return newElements;
+
+    }
 
 
 
