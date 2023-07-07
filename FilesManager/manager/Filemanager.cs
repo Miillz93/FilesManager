@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Shared;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Manager;
 
@@ -74,6 +75,8 @@ public static class FileManager
         sw.Restart();
     }
 
+
+
     public static async Task ExecuteParallelCopyOrMoveAsync(string action, string rootPath, string destinationPath){
         
         if(action == "copy"){
@@ -88,7 +91,7 @@ public static class FileManager
         
     }
 
-    public static async Task<bool> GenerateDirectory(string pathDestination) {
+    public static async Task<bool> GenerateDirectory(string path) {
         string[]? folders = new string[]{"JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
         bool success = false;
         await Task.Delay(100);
@@ -96,8 +99,8 @@ public static class FileManager
         foreach (var folder in folders)
         {
             string folderDated = string.Concat(folder,"_",DateTime.Now.Year);
-            if(!Directory.Exists(Path.Combine(pathDestination, folderDated))) {
-                Directory.CreateDirectory(Path.Combine(pathDestination, folderDated));
+            if(!Directory.Exists(Path.Combine(path, folderDated))) {
+                Directory.CreateDirectory(Path.Combine(path, folderDated));
                 success = true;
             }
             // else System.Console.WriteLine($"Directory Already contains {Path.Combine(pathDestination, folderDated)}");
@@ -291,6 +294,13 @@ public static class FileManager
         return dict;
     }
 
+    public static async Task CreateDocument(string path){
+        
+        await Task.Delay(10);
+
+        if(!File.Exists(path)) File.Create(path);
+     }
+
     /// <summary>
     /// Get Directories, subDirectories and Includes Files 
     /// </summary>
@@ -349,7 +359,8 @@ public static class FileManager
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ExportPathToFileAsync(string embeedPath, string embeedDestination, string embeedFileName){
+    public static async Task ExportPathToDocumentAsync(string embeedPath, string embeedDestination, string embeedFileName)
+    {
          string indexHeader; 
 
         if(embeedPath is null ^ embeedDestination is null ^ embeedFileName is null) return;  
@@ -401,6 +412,8 @@ public static class FileManager
         }
         catch (Exception) { throw; }
     }
+
+
 
 
     /// <summary>
@@ -571,6 +584,55 @@ public static class FileManager
         return fileInfo;
     }
 
+    public static async Task CreateDirectory(string path) {
+        if(path is null) return;
+
+        if(!Directory.Exists(path)) Directory.CreateDirectory(path);
+    }
+
+     /// <summary>
+    /// Create A Directory For Playlist logs
+    /// </summary>
+    /// <param name="logPathDestination"></param>
+    /// <param name="playlistName"></param>
+    /// <returns></returns>
+    public static async Task<string> CreateDirectory(string path, string name, int choiceType){
+        if (choiceType == 1) {
+            if(path is null ^ name is null) return string.Empty;
+
+            await Task.Delay(10);
+
+            string list = Path.Combine(path ?? "", name ?? "");
+            if (!Directory.Exists(list)) Directory.CreateDirectory(list);
+
+            return list;
+        } 
+        else 
+        {
+            string pathNumber = name+"1";
+            var dict = await FileManager.GetDirectories(path, true, false);
+
+            string newPath;
+            // Create sequence of directory type
+            if (dict.Count == 0)
+            {
+                newPath = Path.Combine(path, pathNumber ?? "");
+                await FileManager.CreateDirectory(newPath);
+            }
+
+            int number =  Convert.ToInt32(dict.Count+1);
+            
+            Console.WriteLine($"number is {number}");
+            Console.WriteLine($"dict contains {dict.Count}");
+
+            newPath = Path.Combine(path, name+$"{number}" ?? "");
+            await FileManager.CreateDirectory(newPath);
+            
+            return newPath;
+        }
+
+    }
+
     /// <summary>
     /// Read Files Content get from pattern 
     /// </summary>
@@ -581,13 +643,14 @@ public static class FileManager
 
         foreach (var item in elements)
         {
-            string [] arrayOfElements = File.ReadAllLines(item);
+            string [] arrayOfElements = await File.ReadAllLinesAsync(item);
             if(arrayOfElements != null) contents.AddRange(arrayOfElements);
            
         }
-
         
         return contents;
     }
+
+
 
 }

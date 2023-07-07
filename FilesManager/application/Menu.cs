@@ -130,7 +130,7 @@ public static class Menu{
                     Console.WriteLine("-------------------------- Export Data \n");
                     await Task.Delay(50);
                     if(data is {EmbeedPath : not null, EmbeedDestination: not null, EmbeedFileName: not null})
-                        await FileManager.ExportPathToFileAsync(data.EmbeedPath, data.EmbeedDestination, data.EmbeedFileName);
+                        await FileManager.ExportPathToDocumentAsync(data.EmbeedPath, data.EmbeedDestination, data.EmbeedFileName);
                     Thread.Sleep(2500);   
 
                     break;                
