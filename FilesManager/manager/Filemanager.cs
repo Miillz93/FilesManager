@@ -655,5 +655,15 @@ public static class FileManager
     }
 
 
+    public static async Task WriteToDocument(List<string> elements, string path) {
+        await Task.Delay(10);
+        if(elements is null ^ path is null) return;
+        using StreamWriter sw = new (path ?? "");
+        foreach (var item in elements)
+        {
+            sw.WriteLine(item);
+
+        }
+    }
 
 }
