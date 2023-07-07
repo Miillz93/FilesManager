@@ -75,7 +75,21 @@ public static class FileManager
         sw.Restart();
     }
 
+    public static async  Task CopyAsync(string[] root, string destination) {
+        
+        if(root is not null ^ destination is null) return;
 
+        foreach (var item in root)
+        {
+            string path = Path.GetFileName(item);
+            string dest = Path.Combine(destination, path);
+
+            _ = Task.Run(Helpers.LoadSpinner);
+            File.Copy(item, dest);
+            Console.Write("\r Done!");
+        }
+
+    }
 
     public static async Task ExecuteParallelCopyOrMoveAsync(string action, string rootPath, string destinationPath){
         
