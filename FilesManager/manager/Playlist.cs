@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Shared;
 using System.Linq;
+using System.Net.Mail;
 
 namespace Manager; 
 public static class PlaylistManager
@@ -14,8 +15,7 @@ public static class PlaylistManager
     /// <returns></returns>
     public static async Task CreateGenericPlaylist(SampleData data, [Optional] int choiceType) {
 
-        
-        
+    
     }
 
     /// <summary>
@@ -24,15 +24,34 @@ public static class PlaylistManager
     /// <param name="elements"></param>
     /// <param name="filesContent"></param>
     /// <returns></returns>
-    public static async Task<List<string>> IsCopyrighted(List<string> elements, List<string> filesContent){
+    public static async Task<List<string>> IsNotDuplicated(List<string> elements, List<string> filesContent){
         
+        await Task.Delay(10);
         var contentFilter = elements.Where(element => !filesContent.Any(item => element.Contains(item, StringComparison.OrdinalIgnoreCase))).ToList();
 
         return contentFilter;
     }
 
+    public static async Task<List<string>> GeneratePlaylist(List<string> elements, int counter){
+
+        Random rand = new(); List<string> newElements = new();
+        var newEelements = elements.OrderBy(_ => rand.Next()).Take(counter).ToList();
+        int count = 1;
+
+        foreach (var item in newEelements)
+        {
+            newElements.Add(item); 
+            Console.WriteLine($"{count}  ---- {item}");
+            count++;
+        }
+
+        return newElements;
+
+    }
 
     
+
+
 
     /// <summary>
     /// Add A Filter By Included Only Some Data
@@ -116,22 +135,6 @@ public static class PlaylistManager
         return filesList;
     }
 
-     /// <summary>
-    /// Create A Directory For Playlist logs
-    /// </summary>
-    /// <param name="logPathDestination"></param>
-    /// <param name="playlistName"></param>
-    /// <returns></returns>
-    public static async Task<string> CreateLogPathDirectory(string logPathDestination, string playlistName){
-        
-        await Task.Delay(100); 
-        
-        var path = Path.Combine(logPathDestination,playlistName);
-        if(!Directory.Exists(path)) Directory.CreateDirectory(path);
-
-        return path;
-
-    }
 
 
 }
