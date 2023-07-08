@@ -49,7 +49,7 @@ public static class Helpers
         var sw = new Stopwatch();
         sw.Start();
         
-        for (int i=0; i < 1000;i++) {
+        for (int i=0; i < 10000;i++) {
 
             switch (counter % 4)
             {
@@ -60,7 +60,7 @@ public static class Helpers
             }
 
             counter++;
-            await Task.Delay(200);
+            await Task.Delay(50);
             //Console.SetCursorPosition(0, Console.CursorTop);
         }
     }
