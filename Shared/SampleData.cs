@@ -14,8 +14,8 @@ public class SampleData
     public string[]? IncludeItem {get;set;}
     public string[]? VideoPath {get; set;}
     public string? Action {get; set;}
-    public string? LogFileName {get; set;}
-    public string? LogPath {get; set;}
+    // public string? LogFileName {get; set;}
+    // public string? LogPath {get; set;}
     public string? LogFileDestination  {get; set;}
     public string? LogPathDestination {get; set;}
     public Playlist? Playlist {get; set;}
