@@ -202,7 +202,7 @@ public static class Menu{
             bool success = int.TryParse(strSelector, out int selector);
             if(!success) selector = -1;
 
-            await Task.Delay(500);
+            await Task.Delay(100);
             data = await Helpers.ReloadJson();
 
             switch(selector){
@@ -210,15 +210,15 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    Console.WriteLine("Normal Playlist with or without restriction");
+                    Console.WriteLine("Create A Generic Playlist");
 
                     break;
                 case 2: 
-                    Console.WriteLine("Mix Playlist with or without restriction");
+                    Console.WriteLine("Create A Mix Playlist");
 
                     break;
                 case 3: 
-                    Console.WriteLine("Create A random Playlist with or without restriction");
+                    Console.WriteLine("Create A Random Playlist");
 
 
                     break;
