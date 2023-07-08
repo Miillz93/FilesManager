@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Shared;
 using System.Linq;
-using System.Net.Mail;
 
 namespace Manager; 
 public static class PlaylistManager
@@ -13,13 +12,59 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task CreateGenericPlaylist(SampleData data, [Optional] int choiceType) {
+    public static async Task CreatePlaylist(SampleData data, [Optional] int choiceType) {
 
+
+
+    }
+
+    
+    /// <summary>
+    ///  Load Data By Filtered Data
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static async Task <Dictionary<string, List<string>>> LoadPlaylistData(SampleData data) {
         
+        var dict = new Dictionary<string, List<string>>();
+
+        if(data.LogPathDestination is null) return new();
+        await FileManager.GenerateDocuements(data.LogPathDestination);
+
+        if(data?.Playlist?.PlaylistPathDestination is null ^ data?.Playlist?.PlaylistName is null) return new();
+        string path = await FileManager.CreateDirectory(data?.Playlist?.PlaylistPathDestination ?? "", data?.Playlist?.PlaylistName ?? "", 1);
+        dict.Add("path", new List<string>{path});
+
+        if(data?.Playlist?.BasePath is null ) return new(); 
+
+        if(data.Playlist.UniquePathSource is null) return new();
+        var playlist = await GetPlaylist(data.Playlist.UniquePathSource);
+        dict.Add("playlist", playlist);
+    
+        if(playlist is null && data.Playlist.IncludeOnly is null) return new();
+    
+        var playlistFilter = await GetIncludedPlaylist(playlist , data.Playlist.IncludeOnly); 
+        dict.Add("playlistFilter", playlistFilter);
+        
+        if(playlistFilter is null && data.Playlist.ExcludeFolderName is null) return new();
+
+        var playlistExcluded =  await GetExcludedPlaylist(playlist, data.Playlist.ExcludeFolderName ?? Array.Empty<string>());
+        dict.Add("playlistExcluded", playlistExcluded);
+
+        if(data.Playlist.CopyType is null) return new();
+
+        var copyright = await FileManager.GetFilesWithSpecificInfoAsync(data.LogPathDestination, data.Playlist.CopyType);
+        dict.Add("copyright", copyright);
+        // for copyright
+        var noCopyrightContents = await FileManager.ReadContentWithSpecificInfos(copyright);
+        var notCopyrighted = await IsNotDuplicated(playlistExcluded, noCopyrightContents);
+        dict.Add("notCopyrighted", notCopyrighted);
+
+        return dict;
     }
 
     /// <summary>
-    /// Check If Datas Is Copyrighted
+    /// Check If Datas Already Exist
     /// </summary>
     /// <param name="elements"></param>
     /// <param name="filesContent"></param>
@@ -41,7 +86,7 @@ public static class PlaylistManager
         foreach (var item in newEelements)
         {
             newElements.Add(item); 
-            Console.WriteLine($"{count}  ---- {item}");
+            // Console.WriteLine($"{count}  ---- {item}");
             count++;
         }
 
