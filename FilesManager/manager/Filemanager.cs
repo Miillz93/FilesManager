@@ -75,7 +75,30 @@ public static class FileManager
         sw.Restart();
     }
 
+    public static async  Task CopyAsync(List<string> elements, string destination) 
+    {
+        int number = 1;
+        if(elements.Count == 0  ^ destination is null) return;
+        Thread.Sleep(200);
+        Console.WriteLine($"\n {elements.Count} elements 'll Be Generate,  Make Sure To Not Cancel 🔴 \n");
+        Thread.Sleep(200);
 
+        
+        foreach (var item in elements)
+        {
+            string filename = Path.GetFileName(item);
+            
+            string dest = Path.Combine(destination, filename);
+            Console.WriteLine($"\r \"{filename}\" Is Being Created At N° {number}");
+            Console.WriteLine("----------------------------------------");
+            var task = Task.Run(Helpers.LoadSpinner);
+            File.Copy(item, dest);
+            Console.Write("\r Done! \n");
+            Console.WriteLine("----------------------------------------");
+            number++;
+        }
+
+    }
 
     public static async Task ExecuteParallelCopyOrMoveAsync(string action, string rootPath, string destinationPath){
         
