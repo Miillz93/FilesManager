@@ -75,21 +75,7 @@ public static class FileManager
         sw.Restart();
     }
 
-    public static async  Task CopyAsync(string[] root, string destination) {
-        
-        if(root is not null ^ destination is null) return;
 
-        foreach (var item in root)
-        {
-            string path = Path.GetFileName(item);
-            string dest = Path.Combine(destination, path);
-
-            _ = Task.Run(Helpers.LoadSpinner);
-            File.Copy(item, dest);
-            Console.Write("\r Done!");
-        }
-
-    }
 
     public static async Task ExecuteParallelCopyOrMoveAsync(string action, string rootPath, string destinationPath){
         
@@ -383,13 +369,13 @@ public static class FileManager
     /// <param name="data"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static async Task ExportPathToDocumentAsync(string embeedPath, string embeedDestination, string embeedFileName)
+    public static async Task ExportPathToDocumentAsync(string path, string destination, string fileName)
     {
          string indexHeader; 
 
-        if(embeedPath is null ^ embeedDestination is null ^ embeedFileName is null) return;  
+        if(path is null ^ destination is null ^ fileName is null) return;  
 
-        var (type, dataFormat) = await FormatPath(embeedPath, embeedDestination, true);
+        var (type, dataFormat) = await FormatPath(path, destination, true);
         
         try
         {
@@ -397,8 +383,8 @@ public static class FileManager
             DateTime parisTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, parisTimeZone);
             
             string timer = parisTime.ToString("hh:mm").Replace(":","_");
-            string file = string.Concat(parisTime.ToString("dd-MM-yyyy") + $"_{timer}", $"_{embeedFileName}");
-            string fileDestination = Path.Combine(embeedDestination, file);   
+            string file = string.Concat(parisTime.ToString("dd-MM-yyyy") + $"_{timer}", $"_{fileName}");
+            string fileDestination = Path.Combine(destination, file);   
             
             if(dataFormat.Count != 0){
                 using StreamWriter sw = new (fileDestination);
@@ -439,7 +425,18 @@ public static class FileManager
 
     public static async Task ExportPathToDocumentAsync(string path, List<string> elements)
     {
+        // await WriteToDocument(elements, path);
+        if(elements is null ^ path is null) return;
+
+        using StreamWriter sw = new (path ?? "");
+        foreach (var item in elements)
+        {
+            sw.WriteLine(item);
+
+        }
+        await Task.Delay(100);
         
+        Console.WriteLine($"data added to \"{path}\" successfully 👍");
     }
 
 
@@ -648,10 +645,6 @@ public static class FileManager
             }
 
             int number =  Convert.ToInt32(dict.Count+1);
-            
-            Console.WriteLine($"number is {number}");
-            Console.WriteLine($"dict contains {dict.Count}");
-
             newPath = Path.Combine(path, name+$"{number}" ?? "");
             await CreateDirectory(newPath);
             
@@ -677,18 +670,6 @@ public static class FileManager
         }
         
         return contents;
-    }
-
-
-    public static async Task WriteToDocument(List<string> elements, string path) {
-        await Task.Delay(10);
-        if(elements is null ^ path is null) return;
-        using StreamWriter sw = new (path ?? "");
-        foreach (var item in elements)
-        {
-            sw.WriteLine(item);
-
-        }
     }
 
 }
