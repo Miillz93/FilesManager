@@ -83,6 +83,13 @@ public static class PlaylistManager
         return contentFilter;
     }
 
+        public static async Task<List<string>> IsNotDuplicated(List<string> elements, string[] filesContent){
+        
+        await Task.Delay(10);
+        var contentFilter = elements.Where(element => !filesContent.Contains(element)).ToList();
+
+        return contentFilter;
+    }
 
     public static async Task<List<string>> GeneratePlaylist(List<string> elements, int counter){
 
