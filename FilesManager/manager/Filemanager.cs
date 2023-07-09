@@ -75,28 +75,38 @@ public static class FileManager
         sw.Restart();
     }
 
-    public static async  Task CopyAsync(List<string> elements, string destination) 
-    {
-        int number = 1;
-        if(elements.Count == 0  ^ destination is null) return;
-        Thread.Sleep(200);
-        Console.WriteLine($"\n {elements.Count} elements 'll Be Generate,  Make Sure To Not Cancel 🔴 \n");
-        Thread.Sleep(200);
-
-        
-        foreach (var item in elements)
+        public static async  Task CopyAsync(List<string> elements, string destination) 
         {
-            string filename = Path.GetFileName(item);
+
+            int number = 1;
             
-            string dest = Path.Combine(destination, filename);
-            Console.WriteLine($"\r \"{filename}\" Is Being Created At N° {number}");
-            Console.WriteLine("----------------------------------------");
-            var task = Task.Run(Helpers.LoadSpinner);
-            File.Copy(item, dest);
-            Console.Write("\r Done! \n");
-            Console.WriteLine("----------------------------------------");
-            number++;
-        }
+            if(elements.Count == 0  ^ destination is null) 
+            {          
+                Console.WriteLine("LIMIT REACH 😨");
+                Thread.Sleep(1000);
+
+                return;
+            }else{
+                
+                Thread.Sleep(1000);
+                Console.WriteLine($"\n {elements.Count} elements 'll Be Generate,  Make Sure To Not Cancel Otherwise You 'll Loose Your Progressiob🔴 \n");
+                Thread.Sleep(1000);
+
+                
+                foreach (var item in elements)
+                {
+                    string filename = Path.GetFileName(item);
+                    
+                    string dest = Path.Combine(destination, filename);
+                    Console.WriteLine($"\r \"{filename}\" Is Being Created At N° {number}");
+                    Console.WriteLine("----------------------------------------");
+                    var task = Task.Run(Helpers.LoadSpinner);
+                    File.Copy(item, dest);
+                    Console.Write("\r Done! \n");
+                    Console.WriteLine("----------------------------------------");
+                    number++;
+                }
+            }
 
     }
 
@@ -297,7 +307,7 @@ public static class FileManager
 
         int counter = 0;
         List<string> fileLists = new();
-        Dictionary<int, string> dict = new (); 
+        var dict = new Dictionary<int, string>(); 
 
         await Task.Delay(100);
         
@@ -319,18 +329,13 @@ public static class FileManager
 
     public static async Task CreateDocument(string path){
         
-        await Task.Delay(10);
-
-        if(!File.Exists(path)) File.Create(path);
+        if(!File.Exists(path)) {
+            var file = File.Create(path);
+            file.Close();
+        }
      }
 
-     public static async Task GenerateDocuements(string logPath){
-        await CreateDirectory(logPath);
-
-        if(!File.Exists(Path.Combine(logPath, "playlist_copyright.md"))) File.Create(Path.Combine(logPath, "playlist_copyright.md"));
-        if(!File.Exists(Path.Combine(logPath, "playlist_copycat.md"))) File.Create(Path.Combine(logPath, "playlist_copycat.md"));
-        if(!File.Exists(Path.Combine(logPath, "tracklist_copyright.md"))) File.Create(Path.Combine(logPath, "tracklist_copyright.md"));
-        if(!File.Exists(Path.Combine(logPath, "'tracklist_copycat.md"))) File.Create(Path.Combine(logPath, "tracklist_copycat.md"));
+    
       
     }
 
@@ -385,6 +390,8 @@ public static class FileManager
 
         return folders;
     }
+
+    
 
     /// <summary>
     /// Export Files And Directories If Exist To A Files
@@ -451,15 +458,18 @@ public static class FileManager
         // await WriteToDocument(elements, path);
         if(elements is null ^ path is null) return;
 
-        using StreamWriter sw = new (path ?? "");
-        foreach (var item in elements)
-        {
-            sw.WriteLine(item);
+        if(File.ReadAllLines(path).Length == 0) {
+            using StreamWriter sw = new(path);
+            foreach (var item in elements)
+            {
+                sw.WriteLine(item);
 
-        }
-        await Task.Delay(100);
+            }
+        }else File.AppendAllLines(path, elements);
         
+        Thread.Sleep(1000);        
         Console.WriteLine($"data added to \"{path}\" successfully 👍");
+
     }
 
 
@@ -475,7 +485,7 @@ public static class FileManager
         
         var fileItems = await GetFilesListFromSubFolders(embeedDestination, embeedPath); 
 
-        Dictionary<string, List<string>> dict = new();
+        var dict = new Dictionary<string, List<string>>();
 
         foreach (var item in fileItems)
         {
@@ -631,9 +641,11 @@ public static class FileManager
         return fileInfo;
     }
 
-    public static async Task CreateDirectory(string path) {
-        if(path is null) return;
 
+
+    public static async Task CreateDirectory(string path) {
+        
+        if(path is null) return;                
         if(!Directory.Exists(path)) Directory.CreateDirectory(path);
     }
 
@@ -647,8 +659,6 @@ public static class FileManager
         if (choiceType == 1) {
             if(path is null ^ name is null) return string.Empty;
 
-            await Task.Delay(10);
-
             string list = Path.Combine(path ?? "", name ?? "");
             if (!Directory.Exists(list)) Directory.CreateDirectory(list);
 
@@ -657,19 +667,22 @@ public static class FileManager
         else 
         {
             string pathNumber = name+"1";
-            var dict = await GetDirectories(path, true, false);
+            var dict = await GetDirectories(Path.Combine(path ?? "", name ?? ""));
 
             string newPath;
+            int number = 1;
             // Create sequence of directory type
             if (dict.Count == 0)
             {
-                newPath = Path.Combine(path, pathNumber ?? "");
+                newPath = Path.Combine(path, name, pathNumber ?? "");
+                await CreateDirectory(newPath);
+            }else{
+
+                number +=  dict.Count;
+                newPath = Path.Combine(path, name,name+$"{number}" ?? "");
+
                 await CreateDirectory(newPath);
             }
-
-            int number =  Convert.ToInt32(dict.Count+1);
-            newPath = Path.Combine(path, name+$"{number}" ?? "");
-            await CreateDirectory(newPath);
             
             return newPath;
         }
@@ -689,10 +702,50 @@ public static class FileManager
         {
             string [] arrayOfElements = await File.ReadAllLinesAsync(item);
             if(arrayOfElements != null) contents.AddRange(arrayOfElements);
-           
         }
         
         return contents;
+    }
+
+    /// <summary>
+    ///  Read Content From Different Location 
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static async Task<List<string>> ReadContentWithSpecificInfos(string path, int type)
+    {
+        string tracking;
+
+        if(type == 1)
+           tracking =  await GetDocument(path, type);
+        else
+            tracking =  await GetDocument(path, type);
+        
+        var readers = await FileManager.ReadContentWithSpecificInfos(new List<string>(){tracking});
+        
+        return readers;
+    }
+
+    /// <summary>
+    /// Get File To Compare With
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static async Task<string> GetDocument(string path, int type) 
+    {
+        string file;
+        if(path is null ) return string.Empty;
+        
+        if(type == 1)
+            file = Path.Combine(path ?? "", "musicplaylist.md");
+        else
+            file = Path.Combine(path ?? "", "musictracklist.md");
+        
+        await FileManager.CreateDocument(file);  
+
+        return file;
     }
 
 }
