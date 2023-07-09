@@ -335,7 +335,27 @@ public static class FileManager
         }
      }
 
-    
+     public static async Task CreateDocuments(string logPath){
+        await CreateDirectory(logPath);
+        await Task.Delay(50);
+        if(!File.Exists(Path.Combine(logPath, "playlist_copyright.md"))){ 
+            var file = File.Create(Path.Combine(logPath, "playlist_copyright.md"));
+            file.Close();
+        }
+        if(!File.Exists(Path.Combine(logPath, "playlist_copycat.md"))) 
+        {
+            var file = File.Create(Path.Combine(logPath, "playlist_copycat.md"));
+            file.Close();
+        }
+        if(!File.Exists(Path.Combine(logPath, "tracklist_copyright.md"))) {
+            var file = File.Create(Path.Combine(logPath, "tracklist_copyright.md"));
+            file.Close();
+        }
+        if(!File.Exists(Path.Combine(logPath, "'tracklist_copycat.md"))) 
+        {
+            var file = File.Create(Path.Combine(logPath, "tracklist_copycat.md"));
+            file.Close();
+        }
       
     }
 
