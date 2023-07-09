@@ -411,7 +411,18 @@ public static class FileManager
         return folders;
     }
 
-    
+    public static async Task<List<string>> GetDirectories(string path)
+    {
+        var listing =  new List<string>();
+        var directories = Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly);
+        if(directories.Length == 0) return new();
+        foreach (var item in directories)
+        {
+            listing.Add(item);
+        }
+
+        return listing;
+    }
 
     /// <summary>
     /// Export Files And Directories If Exist To A Files
