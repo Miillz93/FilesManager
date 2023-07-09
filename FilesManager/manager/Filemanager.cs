@@ -672,7 +672,26 @@ public static class FileManager
         return fileInfo;
     }
 
+    public static async Task<string> CreateDocument(string path, string subdirectory)
+    {
+        var listing = new List<string>();
 
+        if(subdirectory is null) return string.Empty;
+        
+        // listing.Add(Path.Combine(path, subdirectory));
+        string newPath = await FileManager.CreateDirectory(path, subdirectory ?? "", 2);
+        // listing.Add(newPath);
+
+        string newPathWithDocument = Path.Combine(newPath, subdirectory + ".md" ?? "");
+        ;
+
+        if(!File.Exists(newPathWithDocument)) {
+            var file  = File.Create(newPathWithDocument);
+            file.Close();
+        }
+
+        return newPathWithDocument;
+    }
 
     public static async Task CreateDirectory(string path) {
         
