@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Shared;
 using System.Linq;
+using System.Text.Json;
 
 namespace Manager; 
 public static class PlaylistManager
@@ -12,50 +13,55 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task CreatePlaylist(SampleData data, [Optional] int choiceType) {
-
-
+    public static async Task CreatePlaylist(SampleData data,  [Optional] int choiceType) {
+        
+        
 
     }
 
-    
+    public static async Task<List<string>> CreatePlaylistWithoutDuplicateDatas(SampleData data, List<string> fileToRead)
+    {
+        var playlistLoader = await LoadPlaylistData(data, "one");
+        // Check if playlist Already Use 
+        playlistLoader.TryGetValue("notCopyrighted", out var notCopyrighted);
+        
+        var noDuplicatePlaylist = await IsNotDuplicated(notCopyrighted ?? new(), fileToRead.ToArray());
+
+        //Playlist generate
+        var generated = await GeneratePlaylist(noDuplicatePlaylist, data!.Playlist!.MaxCount);
+
+        return generated;
+    }
+
     /// <summary>
     ///  Load Data By Filtered Data
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task <Dictionary<string, List<string>>> LoadPlaylistData(SampleData data) {
-        
+    public static async Task <Dictionary<string, List<string>>> LoadPlaylistData(SampleData data,  string choiceType)
+    {
+        List<string>? playlist;
         var dict = new Dictionary<string, List<string>>();
 
         if(data.LogPathDestination is null) return new();
-        await FileManager.GenerateDocuements(data.LogPathDestination);
+        await FileManager.CreateDocuments(data.LogPathDestination);
 
-        if(data?.Playlist?.PlaylistPathDestination is null ^ data?.Playlist?.PlaylistName is null) return new();
-        string path = await FileManager.CreateDirectory(data?.Playlist?.PlaylistPathDestination ?? "", data?.Playlist?.PlaylistName ?? "", 1);
-        dict.Add("path", new List<string>{path});
+        if(data?.Playlist?.BasePath is null ^ data?.Playlist?.UniquePathSource is null) return new(); 
 
-        if(data?.Playlist?.BasePath is null ) return new(); 
+        if (choiceType == "one") playlist = await GetPlaylist(data?.Playlist?.UniquePathSource ?? "");
+        else playlist = await GetPlaylist(data.Playlist.BasePath);
 
-        if(data.Playlist.UniquePathSource is null) return new();
-        var playlist = await GetPlaylist(data.Playlist.UniquePathSource);
-        dict.Add("playlist", playlist);
-    
-        if(playlist is null && data.Playlist.IncludeOnly is null) return new();
+        if (playlist is null && data.Playlist.IncludeOnly is null) return new();
     
         var playlistFilter = await GetIncludedPlaylist(playlist , data.Playlist.IncludeOnly); 
-        dict.Add("playlistFilter", playlistFilter);
         
         if(playlistFilter is null && data.Playlist.ExcludeFolderName is null) return new();
 
         var playlistExcluded =  await GetExcludedPlaylist(playlist, data.Playlist.ExcludeFolderName ?? Array.Empty<string>());
-        dict.Add("playlistExcluded", playlistExcluded);
 
         if(data.Playlist.CopyType is null) return new();
 
         var copyright = await FileManager.GetFilesWithSpecificInfoAsync(data.LogPathDestination, data.Playlist.CopyType);
-        dict.Add("copyright", copyright);
-        // for copyright
         var noCopyrightContents = await FileManager.ReadContentWithSpecificInfos(copyright);
         var notCopyrighted = await IsNotDuplicated(playlistExcluded, noCopyrightContents);
         dict.Add("notCopyrighted", notCopyrighted);
@@ -76,6 +82,7 @@ public static class PlaylistManager
 
         return contentFilter;
     }
+
 
     public static async Task<List<string>> GeneratePlaylist(List<string> elements, int counter){
 
