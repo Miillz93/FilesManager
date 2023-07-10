@@ -13,32 +13,42 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task CreatePlaylist(SampleData data,  [Optional] int choiceType) {
-        
-        
+    public static async Task GenerateGenericPlaylist(SampleData data, string type) {
+        var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackPlaylist ??"", 1);
+        var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type);
+
+        if(playlist.Count != 0){
+            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "");
+            string path = await FileManager.GetDocument(data?.Playlist?.TrackPlaylist ??"", 1);
+            var pathRoot = Path.GetDirectoryName(newPath);
+
+            Thread.Sleep(1000);
+            Console.WriteLine($"\n {playlist.Count} elements 'll Be Generate,  Make Sure To Not Cancel Otherwise You 'll Loose Your Progression 🔴 \n");
+            Thread.Sleep(1000);
+
+            foreach (var item in playlist)
+            {
+                await FileManager.ExportPathToDocumentAsync(path, item);
+                Thread.Sleep(300);
+                await FileManager.ExportPathToDocumentAsync(newPath, item);
+                Thread.Sleep(300);
+                var destinationPath = Path.Combine(pathRoot ??"", Path.GetFileName(item));
+                await FileManager.CopyAsync(item, destinationPath);
+            }
+
+        }
+        else await FileManager.CopyAsync(playlist, "");
 
     }
 
-    public static async Task<List<string>> CreatePlaylistWithoutDuplicateDatas(SampleData data, List<string> fileToRead)
-    {
-        var playlistLoader = await LoadPlaylistData(data, "one");
-        // Check if playlist Already Use 
-        playlistLoader.TryGetValue("notCopyrighted", out var notCopyrighted);
-        
-        var noDuplicatePlaylist = await IsNotDuplicated(notCopyrighted ?? new(), fileToRead.ToArray());
 
-        //Playlist generate
-        var generated = await GeneratePlaylist(noDuplicatePlaylist, data!.Playlist!.MaxCount);
-
-        return generated;
-    }
 
     /// <summary>
     ///  Load Data By Filtered Data
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task <Dictionary<string, List<string>>> LoadPlaylistData(SampleData data,  string choiceType)
+    public static async Task <List<string>> LoadPlaylistData(SampleData data,  string choiceType)
     {
         List<string>? playlist;
         var dict = new Dictionary<string, List<string>>();
@@ -64,9 +74,8 @@ public static class PlaylistManager
         var copyright = await FileManager.GetFilesWithSpecificInfoAsync(data.LogPathDestination, data.Playlist.CopyType);
         var noCopyrightContents = await FileManager.ReadContentWithSpecificInfos(copyright);
         var notCopyrighted = await IsNotDuplicated(playlistExcluded, noCopyrightContents);
-        dict.Add("notCopyrighted", notCopyrighted);
 
-        return dict;
+        return notCopyrighted;
     }
 
     /// <summary>
