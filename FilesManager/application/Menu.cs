@@ -28,7 +28,6 @@ public static class Menu{
             bool success = int.TryParse(strSelector, out int selector);
             Console.WriteLine("");
 
-
             if (!success) selector = -1;
 
             switch (selector)
@@ -111,7 +110,6 @@ public static class Menu{
                     Thread.Sleep(2500);   
 
                     Console.WriteLine(Environment.NewLine);
-                    // continued = false;
 
                     break;               
                 case 2:
@@ -329,12 +327,11 @@ public static class Menu{
                     break;
                 case 1:
                     Thread.Sleep(1500);
-                    Console.WriteLine("Create A Generic Playlist");
+                    Console.WriteLine("Create A Generic TrackList");
                     Thread.Sleep(1500);
+                
+                    await PlaylistManager.GeneratePlaylist(data);
                     
-                    
-                    Console.ReadKey();
-
                     break;
                 case 2: 
                     continued = false;
