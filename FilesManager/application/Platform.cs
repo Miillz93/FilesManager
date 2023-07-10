@@ -19,6 +19,7 @@ public static class Platform
             Console.WriteLine("0 ► Exit");
             Console.WriteLine("1 ► Music 🎹");
             Console.WriteLine("2 ► Gaming 🕹️");
+            Console.WriteLine("3 ► Themes 🎲");
 
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out selector);
@@ -41,6 +42,12 @@ public static class Platform
                     Id = selector;
                     // data = await Helpers.ReloadJson();
                     await GetPlatformAsync(Id);
+
+                    break;                
+                case 3:
+                    Id = selector;
+                    // data = await Helpers.ReloadJson();
+                    await Theme.LoadThemeAsync(Id);
 
                     break;
                 default:
