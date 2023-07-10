@@ -45,7 +45,7 @@ public static class Menu{
                     break;
                 case 2:
                     subIndex = 2;
-                    check = await SubMenuLevelTwoPlayList(data, subIndex, platformId);
+                    check = await SubMenuLevelTwoPlayListType(data, subIndex, platformId);
 
                     if (check == 0) continued = false;
                     break;                
@@ -180,9 +180,7 @@ public static class Menu{
         return index;
     }
 
-    public static async Task<int> SubMenuLevelTwoPlayList (SampleData data, int index, int platformId){
-
-        
+    public static async Task<int> SubMenuLevelTwoPlayListType (SampleData data, int index, int platformId){
         bool continued = true;
 
         while (continued)
@@ -192,9 +190,9 @@ public static class Menu{
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Choice playlist type \n---------------------");
             Console.WriteLine("0) Exit from Console ❌");
-            Console.WriteLine("1) Normal 🎞️");
-            Console.WriteLine("2) Mix 💎");
-            Console.WriteLine("3) Random ⌚");
+            Console.WriteLine("1) Tracklist🎵");
+            Console.WriteLine("2) Playlist 🎶");
+            Console.WriteLine("3) Reload 🟠");
             Console.WriteLine("4) Back ⏪");
 
             string? strSelector = Console.ReadLine();
@@ -210,16 +208,80 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
+                    await SubMenuLevelTwoTrackList(data, index, platformId);
+
+                    break;
+                case 2: 
+                    await SubMenuLevelTwoPlayList(data, index, platformId);
+  
+                    break;                
+                case 3: 
+                    continued = true;
+                    break;
+                case 4: 
+                    continued = false;
+                    break;
+
+                default:
+                    Console.WriteLine("----------------------- Invalid number selected {0}", selector);
+                    break;
+            }   
+        }
+
+        return index;
+    }
+
+    /// <summary>
+    /// Manage Playlist Operations
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="index"></param>
+    /// <param name="platformId"></param>
+    /// <returns></returns>
+    public static async Task<int> SubMenuLevelTwoPlayList (SampleData data, int index, int platformId){
+
+        
+        bool continued = true;
+
+        while (continued)
+        {
+            Console.Clear();
+            Helpers.GetWelcomePage(platformId) ; 
+            Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("Choice playlist type \n---------------------");
+            Console.WriteLine("0) Exit from Console ❌");
+            Console.WriteLine("1) Unique -> Without Duplicate Informations 🎞️");
+            Console.WriteLine("2) Mix -> Based On Multiple Source 💎");
+            Console.WriteLine("3) Random -> Generate A Random Playlist ⌚");
+            Console.WriteLine("4) Back ⏪");
+
+            string? strSelector = Console.ReadLine();
+
+            bool success = int.TryParse(strSelector, out int selector);
+            if(!success) selector = -1;
+
+            await Task.Delay(100);
+            data = await Helpers.ReloadJson();
+
+            switch(selector){
+                case 0:
+                    Environment.Exit(0);
+                    break;
+                case 1:
+
                     Console.WriteLine("Create A Generic Playlist");
+                    
+                    Console.ReadKey();
 
                     break;
                 case 2: 
                     Console.WriteLine("Create A Mix Playlist");
-
+                    Console.ReadKey();
+  
                     break;
                 case 3: 
                     Console.WriteLine("Create A Random Playlist");
-
+                    Console.ReadKey();
 
                     break;
                 case 4: 
@@ -234,4 +296,6 @@ public static class Menu{
 
         return index;
     }
+
+    
 }
