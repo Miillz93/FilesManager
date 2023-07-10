@@ -54,6 +54,6 @@ public static class Theme
 
     public static async Task LoadWriteMode(){
         Console.BackgroundColor = ConsoleColor.White;
-         Console.ForegroundColor = ConsoleColor.DarkBlue;
+         Console.ForegroundColor = ConsoleColor.Black;
     }
 }
