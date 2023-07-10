@@ -297,5 +297,55 @@ public static class Menu{
         return index;
     }
 
-    
+    public static async Task<int> SubMenuLevelTwoTrackList (SampleData data, int index, int platformId){
+
+        
+        bool continued = true;
+
+        while (continued)
+        {
+            Console.Clear();
+            Helpers.GetWelcomePage(platformId) ; 
+            Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("Select TrackList \n---------------------");
+            Console.WriteLine("0) Exit from Console ❌");
+            Console.WriteLine("1) Generate 🎞️");
+            // Console.WriteLine("2) Mix -> Based On Multiple Source 💎");
+            Console.WriteLine("2) Back ⏪");
+
+            string? strSelector = Console.ReadLine();
+
+            bool success = int.TryParse(strSelector, out int selector);
+            List<string> playlist;
+
+            if(!success) selector = -1;
+
+            await Task.Delay(100);
+            data = await Helpers.ReloadJson();
+
+            switch(selector){
+                case 0:
+                    Environment.Exit(0);
+                    break;
+                case 1:
+                    Thread.Sleep(1500);
+                    Console.WriteLine("Create A Generic Playlist");
+                    Thread.Sleep(1500);
+                    
+                    
+                    Console.ReadKey();
+
+                    break;
+                case 2: 
+                    continued = false;
+  
+                    break;
+                default:
+                    Console.WriteLine("----------------------- Invalid number selected {0}", selector);
+                    break;
+            }   
+        }
+
+        return index;
+    }
 }
