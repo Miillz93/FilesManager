@@ -266,12 +266,11 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    await SubMenuLevelTwoPlayListBasiType(data, index , platformId);
+                    await SubMenuLevelTwoPlayListBasicType(data, index , platformId);
                     
-
                     break;
                 case 2: 
-                    Console.ReadKey();
+                    await SubMenuLevelTwoPlayListMixType(data, index, platformId);
   
                     break;
                 case 3: 
@@ -291,7 +290,7 @@ public static class Menu{
         return index;
     }
 
-    public static async Task<int> SubMenuLevelTwoPlayListBasiType (SampleData data, int index, int platformId){
+    public static async Task<int> SubMenuLevelTwoPlayListBasicType (SampleData data, int index, int platformId){
         bool continued = true;
 
         while (continued)
@@ -323,6 +322,57 @@ public static class Menu{
                     break;
                 case 2: 
                     await PlaylistManager.GenerateGenericPlaylist(data, "multi");
+  
+                    break;                
+                case 3: 
+                    continued = true;
+                    break;
+                case 4: 
+                    continued = false;
+                    break;
+
+                default:
+                    Console.WriteLine("----------------------- Invalid number selected {0}", selector);
+                    break;
+            }   
+        }
+
+        return index;
+    }
+
+
+    public static async Task<int> SubMenuLevelTwoPlayListMixType (SampleData data, int index, int platformId){
+        bool continued = true;
+
+        while (continued)
+        {
+            Console.Clear();
+            Helpers.GetWelcomePage(platformId) ; 
+            Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("MIX PLAYLIST \n---------------------");
+            Console.WriteLine("0 ► Exit from Console ❌");
+            Console.WriteLine("1 ► UNIQUE🎵");
+            Console.WriteLine("2 ► MIX 🎶");
+            Console.WriteLine("3 ► Reload 🟠");
+            Console.WriteLine("4 ► Back ⏪");
+
+            string? strSelector = Console.ReadLine();
+
+            bool success = int.TryParse(strSelector, out int selector);
+            if(!success) selector = -1;
+
+            await Task.Delay(100);
+            data = await Helpers.ReloadJson();
+
+            switch(selector){
+                case 0:
+                    Environment.Exit(0);
+                    break;
+                case 1:
+                    await PlaylistManager.GenerateMixPlaylist(data, "one");
+                    break;
+                case 2: 
+                    await PlaylistManager.GenerateMixPlaylist(data, "multi");
   
                     break;                
                 case 3: 
