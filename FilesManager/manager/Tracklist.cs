@@ -10,9 +10,9 @@ public static class TracklistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task GenerateTracklist(SampleData data) {
+    public static async Task GenerateGenericTracklist(SampleData data) {
         var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackTracklist ??"", 2);
-        var playlist = await PlaylistManager.CreatePlaylistWithoutDuplicateDatas(data ?? new(), tracking, "multi");
+        var playlist = await CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, "multi");
 
         if(playlist.Count != 0){
             var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackTracklist ?? "", data?.Playlist?.PlaylistName ?? "");
@@ -37,5 +37,18 @@ public static class TracklistManager
         else await FileManager.CopyAsync(playlist, "");
         
 
+    }
+
+    public static async Task<List<string>> CreateTracklistWithoutDuplicateDatas(SampleData data, List<string> fileToRead, string type)
+    {
+        var playlistLoader = await PlaylistManager.LoadPlaylistData(data, type);
+        // Check if playlist Already Use 
+        
+        var noDuplicatePlaylist = await PlaylistManager.IsNotDuplicated(playlistLoader ?? new(), fileToRead.ToArray());
+
+        //Playlist generate
+        var generated = await PlaylistManager.GeneratePlaylist(noDuplicatePlaylist, data!.Playlist!.MaxCount);
+
+        return generated;
     }
 }
