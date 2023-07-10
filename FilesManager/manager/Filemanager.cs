@@ -61,15 +61,16 @@ public static class FileManager
         var sw = new Stopwatch();
         sw.Start();
         
-        if(! File.Exists(destination))
+        if(!File.Exists(destination))
         {
             Console.Write($"\ncopy of ---------------------- {root}    \nto-------------- {destination} \n");
-
-            var task = Task.Run(Helpers.LoadSpinner);
+            
+            var task = Task.Run(Helpers.LoadSpinner); 
             File.Copy(root, destination);
             Console.Write("\r Done!");
             
         }else  Console.WriteLine($"\"{destination}\" Already Exist");
+        await Task.Delay(10);
 
         sw.Stop();
         sw.Restart();
@@ -81,17 +82,12 @@ public static class FileManager
             int number = 1;
             
             if(elements.Count == 0  ^ destination is null) 
-            {          
+            {   
                 Console.WriteLine("LIMIT REACH 😨");
                 Thread.Sleep(1000);
 
                 return;
-            }else{
-                
-                Thread.Sleep(1000);
-                Console.WriteLine($"\n {elements.Count} elements 'll Be Generate,  Make Sure To Not Cancel Otherwise You 'll Loose Your Progressiob🔴 \n");
-                Thread.Sleep(1000);
-
+            } else {
                 
                 foreach (var item in elements)
                 {
@@ -110,7 +106,7 @@ public static class FileManager
 
     }
 
-    public static async Task ExecuteParallelCopyOrMoveAsync(string action, string rootPath, string destinationPath){
+    public static async Task ExecuteParallelCopyOrMoveAsync(string rootPath, string destinationPath, string action){
         
         if(action == "copy"){
 
@@ -226,8 +222,8 @@ public static class FileManager
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
                             if(action.ToLower() == "copy") 
-                                await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
-                            else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
+                                await ExecuteParallelCopyOrMoveAsync(musics.Value, parentFull, "copy");
+                            else await ExecuteParallelCopyOrMoveAsync(musics.Value, parentFull, "move");
                         }
                     }
 
@@ -244,8 +240,8 @@ public static class FileManager
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
                             if (action.ToLower() == "copy") 
-                                await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
-                            else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
+                                await ExecuteParallelCopyOrMoveAsync(musics.Value, parentFull, "copy");
+                            else await ExecuteParallelCopyOrMoveAsync(musics.Value, parentFull, "move");
 
                         }
                     }
@@ -261,8 +257,8 @@ public static class FileManager
                             parentFull = Path.Combine(path, Path.GetFileName(musics.Value));
                             
                             if (action.ToLower() == "copy") 
-                                await ExecuteParallelCopyOrMoveAsync("copy", musics.Value, parentFull);
-                            else await ExecuteParallelCopyOrMoveAsync("move", musics.Value, parentFull);
+                                await ExecuteParallelCopyOrMoveAsync(musics.Value, parentFull, "copy");
+                            else await ExecuteParallelCopyOrMoveAsync(musics.Value, parentFull, "move");
                         }
                     }
                 } 
@@ -330,6 +326,7 @@ public static class FileManager
     public static async Task CreateDocument(string path){
         
         if(!File.Exists(path)) {
+            await CreateDirectory(Path.GetDirectoryName(path) ?? "");
             var file = File.Create(path);
             file.Close();
         }
@@ -414,6 +411,7 @@ public static class FileManager
     public static async Task<List<string>> GetDirectories(string path)
     {
         var listing =  new List<string>();
+        await CreateDirectory(path);
         var directories = Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly);
         if(directories.Length == 0) return new();
         foreach (var item in directories)
@@ -502,7 +500,25 @@ public static class FileManager
         Console.WriteLine($"data added to \"{path}\" successfully 👍");
 
     }
+    public static async Task ExportPathToDocumentAsync(string path, string element)
+        {
+            if(element is null ^ path is null) return;
 
+            if(File.ReadAllLines(path ??"").Length == 0) {
+                using StreamWriter sw = File.CreateText(path ??"");
+                await sw.WriteLineAsync(element);
+                // Console.WriteLine($"\"{element}\" added to \"{path}\" successfully 👍");
+
+
+            }else {
+                using StreamWriter sw = File.AppendText(path ?? "");
+                await sw.WriteLineAsync(element);
+                // Console.WriteLine($"\"{element}\" added to \"{path}\" successfully 👍");
+            }
+            
+            Thread.Sleep(300);        
+
+        }
 
     /// <summary>
     /// Format A List By Files If A Directory Dont Include SubDirectory Or Return List Of  SubDirectories
@@ -674,14 +690,12 @@ public static class FileManager
 
     public static async Task<string> CreateDocument(string path, string subdirectory)
     {
-        var listing = new List<string>();
 
         if(subdirectory is null) return string.Empty;
         
         // listing.Add(Path.Combine(path, subdirectory));
         string newPath = await FileManager.CreateDirectory(path, subdirectory ?? "", 2);
         // listing.Add(newPath);
-
         string newPathWithDocument = Path.Combine(newPath, subdirectory + ".md" ?? "");
         ;
 
@@ -705,9 +719,11 @@ public static class FileManager
     /// <param name="logPathDestination"></param>
     /// <param name="playlistName"></param>
     /// <returns></returns>
-    public static async Task<string> CreateDirectory(string path, string name, int choiceType){
+    public static async Task<string> CreateDirectory(string path, string name, int choiceType)
+    {
+        if(path is null ^ name is null) return string.Empty;
+
         if (choiceType == 1) {
-            if(path is null ^ name is null) return string.Empty;
 
             string list = Path.Combine(path ?? "", name ?? "");
             if (!Directory.Exists(list)) Directory.CreateDirectory(list);
