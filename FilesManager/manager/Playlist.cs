@@ -15,7 +15,7 @@ public static class PlaylistManager
     /// <returns></returns>
     public static async Task GenerateGenericPlaylist(SampleData data, string type) {
         var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackPlaylist ??"", 1);
-        var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type);
+        var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type, data!.Playlist!.PlaylistMaxCount);
 
         if(playlist.Count != 0){
             var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "");
@@ -42,6 +42,33 @@ public static class PlaylistManager
     }
 
 
+    public static async Task GenerateMixPlaylist(SampleData data, string type) {
+        var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackPlaylist ??"", 1);
+        var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type, data.Playlist.PlaylistMaxCount);
+
+        if(playlist.Count != 0){
+            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "");
+            var pathRoot = Path.GetDirectoryName(newPath);
+
+            Thread.Sleep(1000);
+            Console.WriteLine($"\n {playlist.Count} elements 'll Be Generate,  Make Sure To Not Cancel Otherwise You 'll Loose Your Progression 🔴 \n");
+            Thread.Sleep(1000);
+
+            foreach (var item in playlist)
+            {
+                await FileManager.ExportPathToDocumentAsync(newPath, item);
+                Thread.Sleep(300);
+                var destinationPath = Path.Combine(pathRoot ??"", Path.GetFileName(item));
+                await FileManager.CopyAsync(item, destinationPath);
+            }
+
+        }
+        else await FileManager.CopyAsync(playlist, "");
+
+    }
+
+
+
 
     /// <summary>
     ///  Load Data By Filtered Data
@@ -51,7 +78,6 @@ public static class PlaylistManager
     public static async Task <List<string>> LoadPlaylistData(SampleData data,  string choiceType)
     {
         List<string>? playlist;
-        var dict = new Dictionary<string, List<string>>();
 
         if(data.LogPathDestination is null) return new();
         await FileManager.CreateDocuments(data.LogPathDestination);
@@ -59,11 +85,11 @@ public static class PlaylistManager
         if(data?.Playlist?.BasePath is null ^ data?.Playlist?.UniquePathSource is null) return new(); 
 
         if (choiceType == "one") playlist = await GetPlaylist(data?.Playlist?.UniquePathSource ?? "");
-        else playlist = await GetPlaylist(data.Playlist.BasePath);
+        else playlist = await GetPlaylist(data?.Playlist?.BasePath ?? new string[1]);
 
-        if (playlist is null && data.Playlist.IncludeOnly is null) return new();
+        if (playlist is null && data?.Playlist?.IncludeOnly is null) return new();
     
-        var playlistFilter = await GetIncludedPlaylist(playlist , data.Playlist.IncludeOnly); 
+        var playlistFilter = await GetIncludedPlaylist(playlist ?? new() , data?.Playlist?.IncludeOnly ?? new string[1]); 
         
         if(playlistFilter is null && data.Playlist.ExcludeFolderName is null) return new();
 
@@ -196,10 +222,7 @@ public static class PlaylistManager
         {
             var directories = await FileManager.GetDirectories(item, true, false);
             var filesList =  GetFiles(directories);
-            foreach (var file in filesList)
-            {
-                listing.Add(file);
-            }
+            listing.AddRange(filesList);
         }
   
         return listing;
