@@ -64,13 +64,13 @@ public static class FileManager
         if(!File.Exists(destination))
         {
             Console.Write($"\ncopy of ---------------------- {root}    \nto-------------- {destination} \n");
+            await Task.Delay(10);
             
             var task = Task.Run(Helpers.LoadSpinner); 
             File.Copy(root, destination);
             Console.Write("\r Done!");
             
         }else  Console.WriteLine($"\"{destination}\" Already Exist");
-        await Task.Delay(10);
 
         sw.Stop();
         sw.Restart();
