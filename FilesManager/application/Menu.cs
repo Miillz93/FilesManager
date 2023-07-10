@@ -18,11 +18,11 @@ public static class Menu{
 
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Select one of the following \n---------------------");
-            Console.WriteLine("0) Exit from Console ❌");
-            Console.WriteLine("1) Manage files 👜");
-            Console.WriteLine("2) Create playlists 💡");
-            Console.WriteLine("3) Reload 🟠");
-            Console.WriteLine("4) Back ⏪");
+            Console.WriteLine("0 ► Exit from Console ❌");
+            Console.WriteLine("1 ► Manage files 👜");
+            Console.WriteLine("2 ► Create playlists 💡");
+            Console.WriteLine("3 ► Reload 🟠");
+            Console.WriteLine("4 ► Back ⏪");
 
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out int selector);
@@ -77,13 +77,13 @@ public static class Menu{
 
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Manage files 👜 \n---------------------");
-            Console.WriteLine("0) Exit from Console ❌");
-            Console.WriteLine("1) Copy Files ✒️");
-            Console.WriteLine("2) Move Files 🧲");
-            Console.WriteLine("3) Export Files 📗");
-            Console.WriteLine("4) Delete Directory ⚡");
-            Console.WriteLine("5) Reload 🟠");
-            Console.WriteLine("6) Back ⏪");
+            Console.WriteLine("0 ► Exit from Console ❌");
+            Console.WriteLine("1 ► Copy Files ✒️");
+            Console.WriteLine("2 ► Move Files 🧲");
+            Console.WriteLine("3 ► Export Files 📗");
+            Console.WriteLine("4 ► Delete Directory ⚡");
+            Console.WriteLine("5 ► Reload 🟠");
+            Console.WriteLine("6 ► Back ⏪");
             
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out index);
@@ -187,11 +187,11 @@ public static class Menu{
             Helpers.GetWelcomePage(platformId) ; 
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Choice playlist type \n---------------------");
-            Console.WriteLine("0) Exit from Console ❌");
-            Console.WriteLine("1) Tracklist🎵");
-            Console.WriteLine("2) Playlist 🎶");
-            Console.WriteLine("3) Reload 🟠");
-            Console.WriteLine("4) Back ⏪");
+            Console.WriteLine("0 ► Exit from Console ❌");
+            Console.WriteLine("1 ► Tracklist🎵");
+            Console.WriteLine("2 ► Playlist 🎶");
+            Console.WriteLine("3 ► Reload 🟠");
+            Console.WriteLine("4 ► Back ⏪");
 
             string? strSelector = Console.ReadLine();
 
@@ -247,11 +247,11 @@ public static class Menu{
             Helpers.GetWelcomePage(platformId) ; 
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Choice playlist type \n---------------------");
-            Console.WriteLine("0) Exit from Console ❌");
-            Console.WriteLine("1) Unique -> Without Duplicate Informations 🎞️");
-            Console.WriteLine("2) Mix -> Based On Multiple Source 💎");
-            Console.WriteLine("3) Random -> Generate A Random Playlist ⌚");
-            Console.WriteLine("4) Back ⏪");
+            Console.WriteLine("0 ► Exit from Console ❌");
+            Console.WriteLine("1 ► BASIC 🎞️");
+            Console.WriteLine("2 ► MIX 💎");
+            Console.WriteLine("3 ► RANDOM ⌚");
+            Console.WriteLine("4 ► Back ⏪");
 
             string? strSelector = Console.ReadLine();
 
@@ -267,19 +267,15 @@ public static class Menu{
                     break;
                 case 1:
 
-                    Console.WriteLine("Create A Generic Playlist");
                     await PlaylistManager.GenerateGenericPlaylist(data, "one");
                     // await PlaylistManager.GeneratePlaylist(data, "multi");
-                    
 
                     break;
                 case 2: 
-                    Console.WriteLine("Create A Mix Playlist");
                     Console.ReadKey();
   
                     break;
                 case 3: 
-                    Console.WriteLine("Create A Random Playlist");
                     Console.ReadKey();
 
                     break;
@@ -296,6 +292,7 @@ public static class Menu{
         return index;
     }
 
+
     public static async Task<int> SubMenuLevelTwoTrackList (SampleData data, int index, int platformId){
 
         
@@ -307,10 +304,10 @@ public static class Menu{
             Helpers.GetWelcomePage(platformId) ; 
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Select TrackList \n---------------------");
-            Console.WriteLine("0) Exit from Console ❌");
-            Console.WriteLine("1) Generate 🎞️");
+            Console.WriteLine("0 ► Exit from Console ❌");
+            Console.WriteLine("1 ► Generate 🎞️");
             // Console.WriteLine("2) Mix -> Based On Multiple Source 💎");
-            Console.WriteLine("2) Back ⏪");
+            Console.WriteLine("2 ► Back ⏪");
 
             string? strSelector = Console.ReadLine();
 
