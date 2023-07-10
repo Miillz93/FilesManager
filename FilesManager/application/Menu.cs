@@ -327,6 +327,7 @@ public static class Menu{
                     break;
                 case 1:
                     Thread.Sleep(1500);
+
                     Console.WriteLine("Create A Generic TrackList");
                     Thread.Sleep(1500);
                 
