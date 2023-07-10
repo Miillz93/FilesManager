@@ -268,8 +268,9 @@ public static class Menu{
                 case 1:
 
                     Console.WriteLine("Create A Generic Playlist");
+                    await PlaylistManager.GenerateGenericPlaylist(data, "one");
+                    // await PlaylistManager.GeneratePlaylist(data, "multi");
                     
-                    Console.ReadKey();
 
                     break;
                 case 2: 
@@ -331,7 +332,7 @@ public static class Menu{
                     Console.WriteLine("Create A Generic TrackList");
                     Thread.Sleep(1500);
                 
-                    await PlaylistManager.GeneratePlaylist(data);
+                    await TracklistManager.GenerateGenericTracklist(data);
                     
                     break;
                 case 2: 
