@@ -29,7 +29,7 @@ public static class Helpers
             message +="------------------------------------------------------------";
 
             Console.WriteLine(message);
-        }else {
+        }else if(id == 2) {
             // message = "-----------------------------------------------------------";
             // message += "|                     GAMING PLATFORM                      |";
             // message +="-----------------------------------------------------------";
@@ -37,6 +37,15 @@ public static class Helpers
             message += "|                     GAMING PLATFORM                      | \n";
             message +="------------------------------------------------------------";
 
+            Console.WriteLine(message);
+        }else{
+            // message = "-----------------------------------------------------------";
+            // message += "|                     GAMING PLATFORM                      |";
+            // message +="-----------------------------------------------------------";
+            message = "------------------------------------------------------------ \n";
+            message += "|                          THEMES                          | \n";
+            message +="------------------------------------------------------------";
+            
             Console.WriteLine(message);
         }
 
