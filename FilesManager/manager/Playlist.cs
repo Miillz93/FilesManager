@@ -67,6 +67,30 @@ public static class PlaylistManager
 
     }
 
+    public static async Task GenerateRandomPlaylist(SampleData data, string type) {
+        var playlistLoader = await LoadPlaylistData(data, type);
+        var playlist = await GeneratePlaylist(playlistLoader, data.Playlist!.PlaylistMaxCount);
+        if(playlist.Count != 0){
+            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "");
+            var pathRoot = Path.GetDirectoryName(newPath);
+
+            Thread.Sleep(1000);
+            Console.WriteLine($"\n {playlist.Count} elements 'll Be Generate,  Make Sure To Not Cancel Otherwise You 'll Loose Your Progression 🔴 \n");
+            Thread.Sleep(1000);
+
+            foreach (var item in playlist)
+            {
+                await FileManager.ExportPathToDocumentAsync(newPath, item);
+                Thread.Sleep(300);
+                var destinationPath = Path.Combine(pathRoot ??"", Path.GetFileName(item));
+                await FileManager.CopyAsync(item, destinationPath);
+            }
+
+        }
+        else await FileManager.CopyAsync(playlist, "");
+
+    }
+
 
 
 
@@ -91,11 +115,11 @@ public static class PlaylistManager
     
         var playlistFilter = await GetIncludedPlaylist(playlist ?? new() , data?.Playlist?.IncludeOnly ?? new string[1]); 
         
-        if(playlistFilter is null && data.Playlist.ExcludeFolderName is null) return new();
+        if(playlistFilter is null && data?.Playlist?.ExcludeFolderName is null) return new();
 
-        var playlistExcluded =  await GetExcludedPlaylist(playlist, data.Playlist.ExcludeFolderName ?? Array.Empty<string>());
+        var playlistExcluded =  await GetExcludedPlaylist(playlist ?? new(), data?.Playlist?.ExcludeFolderName ?? Array.Empty<string>());
 
-        if(data.Playlist.CopyType is null) return new();
+        if(data?.Playlist?.CopyType is null) return new();
 
         var copyright = await FileManager.GetFilesWithSpecificInfoAsync(data.LogPathDestination, data.Playlist.CopyType);
         var noCopyrightContents = await FileManager.ReadContentWithSpecificInfos(copyright);
