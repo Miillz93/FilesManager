@@ -728,15 +728,16 @@ public static class FileManager
 
         if (choiceType == 1) {
 
-            string list = Path.Combine(path ?? "",origin , name ?? "");
+            string list = Path.Combine(path ?? "", origin?? "" , name ?? "");
             if (!Directory.Exists(list)) Directory.CreateDirectory(list);
 
             return list;
         } 
         else 
         {
+            System.Console.WriteLine($"Path combine {Path.Combine(path ?? "", "basic", name ?? "")}");
             string pathNumber = name+"1";
-            var dict = await GetDirectories(Path.Combine(path ?? "", origin, name ?? ""));
+            var dict = await GetDirectories(Path.Combine(path ?? "", origin ?? "",name ?? ""));
 
             string newPath;
             int number = 1;
