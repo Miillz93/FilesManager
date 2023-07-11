@@ -1,5 +1,6 @@
 using Shared;
 using Manager;
+using System.Runtime.InteropServices;
 
 namespace Application;
 public static class Menu{
@@ -246,12 +247,14 @@ public static class Menu{
             Console.Clear();
             Helpers.GetWelcomePage(platformId) ; 
             Console.WriteLine(Environment.NewLine);
-            Console.WriteLine("Choice playlist type \n---------------------");
+            Console.WriteLine("Choice Playlist Type \n---------------------");
             Console.WriteLine("0 ► Exit from Console ❌");
             Console.WriteLine("1 ► BASIC 🎞️");
             Console.WriteLine("2 ► MIX 💎");
             Console.WriteLine("3 ► RANDOM ⌚");
             Console.WriteLine("4 ► Back ⏪");
+
+            string message;
 
             string? strSelector = Console.ReadLine();
 
@@ -266,15 +269,15 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    await SubMenuLevelTwoPlayListBasicType(data, index , platformId);
+                    await SubMenuLevelTwoPlayListBasicType(data, index , platformId,"BASIC");
                     
                     break;
                 case 2: 
-                    await SubMenuLevelTwoPlayListMixType(data, index, platformId);
+                    await SubMenuLevelTwoPlayListMixType(data, index, platformId, "MIX");
   
                     break;
                 case 3: 
-                    Console.ReadKey();
+                    await SubMenuLevelTwoPlayListRandomType(data, index, platformId, "RANDOM");
 
                     break;
                 case 4: 
@@ -290,7 +293,7 @@ public static class Menu{
         return index;
     }
 
-    public static async Task<int> SubMenuLevelTwoPlayListBasicType (SampleData data, int index, int platformId)
+    public static async Task<int> SubMenuLevelTwoPlayListBasicType (SampleData data, int index, int platformId, [Optional] string origin)
     {
         bool continued = true;
 
@@ -319,10 +322,10 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    await PlaylistManager.GenerateGenericPlaylist(data, "one");
+                    await PlaylistManager.GenerateGenericPlaylist(data, "one", origin);
                     break;
                 case 2: 
-                    await PlaylistManager.GenerateGenericPlaylist(data, "multi");
+                    await PlaylistManager.GenerateGenericPlaylist(data, "multi", origin);
   
                     break;                
                 case 3: 
@@ -342,7 +345,7 @@ public static class Menu{
     }
 
 
-    public static async Task<int> SubMenuLevelTwoPlayListMixType (SampleData data, int index, int platformId)
+    public static async Task<int> SubMenuLevelTwoPlayListMixType (SampleData data, int index, int platformId, [Optional] string origin)
     {
         bool continued = true;
 
@@ -371,10 +374,10 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    await PlaylistManager.GenerateMixPlaylist(data, "one");
+                    await PlaylistManager.GenerateMixPlaylist(data, "one", origin);
                     break;
                 case 2: 
-                    await PlaylistManager.GenerateMixPlaylist(data, "multi");
+                    await PlaylistManager.GenerateMixPlaylist(data, "multi", origin);
   
                     break;                
                 case 3: 
@@ -394,7 +397,7 @@ public static class Menu{
     }
 
 
-    public static async Task<int> SubMenuLevelTwoPlayListRandomType (SampleData data, int index, int platformId)
+    public static async Task<int> SubMenuLevelTwoPlayListRandomType (SampleData data, int index, int platformId, [Optional] string origin)
     {
         bool continued = true;
 
@@ -425,10 +428,10 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    await PlaylistManager.GenerateRandomPlaylist(data, "one");
+                    await PlaylistManager.GenerateRandomPlaylist(data, "one", origin);
                     break;
                 case 2: 
-                    await PlaylistManager.GenerateRandomPlaylist(data, "multi");
+                    await PlaylistManager.GenerateRandomPlaylist(data, "multi", origin);
   
                     break;                
                 case 3: 
