@@ -13,12 +13,12 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task GenerateGenericPlaylist(SampleData data, string type) {
+    public static async Task GenerateGenericPlaylist(SampleData data, string type, [Optional] string origin) {
         var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackPlaylist ??"", 1);
         var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type, data!.Playlist!.PlaylistMaxCount);
 
         if(playlist.Count != 0){
-            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "");
+            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "", origin);
             string path = await FileManager.GetDocument(data?.Playlist?.TrackPlaylist ??"", 1);
             var pathRoot = Path.GetDirectoryName(newPath);
 
@@ -28,12 +28,12 @@ public static class PlaylistManager
 
             foreach (var item in playlist)
             {
+                var destinationPath = Path.Combine(pathRoot ??"", Path.GetFileName(item));
+                await FileManager.CopyAsync(item, destinationPath);
                 await FileManager.ExportPathToDocumentAsync(path, item);
                 Thread.Sleep(300);
                 await FileManager.ExportPathToDocumentAsync(newPath, item);
                 Thread.Sleep(300);
-                var destinationPath = Path.Combine(pathRoot ??"", Path.GetFileName(item));
-                await FileManager.CopyAsync(item, destinationPath);
             }
 
         }
@@ -42,12 +42,12 @@ public static class PlaylistManager
     }
 
 
-    public static async Task GenerateMixPlaylist(SampleData data, string type) {
+    public static async Task GenerateMixPlaylist(SampleData data, string type, [Optional] string origin) {
         var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackPlaylist ??"", 1);
         var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type, data.Playlist.PlaylistMaxCount);
 
         if(playlist.Count != 0){
-            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "");
+            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "", origin);
             var pathRoot = Path.GetDirectoryName(newPath);
 
             Thread.Sleep(1000);
@@ -67,11 +67,12 @@ public static class PlaylistManager
 
     }
 
-    public static async Task GenerateRandomPlaylist(SampleData data, string type) {
-        var playlistLoader = await LoadPlaylistData(data, type);
+    public static async Task GenerateRandomPlaylist(SampleData data, string type, [Optional] string origin) {
+        var playlistLoader = await LoadPlaylistDataWhitoutFilter(data, type);
         var playlist = await GeneratePlaylist(playlistLoader, data.Playlist!.PlaylistMaxCount);
+        
         if(playlist.Count != 0){
-            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "");
+            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackPlaylist ?? "", data?.Playlist?.PlaylistName ?? "", origin);
             var pathRoot = Path.GetDirectoryName(newPath);
 
             Thread.Sleep(1000);
@@ -90,9 +91,6 @@ public static class PlaylistManager
         else await FileManager.CopyAsync(playlist, "");
 
     }
-
-
-
 
     /// <summary>
     ///  Load Data By Filtered Data
@@ -124,6 +122,27 @@ public static class PlaylistManager
         var copyright = await FileManager.GetFilesWithSpecificInfoAsync(data.LogPathDestination, data.Playlist.CopyType);
         var noCopyrightContents = await FileManager.ReadContentWithSpecificInfos(copyright);
         var notCopyrighted = await IsNotDuplicated(playlistExcluded, noCopyrightContents);
+
+        return notCopyrighted;
+    }
+
+    public static async Task <List<string>> LoadPlaylistDataWhitoutFilter(SampleData data,  string choiceType)
+    {
+        List<string>? playlist;
+
+        if(data.LogPathDestination is null) return new();
+        await FileManager.CreateDocuments(data.LogPathDestination);
+
+        if(data?.Playlist?.BasePath is null ^ data?.Playlist?.UniquePathSource is null) return new(); 
+
+        if (choiceType == "one") playlist = await GetPlaylist(data?.Playlist?.UniquePathSource ?? "");
+        else playlist = await GetPlaylist(data?.Playlist?.BasePath ?? new string[1]);
+
+        if (playlist is null && data?.Playlist?.IncludeOnly is null) return new();
+    
+        var copyright = await FileManager.GetFilesWithSpecificInfoAsync(data?.LogPathDestination ?? "", data.Playlist.CopyType );
+        var noCopyrightContents = await FileManager.ReadContentWithSpecificInfos(copyright);
+        var notCopyrighted = await IsNotDuplicated(playlist, noCopyrightContents);
 
         return notCopyrighted;
     }
