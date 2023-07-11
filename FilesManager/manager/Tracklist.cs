@@ -10,18 +10,18 @@ public static class TracklistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task GenerateGenericTracklist(SampleData data)
+    public static async Task<List<string>> GenerateGenericTracklist(SampleData data)
     {
         var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackTracklist ?? "", 2);
         var playlist = await CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, "multi", data!.Playlist!.MaxCount);
-        await ExportTracklist(data, playlist);
+        return playlist;
     }
 
-    private static async Task ExportTracklist(SampleData data, List<string> playlist)
+    public static async Task ExportTracklist(SampleData data, List<string> playlist)
     {
         if (playlist.Count != 0)
         {
-            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackTracklist ?? "", data?.Playlist?.PlaylistName ?? "");
+            var newPath = await FileManager.CreateDocument(data?.Playlist?.TrackTracklist ?? "", data?.Playlist?.PlaylistName ?? "", "");
             var path = await FileManager.GetDocument(data?.Playlist?.TrackTracklist ?? "", 2);
             var pathRoot = Path.GetDirectoryName(newPath);
 
