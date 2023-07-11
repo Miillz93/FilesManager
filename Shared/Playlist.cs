@@ -15,4 +15,5 @@ public class Playlist
     public string? TracklistName {get; set;}
     // public string[]? PathMixSource {get; set;}
     public int MaxCount {get; set;}
+    public int PlaylistMaxCount {get; set;}
 }
