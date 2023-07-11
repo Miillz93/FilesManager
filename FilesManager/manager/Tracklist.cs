@@ -49,4 +49,15 @@ public static class TracklistManager
 
         return generated;
     }
+
+    public static async Task<List<string>> CreateTracklistWithoutFilter(SampleData data, List<string> fileToRead, string type, int counter)
+    {
+        var playlistLoader = await PlaylistManager.LoadPlaylistDataWhitoutFilter(data, type);
+        
+        var noDuplicatePlaylist = await PlaylistManager.IsNotDuplicated(playlistLoader ?? new(), fileToRead.ToArray());
+
+        var generated = await PlaylistManager.GeneratePlaylist(noDuplicatePlaylist, counter);
+
+        return generated;
+    }
 }
