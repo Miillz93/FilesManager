@@ -44,10 +44,10 @@ public static class TracklistManager
 
     public static async Task<List<string>> CreateTracklistWithoutDuplicateDatas(SampleData data, List<string> fileToRead, string type, int counter)
     {
-        var playlistLoader = await PlaylistManager.LoadPlaylistData(data, type);
-        
-        var noDuplicatePlaylist = await PlaylistManager.IsNotDuplicated(playlistLoader ?? new(), fileToRead.ToArray());
-
+        var playlistLoader = await PlaylistManager.LoadPlaylistData(data, type);        
+        // var noDuplicatePlaylist = await PlaylistManager.IsNotDuplicated(playlistLoader ?? new(), fileToRead.ToArray());
+        var noDuplicatePlaylist = await PlaylistManager.IsNotDuplicated(playlistLoader ?? new(), fileToRead);
+        Console.WriteLine($"{noDuplicatePlaylist.Count} Elements Left...🔴 \n");
         var generated = await PlaylistManager.GeneratePlaylist(noDuplicatePlaylist, counter);
 
         return generated;

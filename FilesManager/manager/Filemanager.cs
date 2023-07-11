@@ -81,10 +81,10 @@ public static class FileManager
 
             int number = 1;
             
-            if(elements.Count == 0  ^ destination is null) 
+            if(elements.Count == 0 ) 
             {   
                 Console.WriteLine("LIMIT REACH 😨");
-                Thread.Sleep(1000);
+                Thread.Sleep(2500);
 
                 return;
             } else {
@@ -735,7 +735,6 @@ public static class FileManager
         } 
         else 
         {
-            System.Console.WriteLine($"Path combine {Path.Combine(path ?? "", "basic", name ?? "")}");
             string pathNumber = name+"1";
             var dict = await GetDirectories(Path.Combine(path ?? "", origin ?? "",name ?? ""));
 
@@ -791,7 +790,6 @@ public static class FileManager
            tracking =  await GetDocument(path, type);
         else
             tracking =  await GetDocument(path, type);
-        
         var readers = await FileManager.ReadContentWithSpecificInfos(new List<string>(){tracking});
         
         return readers;
