@@ -11,22 +11,20 @@ public static class PlaylistManager
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static async Task<List<string>> GenerateGenericPlaylist(SampleData data, string type, [Optional] string origin, [Optional] bool multi) {
+    public static async Task<List<string>> GenerateGenericPlaylist(SampleData data, string type) {
         var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackPlaylist ??"", 1);
         var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type, data!.Playlist!.PlaylistMaxCount);
         
         return playlist;
-        await ExportPlaylist(data, playlist, origin, multi);
 
     }
 
 
-    public static async Task<List<string>> GenerateMixPlaylist(SampleData data, string type, [Optional] string origin, [Optional] bool multi) {
+    public static async Task<List<string>> GenerateMixPlaylist(SampleData data, string type) {
         var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackPlaylist ??"", 1);
         var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type, data.Playlist.PlaylistMaxCount);
 
         return playlist;
-        await ExportPlaylist(data, playlist, origin, multi);
 
     }
 

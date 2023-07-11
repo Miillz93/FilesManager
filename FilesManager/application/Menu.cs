@@ -296,6 +296,7 @@ public static class Menu{
     public static async Task<int> SubMenuLevelTwoPlayListBasicType (SampleData data, int index, int platformId, [Optional] string origin)
     {
         bool continued = true;
+        List<string> playlist;
 
         while (continued)
         {
@@ -322,10 +323,14 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    await PlaylistManager.GenerateGenericPlaylist(data, "one", origin);
+                    playlist = await PlaylistManager.GenerateGenericPlaylist(data, "one");
+                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+
                     break;
                 case 2: 
-                    await PlaylistManager.GenerateGenericPlaylist(data, "multi", origin);
+                    playlist = await PlaylistManager.GenerateGenericPlaylist(data, "multi");
+                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+
   
                     break;                
                 case 3: 
@@ -348,6 +353,7 @@ public static class Menu{
     public static async Task<int> SubMenuLevelTwoPlayListMixType (SampleData data, int index, int platformId, [Optional] string origin)
     {
         bool continued = true;
+        List<string> playlist;
 
         while (continued)
         {
@@ -374,10 +380,14 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    await PlaylistManager.GenerateMixPlaylist(data, "one", origin);
+                    playlist =  await PlaylistManager.GenerateMixPlaylist(data, "one");
+                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+
                     break;
                 case 2: 
-                    await PlaylistManager.GenerateMixPlaylist(data, "multi", origin);
+                    playlist =  await PlaylistManager.GenerateMixPlaylist(data, "multi");
+                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+
   
                     break;                
                 case 3: 
@@ -485,7 +495,7 @@ public static class Menu{
                     break;
                 case 1:
                     Thread.Sleep(1500);
-                    Console.WriteLine("Create A Generic TrackList");
+                    Console.WriteLine("\nCreate A Generic TrackList \n");
                     Thread.Sleep(1000);
                 
                     playlist  = await TracklistManager.GenerateGenericTracklist(data);
@@ -493,7 +503,6 @@ public static class Menu{
                     Thread.Sleep(1000);
 
                     if(playlist is not null) {
-                        List<string> reloader = new();
                         
                         var load = true;
                         while(load) {
@@ -504,7 +513,7 @@ public static class Menu{
                             switch (reload.ToLower())
                             {
                                 case "y":
-                                    reloader = await PlaylistManager.Reload(playlist);
+                                    playlist = await PlaylistManager.Reload(playlist);
 
                                 break;
                                 case "n":
@@ -514,12 +523,12 @@ public static class Menu{
                                     
                                 break;
                                 default: 
-                                    Console.WriteLine("--------------------- Invalid character {0} ❌", reload);
+                                    Console.WriteLine("--------------------- Invalid character {0} ❌ \n", reload);
                                 break;
                             }
 
                         }
-                        await TracklistManager.ExportTracklist(data, reloader ?? playlist);
+                        await TracklistManager.ExportTracklist(data, playlist);
 
                     }
                     
