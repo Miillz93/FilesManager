@@ -155,7 +155,8 @@ public static class PlaylistManager
         foreach (var item in newEelements)
         {
             newElements.Add(item); 
-             Console.WriteLine($"{count}  ---- {item}");
+            Console.WriteLine($"{count}  ---- {item}");
+            Thread.Sleep(100); 
             count++;
         }
 
@@ -173,6 +174,8 @@ public static class PlaylistManager
         {
             newElements.Add(item); 
             Console.WriteLine($"{count}  ---- {item}");
+            Thread.Sleep(100); 
+            
             count++;
         }
 
