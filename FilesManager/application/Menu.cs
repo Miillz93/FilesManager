@@ -140,24 +140,24 @@ public static class Menu{
                     await Task.Delay(2000);
                     if(data is {EmbeedPath: not null})
                         _ = await FileManager.GetDirectories(data.EmbeedPath, false, true);
-                    await Task.Delay(500);
-                    Console.WriteLine("Do You Still Want To Remove The Folder ? Y/N");
-                    var deleted = Console.ReadLine();
+                        await Task.Delay(500);
+                        Console.WriteLine("Do You Still Want To Remove The Folder ? Y/N");
+                        var deleted = Console.ReadLine();
         
-                    switch (deleted.ToLower())
-                    {
-                        case "y":
-                            await FileManager.DeleteDirectory(data.EmbeedPath);
-                        break;
-                        case "n":
-                            Thread.Sleep(1000);
-                            Console.WriteLine("--------------------- operation cancel ❌");
-                        break;
-                        default: 
-                            Console.WriteLine("--------------------- Invalid character {0} ❌", deleted);
-                        break;
-                    }
-                    Thread.Sleep(2500);
+                        switch (deleted.ToLower())
+                        {
+                            case "y":
+                                await FileManager.DeleteDirectory(data.EmbeedPath);
+                            break;
+                            case "n":
+                                Thread.Sleep(1000);
+                                Console.WriteLine("--------------------- operation cancel ❌");
+                            break;
+                            default: 
+                                Console.WriteLine("--------------------- Invalid character {0} ❌", deleted);
+                            break;
+                        }
+                    Console.ReadKey();
                 break;
                 case 5:
                     continued = true; 
@@ -428,11 +428,13 @@ public static class Menu{
                     Environment.Exit(0);
                     break;
                 case 1:
-                    await PlaylistManager.GenerateRandomPlaylist(data, "one", origin);
+                    playlist = await PlaylistManager.GenerateRandomPlaylist(data, "one");
+                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
                     break;
                 case 2: 
-                    await PlaylistManager.GenerateRandomPlaylist(data, "multi", origin);
-  
+                    playlist = await PlaylistManager.GenerateRandomPlaylist(data, "multi");
+                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+
                     break;                
                 case 3: 
                     continued = true;
@@ -445,8 +447,6 @@ public static class Menu{
                     Console.WriteLine("----------------------- Invalid number selected {0}", selector);
                     break;
             }
-
-
 
         }
 
@@ -485,11 +485,43 @@ public static class Menu{
                     break;
                 case 1:
                     Thread.Sleep(1500);
-
                     Console.WriteLine("Create A Generic TrackList");
-                    Thread.Sleep(1500);
+                    Thread.Sleep(1000);
                 
-                    await TracklistManager.GenerateGenericTracklist(data);
+                    playlist  = await TracklistManager.GenerateGenericTracklist(data);
+                    
+                    Thread.Sleep(1000);
+
+                    if(playlist is not null) {
+                        List<string> reloader = new();
+                        
+                        var load = true;
+                        while(load) {
+
+                            Console.WriteLine("\nDo You Want To Reload The Tracklist ? Y/N");
+                            var reload = Console.ReadLine();
+                            
+                            switch (reload.ToLower())
+                            {
+                                case "y":
+                                    reloader = await PlaylistManager.Reload(playlist);
+
+                                break;
+                                case "n":
+                                    Thread.Sleep(1000);
+                                    Console.WriteLine("--------------------- operation cancel ❌"); 
+                                    load = false;
+                                    
+                                break;
+                                default: 
+                                    Console.WriteLine("--------------------- Invalid character {0} ❌", reload);
+                                break;
+                            }
+
+                        }
+                        await TracklistManager.ExportTracklist(data, reloader ?? playlist);
+
+                    }
                     
                     break;
                 case 2: 
