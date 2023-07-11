@@ -688,13 +688,13 @@ public static class FileManager
         return fileInfo;
     }
 
-    public static async Task<string> CreateDocument(string path, string subdirectory)
+    public static async Task<string> CreateDocument(string path, string subdirectory, [Optional] string origin)
     {
 
         if(subdirectory is null) return string.Empty;
         
         // listing.Add(Path.Combine(path, subdirectory));
-        string newPath = await FileManager.CreateDirectory(path, subdirectory ?? "", 2);
+        string newPath = await FileManager.CreateDirectory(path, subdirectory ?? "", 2, origin);
         // listing.Add(newPath);
         string newPathWithDocument = Path.Combine(newPath, subdirectory + ".md" ?? "");
         ;
@@ -719,13 +719,16 @@ public static class FileManager
     /// <param name="logPathDestination"></param>
     /// <param name="playlistName"></param>
     /// <returns></returns>
-    public static async Task<string> CreateDirectory(string path, string name, int choiceType)
+    public static async Task<string> CreateDirectory(string path, string name, int choiceType, [Optional] string origin)
     {
+
         if(path is null ^ name is null) return string.Empty;
+
+
 
         if (choiceType == 1) {
 
-            string list = Path.Combine(path ?? "", name ?? "");
+            string list = Path.Combine(path ?? "",origin , name ?? "");
             if (!Directory.Exists(list)) Directory.CreateDirectory(list);
 
             return list;
@@ -733,19 +736,19 @@ public static class FileManager
         else 
         {
             string pathNumber = name+"1";
-            var dict = await GetDirectories(Path.Combine(path ?? "", name ?? ""));
+            var dict = await GetDirectories(Path.Combine(path ?? "", origin, name ?? ""));
 
             string newPath;
             int number = 1;
             // Create sequence of directory type
             if (dict.Count == 0)
             {
-                newPath = Path.Combine(path, name, pathNumber ?? "");
+                newPath = Path.Combine(path, origin, name, pathNumber ?? "");
                 await CreateDirectory(newPath);
             }else{
 
                 number +=  dict.Count;
-                newPath = Path.Combine(path, name,name+$"{number}" ?? "");
+                newPath = Path.Combine(path, origin, name,name+$"{number}" ?? "");
 
                 await CreateDirectory(newPath);
             }
