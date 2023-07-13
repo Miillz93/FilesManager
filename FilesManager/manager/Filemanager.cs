@@ -41,8 +41,9 @@ public static class FileManager
         if(File.Exists(destination)) Console.WriteLine($"\"{destination}\" Already Exist");
         else {
             Console.Write($"\nmove of ---------------------- {root}    to-------------- {destination} \n");
-            var task = Task.Run(Helpers.LoadSpinner);
+            // var t = new Thread(new ThreadStart(Helpers.LoadSpinner));
             File.Move(root, destination);
+            // Thread.Sleep(100);
             Console.Write("\r Done!" );
 
         }
@@ -66,7 +67,7 @@ public static class FileManager
             Console.Write($"\ncopy of ---------------------- {root}    \nto-------------- {destination} \n");
             await Task.Delay(10);
             
-            var task = Task.Run(Helpers.LoadSpinner); 
+            // var task = Task.Run(() => Helpers.LoadSpinner());
             File.Copy(root, destination);
             Console.Write("\r Done!");
             
@@ -78,7 +79,6 @@ public static class FileManager
 
         public static async  Task CopyAsync(List<string> elements, string destination) 
         {
-
             int number = 1;
             
             if(elements.Count == 0 ) 
