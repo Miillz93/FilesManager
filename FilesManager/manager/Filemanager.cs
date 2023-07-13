@@ -59,50 +59,54 @@ public static class FileManager
     /// <param name="destination"></param>
     /// <returns></returns>
     public static async  Task CopyAsync(string root, string destination) {
-        var sw = new Stopwatch();
-        sw.Start();
+
+        var ts = new CancellationTokenSource();
+        var token = ts.Token;
         
         if(!File.Exists(destination))
         {
             Console.Write($"\ncopy of ---------------------- {root}    \nto-------------- {destination} \n");
             await Task.Delay(10);
             
-            // var task = Task.Run(() => Helpers.LoadSpinner());
+             var task = Task.Run(() => Helpers.LoadSpinner(token));
             File.Copy(root, destination);
             Console.Write("\r Done!");
             
         }else  Console.WriteLine($"\"{destination}\" Already Exist");
+        ts.Cancel();
 
-        sw.Stop();
-        sw.Restart();
     }
 
-        public static async  Task CopyAsync(List<string> elements, string destination) 
-        {
-            int number = 1;
-            
-            if(elements.Count == 0 ) 
-            {   
-                Console.WriteLine("LIMIT REACH 😨");
-                Thread.Sleep(2500);
+    public static async  Task CopyAsync(List<string> elements, string destination) 
+    {
+        int number = 1;
+        var ts = new CancellationTokenSource();
+        var token = ts.Token;
+        
+        if(elements.Count == 0 ) 
+        {   
+            Console.WriteLine("LIMIT REACH 😨");
+            Thread.Sleep(2500);
 
-                return;
-            } else {
+            return;
+        } else {
+            
+            foreach (var item in elements)
+            {
+                string filename = Path.GetFileName(item);
                 
-                foreach (var item in elements)
-                {
-                    string filename = Path.GetFileName(item);
-                    
-                    string dest = Path.Combine(destination, filename);
-                    Console.WriteLine($"\r \"{filename}\" Is Being Created At N° {number}");
-                    Console.WriteLine("----------------------------------------");
-                    var task = Task.Run(Helpers.LoadSpinner);
-                    File.Copy(item, dest);
-                    Console.Write("\r Done! \n");
-                    Console.WriteLine("----------------------------------------");
-                    number++;
-                }
+                string dest = Path.Combine(destination, filename);
+                Console.WriteLine($"\r \"{filename}\" Is Being Created At N° {number}");
+                Console.WriteLine("----------------------------------------");
+                var task = Task.Run(() => Helpers.LoadSpinner(token));
+                File.Copy(item, dest);
+                Console.Write("\r Done! \n");
+                Console.WriteLine("----------------------------------------");
+                number++;
             }
+        }
+
+        ts.Cancel();
 
     }
 

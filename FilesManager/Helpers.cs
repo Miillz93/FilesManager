@@ -51,12 +51,12 @@ public static class Helpers
 
     }
 
-    public static async Task LoadSpinner(){
+    public static void LoadSpinner(CancellationToken token){
 
         int counter = 0; 
 
         for (int i=0; i < 10000;i++) {
-
+            Thread.Sleep(50);
             switch (counter % 4)
             {
                 case 0:  Console.Write("\r/"); break;
@@ -65,8 +65,8 @@ public static class Helpers
                 case 3: Console.Write("\r|"); break;
             }
             counter++;
-            await Task.Delay(50);
-            // Console.SetCursorPosition(0, Console.CursorTop);
+            
+            token.ThrowIfCancellationRequested();
         }
     }
 
