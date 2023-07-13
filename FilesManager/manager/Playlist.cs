@@ -28,6 +28,14 @@ public static class PlaylistManager
 
     }
 
+    public static async Task<List<string>> GenerateShortPlaylist(SampleData data, string type) {
+        var tracking = await FileManager.ReadContentWithSpecificInfos(data.Playlist?.TrackPlaylist ??"", 1);
+        var playlist = await TracklistManager.CreateTracklistWithoutDuplicateDatas(data ?? new(), tracking, type, data!.Playlist!.ShortMaxCount);
+        
+        return playlist;
+
+    }
+
     public static async Task<List<string>> GenerateRandomPlaylist(SampleData data, string type)
     {
         var playlistLoader = await LoadPlaylistDataWithoutFilter(data, type);
@@ -136,10 +144,18 @@ public static class PlaylistManager
         return contentFilter;
     }
 
-        public static async Task<List<string>> IsNotDuplicated(List<string> elements, string[] filesContent){
+    public static async Task<List<string>> IsNotDuplicated(List<string> elements, string[] filesContent){
         
         await Task.Delay(10);
         var contentFilter = elements.Where(element => !filesContent.Contains(element)).ToList();
+
+        return contentFilter;
+    }
+
+    public static async Task<List<string>> IsDuplicated(List<string> elements, string[] filesContent){
+        
+        await Task.Delay(10);
+        var contentFilter = elements.Where(element => filesContent.Contains(element)).ToList();
 
         return contentFilter;
     }
