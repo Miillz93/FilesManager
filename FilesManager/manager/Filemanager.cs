@@ -373,8 +373,13 @@ public static class FileManager
         Dictionary<int, string> folders = new();
 
         if(path is null ^ !Directory.Exists(path)) return folders;
+        
+        var options = new EnumerationOptions {
+            IgnoreInaccessible = true,
+            RecurseSubdirectories = true
+        };
 
-        var directories = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
+        var directories = Directory.GetDirectories(path, "*", options);
 
         Dictionary<int, string> data = new();
         var files = Directory.GetFiles(path, "*"); 
