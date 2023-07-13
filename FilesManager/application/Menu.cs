@@ -816,5 +816,92 @@ public static class Menu{
     }
 
 
-    
+    public static async Task<int> SubMenuLevelTwoShortType (SampleData data, int index, int platformId, [Optional] string origin)
+    {
+        bool continued = true;
+
+        Console.Clear();
+        Helpers.GetWelcomePage(platformId) ; 
+        Console.WriteLine(Environment.NewLine);
+        Console.WriteLine("SHORT PLAYLIST \n---------------------");
+        Console.WriteLine("0 ► Exit from Console ❌");
+        Console.WriteLine("1 ► UNIQUE🎵");
+        Console.WriteLine("2 ► MIX 🎶");
+        Console.WriteLine("3 ► Reload 🟠");
+        Console.WriteLine("4 ► Back ⏪");
+
+        while (continued)
+        {
+            string? strSelector = Console.ReadLine();
+
+            bool success = int.TryParse(strSelector, out int selector);
+            if(!success) selector = -1;
+
+            await Task.Delay(100);
+            data = await Helpers.ReloadJson();
+
+            List<string> playlist;
+
+            switch(selector){
+                case 0:
+                    Environment.Exit(0);
+                    break;
+                case 1:
+                    var load = true;
+                    while(load) {
+
+                        Console.WriteLine("\nHow Many Elements Do You Need ? Y/N");
+                        var reload = Console.ReadLine();
+                        bool value =  int.TryParse(reload, out int result);
+                        if(!value) result = -1;
+
+                        switch(result){
+                            case int n when n <= 2 && n >= 5: 
+                                data.Playlist!.ShortMaxCount = n;
+                                _ = await PlaylistManager.GenerateShortPlaylist(data, "one");
+
+                            break;
+                            default:
+                                Console.WriteLine("--------------------- Invalid character {0} ❌ \n", result);
+                            break;
+                        }
+                    }
+                    break;
+                case 2: 
+                    load = true;
+                    while(load) {
+
+                        Console.WriteLine("\nHow Many Elements Do You Need ? Y/N");
+                        var reload = Console.ReadLine();
+                        bool value =  int.TryParse(reload, out int result);
+                        if(!value) result = -1;
+
+                        switch(result){
+                            case int n when(n <= 2 && n >= 5): 
+                                data.Playlist.ShortMaxCount =  n;
+                                playlist = await PlaylistManager.GenerateShortPlaylist(data, "one");
+
+                            break;
+                            default:
+                                Console.WriteLine("--------------------- Invalid character {0} ❌ \n", result);
+                            break;
+                        }
+                    }
+                    break;          
+                case 3: 
+                    continued = true;
+                    break;
+                case 4: 
+                    continued = false;
+                    break;
+
+                default:
+                    Console.WriteLine("----------------------- Invalid number selected {0}", selector);
+                    break;
+            }
+
+        }
+
+        return index;
+    }
 }
