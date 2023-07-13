@@ -47,7 +47,7 @@ public static class TracklistManager
         var playlistLoader = await PlaylistManager.LoadPlaylistData(data, type);        
         // var noDuplicatePlaylist = await PlaylistManager.IsNotDuplicated(playlistLoader ?? new(), fileToRead.ToArray());
         var noDuplicatePlaylist = await PlaylistManager.IsNotDuplicated(playlistLoader ?? new(), fileToRead);
-        Console.WriteLine($"{noDuplicatePlaylist.Count} Elements Left...🔴 \n");
+        Console.WriteLine($"\n{noDuplicatePlaylist.Count} Elements Found...✅ \n");
         var generated = await PlaylistManager.GeneratePlaylist(noDuplicatePlaylist, counter);
 
         return generated;
@@ -58,6 +58,7 @@ public static class TracklistManager
         var playlistLoader = await PlaylistManager.LoadPlaylistDataWithoutFilter(data, type);
         
         var noDuplicatePlaylist = await PlaylistManager.IsNotDuplicated(playlistLoader ?? new(), fileToRead.ToArray());
+        Console.WriteLine($"\n{noDuplicatePlaylist.Count} Elements Found...🔴 \n");
 
         var generated = await PlaylistManager.GeneratePlaylist(noDuplicatePlaylist, counter);
 
