@@ -252,7 +252,8 @@ public static class Menu{
             Console.WriteLine("1 ► BASIC 🎞️");
             Console.WriteLine("2 ► MIX 💎");
             Console.WriteLine("3 ► RANDOM ⌚");
-            Console.WriteLine("4 ► Back ⏪");
+            Console.WriteLine("4 ► Short 🎦 ");
+            Console.WriteLine("5 ► Back ⏪");
 
             string message;
 
@@ -281,6 +282,10 @@ public static class Menu{
 
                     break;
                 case 4: 
+                    continued = false; 
+                    
+                    break;
+                case 5: 
                     continued = false;
 
                     break;
@@ -297,6 +302,7 @@ public static class Menu{
     {
         bool continued = true;
         List<string> playlist;
+
 
         while (continued)
         {
@@ -324,13 +330,100 @@ public static class Menu{
                     break;
                 case 1:
                     playlist = await PlaylistManager.GenerateGenericPlaylist(data, "one");
-                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                    var load = true;
+                    while(load) {
 
+                        Console.WriteLine("\nDo You Want To Reload The Playlist ? Y/N");
+                        var reload = Console.ReadLine();
+                        
+                        switch (reload.ToLower())
+                        {
+                            case "y":
+                                playlist = await PlaylistManager.Reload(playlist);
+
+                            break;
+                            case "n":
+                                Thread.Sleep(1000);
+                                Console.WriteLine("--------------------- operation cancel ❌"); 
+                                load = false;
+                                
+                            break;
+                            default: 
+                                Console.WriteLine("--------------------- Invalid character {0} ❌ \n", reload);
+                            break;
+                        }
+
+                    }
+
+                    Console.WriteLine("\nExport Playlist ? Y/N \n");
+                    var export = Console.ReadLine();
+                    
+                    switch (export.ToLower())
+                    {
+                        case "y":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, true);
+
+                        break;
+                        case "n":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                            
+                        break;
+                        default: 
+                            Console.WriteLine("--------------------- Invalid character {0} ❌ \n", export);
+                            Thread.Sleep(1000); 
+                            Console.WriteLine("--------------------- operation cancel ❌"); 
+                            Thread.Sleep(1000); 
+                        break;
+                    }
+                    
                     break;
                 case 2: 
                     playlist = await PlaylistManager.GenerateGenericPlaylist(data, "multi");
-                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                    load = true;
+                    while(load) {
 
+                        Console.WriteLine("\nDo You Want To Reload The Playlist ? Y/N");
+                        var reload = Console.ReadLine();
+                        
+                        switch (reload.ToLower())
+                        {
+                            case "y":
+                                playlist = await PlaylistManager.Reload(playlist);
+
+                            break;
+                            case "n":
+                                Thread.Sleep(1000);
+                                Console.WriteLine("--------------------- operation cancel ❌"); 
+                                load = false;
+                                
+                            break;
+                            default: 
+                                Console.WriteLine("--------------------- Invalid character {0} ❌ \n", reload);
+                            break;
+                        }
+
+                    }
+
+                    Console.WriteLine("\nExport Playlist ? Y/N \n");
+                    export = Console.ReadLine();
+                    
+                    switch (export.ToLower())
+                    {
+                        case "y":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, true);
+
+                        break;
+                        case "n":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                            
+                        break;
+                        default: 
+                            Console.WriteLine("--------------------- Invalid character {0} ❌ \n", export);
+                            Thread.Sleep(1000); 
+                            Console.WriteLine("--------------------- operation cancel ❌"); 
+                            Thread.Sleep(1000); 
+                        break;
+                    }
   
                     break;                
                 case 3: 
@@ -348,7 +441,6 @@ public static class Menu{
 
         return index;
     }
-
 
     public static async Task<int> SubMenuLevelTwoPlayListMixType (SampleData data, int index, int platformId, [Optional] string origin)
     {
@@ -381,14 +473,101 @@ public static class Menu{
                     break;
                 case 1:
                     playlist =  await PlaylistManager.GenerateMixPlaylist(data, "one");
-                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                    var load = true;
+                    while(load) {
+
+                        Console.WriteLine("\nDo You Want To Reload The Playlist ? Y/N");
+                        var reload = Console.ReadLine();
+                        
+                        switch (reload.ToLower())
+                        {
+                            case "y":
+                                playlist = await PlaylistManager.Reload(playlist);
+
+                            break;
+                            case "n":
+                                Thread.Sleep(1000);
+                                Console.WriteLine("--------------------- operation cancel ❌"); 
+                                load = false;
+                                
+                            break;
+                            default: 
+                                Console.WriteLine("--------------------- Invalid character {0} ❌ \n", reload);
+                            break;
+                        }
+
+                    }
+
+                    Console.WriteLine("\nExport Playlist ? Y/N \n");
+                    var export = Console.ReadLine();
+                    
+                    switch (export.ToLower())
+                    {
+                        case "y":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, true);
+
+                        break;
+                        case "n":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                            
+                        break;
+                        default: 
+                            Console.WriteLine("--------------------- Invalid character {0} ❌ \n", export);
+                            Thread.Sleep(1000); 
+                            Console.WriteLine("--------------------- operation cancel ❌"); 
+                            Thread.Sleep(1000); 
+                        break;
+                    }
 
                     break;
                 case 2: 
                     playlist =  await PlaylistManager.GenerateMixPlaylist(data, "multi");
-                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                    load = true;
+                    while(load) {
 
-  
+                        Console.WriteLine("\nDo You Want To Reload The Playlist ? Y/N");
+                        var reload = Console.ReadLine();
+                        
+                        switch (reload.ToLower())
+                        {
+                            case "y":
+                                playlist = await PlaylistManager.Reload(playlist);
+
+                            break;
+                            case "n":
+                                Thread.Sleep(1000);
+                                Console.WriteLine("--------------------- operation cancel ❌"); 
+                                load = false;
+                                
+                            break;
+                            default: 
+                                Console.WriteLine("--------------------- Invalid character {0} ❌ \n", reload);
+                            break;
+                        }
+
+                    }
+
+                    Console.WriteLine("\nExport Playlist ? Y/N \n");
+                    export = Console.ReadLine();
+                    
+                    switch (export?.ToLower())
+                    {
+                        case "y":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, true);
+
+                        break;
+                        case "n":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                            
+                        break;
+                        default: 
+                            Console.WriteLine("--------------------- Invalid character {0} ❌ \n", export);
+                            Thread.Sleep(1000); 
+                            Console.WriteLine("--------------------- operation cancel ❌"); 
+                            Thread.Sleep(1000); 
+                        break;
+                    }
+
                     break;                
                 case 3: 
                     continued = true;
@@ -411,17 +590,18 @@ public static class Menu{
     {
         bool continued = true;
 
+        Console.Clear();
+        Helpers.GetWelcomePage(platformId) ; 
+        Console.WriteLine(Environment.NewLine);
+        Console.WriteLine("RANDOM PLAYLIST \n---------------------");
+        Console.WriteLine("0 ► Exit from Console ❌");
+        Console.WriteLine("1 ► UNIQUE🎵");
+        Console.WriteLine("2 ► MIX 🎶");
+        Console.WriteLine("3 ► Reload 🟠");
+        Console.WriteLine("4 ► Back ⏪");
+
         while (continued)
         {
-            Console.Clear();
-            Helpers.GetWelcomePage(platformId) ; 
-            Console.WriteLine(Environment.NewLine);
-            Console.WriteLine("RANDOM PLAYLIST \n---------------------");
-            Console.WriteLine("0 ► Exit from Console ❌");
-            Console.WriteLine("1 ► UNIQUE🎵");
-            Console.WriteLine("2 ► MIX 🎶");
-            Console.WriteLine("3 ► Reload 🟠");
-            Console.WriteLine("4 ► Back ⏪");
 
             string? strSelector = Console.ReadLine();
 
@@ -439,11 +619,100 @@ public static class Menu{
                     break;
                 case 1:
                     playlist = await PlaylistManager.GenerateRandomPlaylist(data, "one");
-                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                    var load = true;
+                    while(load) {
+
+                        Console.WriteLine("\nDo You Want To Reload The Playlist ? Y/N");
+                        var reload = Console.ReadLine();
+                        
+                        switch (reload?.ToLower())
+                        {
+                            case "y":
+                                playlist = await PlaylistManager.Reload(playlist);
+
+                            break;
+                            case "n":
+                                Thread.Sleep(1000);
+                                Console.WriteLine("--------------------- operation cancel ❌"); 
+                                load = false;
+                                
+                            break;
+                            default: 
+                                Console.WriteLine("--------------------- Invalid character {0} ❌ \n", reload);
+                            break;
+                        }
+
+                    }
+
+                    Console.WriteLine("\nExport Playlist ? Y/N \n");
+                    var export = Console.ReadLine();
+                    
+                    switch (export?.ToLower())
+                    {
+                        case "y":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, true);
+
+                        break;
+                        case "n":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                            
+                        break;
+                        default: 
+                            Console.WriteLine("--------------------- Invalid character {0} ❌ \n", export);
+                            Thread.Sleep(1000); 
+                            Console.WriteLine("--------------------- operation cancel ❌"); 
+                            Thread.Sleep(1000); 
+                        break;
+                    }
+
                     break;
                 case 2: 
                     playlist = await PlaylistManager.GenerateRandomPlaylist(data, "multi");
-                    await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                    load = true;
+                    while(load) {
+
+                        Console.WriteLine("\nDo You Want To Reload The Playlist ? Y/N");
+                        var reload = Console.ReadLine();
+                        
+                        switch (reload?.ToLower())
+                        {
+                            case "y":
+                                playlist = await PlaylistManager.Reload(playlist);
+
+                            break;
+                            case "n":
+                                Thread.Sleep(1000);
+                                Console.WriteLine("--------------------- operation cancel ❌"); 
+                                load = false;
+                                
+                            break;
+                            default: 
+                                Console.WriteLine("--------------------- Invalid character {0} ❌ \n", reload);
+                            break;
+                        }
+
+                    }
+
+                    Console.WriteLine("\nExport Playlist ? Y/N \n");
+                    export = Console.ReadLine();
+                    
+                    switch (export.ToLower())
+                    {
+                        case "y":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, true);
+
+                        break;
+                        case "n":
+                            await PlaylistManager.ExportPlaylist(data, playlist, origin, false);
+                            
+                        break;
+                        default: 
+                            Console.WriteLine("--------------------- Invalid character {0} ❌ \n", export);
+                            Thread.Sleep(1000); 
+                            Console.WriteLine("--------------------- operation cancel ❌"); 
+                            Thread.Sleep(1000); 
+                        break;
+                    }
 
                     break;                
                 case 3: 
@@ -464,7 +733,6 @@ public static class Menu{
     }
 
     public static async Task<int> SubMenuLevelTwoTrackList (SampleData data, int index, int platformId){
-
         
         bool continued = true;
 
@@ -524,6 +792,7 @@ public static class Menu{
                                 break;
                                 default: 
                                     Console.WriteLine("--------------------- Invalid character {0} ❌ \n", reload);
+
                                 break;
                             }
 
@@ -545,4 +814,7 @@ public static class Menu{
 
         return index;
     }
+
+
+    
 }
