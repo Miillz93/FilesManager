@@ -124,6 +124,7 @@ public static class Menu{
                     } else{
                         Console.WriteLine("------------------------ Moving Files \n");
 
+                        await GamingManager.MovingGamingDocument(data);
 
                     }
                     
