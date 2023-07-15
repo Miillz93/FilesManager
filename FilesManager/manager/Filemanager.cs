@@ -33,8 +33,9 @@ public static class FileManager
     /// <param name="destination"></param>
     /// <returns></returns>
     public static async Task MoveAsync(string root, string destination) {
-        var sw = new Stopwatch();
-        sw.Start();
+        
+        var ts = new CancellationTokenSource();
+        var token = ts.Token;
 
         await Task.Delay(100);
         
@@ -42,14 +43,15 @@ public static class FileManager
         else {
             Console.Write($"\nmove of ---------------------- {root}    to-------------- {destination} \n");
             // var t = new Thread(new ThreadStart(Helpers.LoadSpinner));
+            var task = Task.Run(() => Helpers.LoadSpinner(token));
+            
             File.Move(root, destination);
             // Thread.Sleep(100);
             Console.Write("\r Done!" );
 
         }
+        ts.Cancel();
 
-        sw.Stop();
-        sw.Restart();
     }
 
     /// <summary>
@@ -73,6 +75,39 @@ public static class FileManager
             Console.Write("\r Done!");
             
         }else  Console.WriteLine($"\"{destination}\" Already Exist");
+        ts.Cancel();
+
+    }
+
+    public static async  Task MoveAsync(List<string> elements, string destination) 
+    {
+        int number = 1;
+        var ts = new CancellationTokenSource();
+        var token = ts.Token;
+        
+        if(elements.Count == 0 ) 
+        {   
+            Console.WriteLine("LIMIT REACH 😨");
+            Thread.Sleep(2500);
+
+            return;
+        } else {
+            
+            foreach (var item in elements)
+            {
+                string filename = Path.GetFileName(item);
+                
+                string dest = Path.Combine(destination, filename);
+                Console.WriteLine($"\r \"{filename}\" Moving Correctly");
+                Console.WriteLine("----------------------------------------");
+                var task = Task.Run(() => Helpers.LoadSpinner(token));
+                File.Move(item, dest, false);
+                Console.Write("\r Done! \n");
+                Console.WriteLine("----------------------------------------");
+                number++;
+            }
+        }
+
         ts.Cancel();
 
     }
@@ -309,7 +344,7 @@ public static class FileManager
         List<string> fileLists = new();
         var dict = new Dictionary<int, string>(); 
 
-        await Task.Delay(100);
+        await Task.Delay(10);
         
         foreach (var item in folders.Where(item => Directory.Exists(item.Value)))
         {
@@ -338,7 +373,7 @@ public static class FileManager
 
      public static async Task CreateDocuments(string logPath){
         await CreateDirectory(logPath);
-        await Task.Delay(50);
+        await Task.Delay(10);
         if(!File.Exists(Path.Combine(logPath, "playlist_copyright.md"))){ 
             var file = File.Create(Path.Combine(logPath, "playlist_copyright.md"));
             file.Close();
@@ -370,21 +405,26 @@ public static class FileManager
     /// <exception cref="ArgumentNullException"></exception>
     public static async Task<Dictionary<int, string>> GetDirectories (string path, bool hideMessage, bool showFiles){
 
-        Dictionary<int, string> folders = new();
+        Dictionary<int, string> folders = new(); List<string> directories = new();
 
         if(path is null ^ !Directory.Exists(path)) return folders;
-        
-        var options = new EnumerationOptions {
+
+        try {
+            var options = new EnumerationOptions {
             IgnoreInaccessible = true,
             RecurseSubdirectories = true
         };
 
-        var directories = Directory.GetDirectories(path, "*", options);
+        directories = Directory.EnumerateDirectories(path, "*", options).ToList();
+        } catch(UnauthorizedAccessException e) {
+            Console.WriteLine("Directory {0} Due To Admin Priviledge", e.Source);
+        }
+ 
 
         Dictionary<int, string> data = new();
         var files = Directory.GetFiles(path, "*"); 
 
-        if(directories.Length == 0) {
+        if(directories.Count == 0) {
 
             folders.Add(0, path);
             data = await GetFiles(folders);
@@ -393,7 +433,7 @@ public static class FileManager
                 foreach (var item in data) Console.WriteLine(item.Value);
             
             if(hideMessage == false) 
-                Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
+                Console.WriteLine($"\nThe directory contains {directories.Count} subFolders and {data.Count} Files \n ");
 
             return data;
         }
@@ -412,7 +452,7 @@ public static class FileManager
         }
 
         if(hideMessage == false)
-            Console.WriteLine($"\nThe directory contains {directories.Length} subFolders and {data.Count} Files \n ");
+            Console.WriteLine($"\nThe directory contains {directories.Count} subFolders and {data.Count} Files \n ");
 
         return folders;
     }
