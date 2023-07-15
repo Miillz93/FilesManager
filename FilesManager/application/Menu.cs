@@ -141,7 +141,29 @@ public static class Menu{
                         await FileManager.CopyOrMoveFileFromSourceFileAsync(data.PathDestination, data.FileMultiPath, data.VideoPath, data.SameSymbol, data.Action); 
 
                     }else{
-
+                        Console.WriteLine("--------------------------Delete Files \n");
+                        await Task.Delay(500);
+                        Console.WriteLine($" \"{data.EmbeedPath}\" and all subdirectories ll'be deleted. 🔴 \n");
+                        await Task.Delay(2000);
+                        if(data is {EmbeedPath: not null})
+                            _ = await FileManager.GetDirectories(data.EmbeedPath, false, true);
+                            await Task.Delay(500);
+                            Console.WriteLine("Do You Still Want To Remove The Folder ? Y/N");
+                            var deleted = Console.ReadLine();
+            
+                            switch (deleted.ToLower())
+                            {
+                                case "y":
+                                    await FileManager.DeleteDirectory(data.EmbeedPath);
+                                break;
+                                case "n":
+                                    Thread.Sleep(1000);
+                                    Console.WriteLine("--------------------- Operation Cancel ❌");
+                                break;
+                                default: 
+                                    Console.WriteLine("--------------------- Invalid Character {0} ❌", deleted);
+                                break;
+                            }
                     }
                     
                     Thread.Sleep(2500);   
