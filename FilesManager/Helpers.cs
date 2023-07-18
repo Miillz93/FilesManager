@@ -6,12 +6,17 @@ namespace Manager;
 
 public static class Helpers
 {
-    private static string JsonPath = Path.Combine(Directory.GetCurrentDirectory(), "sample/sample.json");
     private static DateTime OldTracking { get; set; }
     private static DateTime JsonFileTracking { get; set; }
+    public static string? GamingJson { get; set; }
+    public static string? MusicJson { get; set; }
 
-    public static DateTime GetFileLastChange(){
-        var jsonFileTracking = File.GetLastWriteTime(JsonPath);
+
+    public static DateTime GetFileLastChange(int platformId){
+        DateTime jsonFileTracking;
+        
+        if(platformId == 1) jsonFileTracking = File.GetLastWriteTime(MusicJson ?? "");
+        else jsonFileTracking = File.GetLastWriteTime(GamingJson ?? "");
 
         return jsonFileTracking;
 
@@ -79,20 +84,22 @@ public static class Helpers
         return sampleData ?? throw new NullReferenceException() ;
     }
 
-    public static async Task<SampleData> ReloadJson(){
+    public static async Task<SampleData> ReloadJson(int platformId){
         SampleData data;
 
         OldTracking = JsonFileTracking;
 
-        JsonFileTracking = GetFileLastChange();
+        JsonFileTracking = GetFileLastChange(platformId);
 
         if (JsonFileTracking != OldTracking)
         {
-            data = DeserializeJson(JsonPath);
+            if(platformId == 1) data = DeserializeJson(MusicJson ?? "");
+            else  data = DeserializeJson(GamingJson ?? "");
             return data;
         }
 
-        data = DeserializeJson(JsonPath);
+        if(platformId == 1) data = DeserializeJson(MusicJson);
+        else data = DeserializeJson(GamingJson);
 
         return data;
 
