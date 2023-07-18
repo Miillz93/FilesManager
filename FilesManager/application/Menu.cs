@@ -1,9 +1,11 @@
 using Shared;
 using Manager;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+
 
 namespace Application;
-public static class Menu{
+public static class Menu {
 
     public static async Task<int> MainMenuAsync(SampleData data, int platformId){
         if (data == null) throw new ArgumentNullException();
@@ -27,7 +29,6 @@ public static class Menu{
 
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out int selector);
-            Console.WriteLine("");
 
             if (!success) selector = -1;
 
@@ -68,6 +69,7 @@ public static class Menu{
         return subIndex;
     }
 
+
     public static async Task<int> SubMenuLevelOneFilesAsync (SampleData data, int index, int platformId){
 
         bool continued = true; 
@@ -103,7 +105,7 @@ public static class Menu{
             if(!success) index = -1;
 
             await Task.Delay(500);
-            data = await Helpers.ReloadJson();
+            data = await Helpers.ReloadJson(platformId);
 
             switch(index){
                 case 0:
@@ -115,15 +117,15 @@ public static class Menu{
                         Console.WriteLine("------------------------ Copying Files \n");
 
                         data.Action = "copy";
-
+                        System.Console.WriteLine($"Path destination {data.PathDestination}");
+                        Console.ReadKey();
                         if(platformId == 1 ) 
                             await FileManager.CopyOrMoveFileFromSourceFileAsync(data.PathDestination, data.FileMultiPath,data.VideoPath, data.SameSymbol, data.Action); 
-                        
 
                         Console.WriteLine(Environment.NewLine);
                     } else{
                         Console.WriteLine("------------------------ Moving Files \n");
-
+                        Console.WriteLine($"Path destination {data.PathDestination}");
                         await GamingManager.MovingGamingDocument(data);
 
                     }
@@ -207,7 +209,7 @@ public static class Menu{
                                 break;
                             }
                     } else{
-                        continued = true; 
+                        continued = false; 
                     }
                 break;
                 case 5:
@@ -251,7 +253,7 @@ public static class Menu{
             if(!success) selector = -1;
 
             await Task.Delay(100);
-            data = await Helpers.ReloadJson();
+            data = await Helpers.ReloadJson(platformId);
 
             switch(selector){
                 case 0:
@@ -314,7 +316,7 @@ public static class Menu{
             if(!success) selector = -1;
 
             await Task.Delay(100);
-            data = await Helpers.ReloadJson();
+            data = await Helpers.ReloadJson(platformId);
 
             switch(selector){
                 case 0:
@@ -374,7 +376,7 @@ public static class Menu{
             if(!success) selector = -1;
 
             await Task.Delay(100);
-            data = await Helpers.ReloadJson();
+            data = await Helpers.ReloadJson(platformId);
 
             switch(selector){
                 case 0:
@@ -520,7 +522,7 @@ public static class Menu{
             if(!success) selector = -1;
 
             await Task.Delay(100);
-            data = await Helpers.ReloadJson();
+            data = await Helpers.ReloadJson(platformId);
 
             switch(selector){
                 case 0:
@@ -666,7 +668,7 @@ public static class Menu{
             if(!success) selector = -1;
 
             await Task.Delay(100);
-            data = await Helpers.ReloadJson();
+            data = await Helpers.ReloadJson(platformId);
 
             List<string> playlist;
 
@@ -812,7 +814,7 @@ public static class Menu{
             if(!success) selector = -1;
 
             await Task.Delay(100);
-            data = await Helpers.ReloadJson();
+            data = await Helpers.ReloadJson(platformId);
 
             switch(selector){
                 case 0:
@@ -895,7 +897,7 @@ public static class Menu{
             if(!success) selector = -1;
 
             await Task.Delay(100);
-            data = await Helpers.ReloadJson();
+            data = await Helpers.ReloadJson(platformId);
 
 
             switch(selector){

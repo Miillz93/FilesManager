@@ -1,10 +1,11 @@
-﻿using Manager;
+﻿using System.Text.Json;
+using Manager;
 
 namespace Application;
 
 public static class Platform
 {
-    public static int Id { get; set; }
+    private static int Id { get; set; }
     private static readonly string Message = "\nApplication exit successfully....................👍 \n";
 
     public static async Task<int> LoadPlatformAsync(){
@@ -21,6 +22,7 @@ public static class Platform
             Console.WriteLine("2 ► Gaming 🕹️");
             Console.WriteLine("3 ► Themes 🎲");
 
+
             string? strSelector = Console.ReadLine();
             bool success = int.TryParse(strSelector, out selector);
 
@@ -34,19 +36,16 @@ public static class Platform
                     break;
                 case 1:
                     Id = selector;
-                    // var data = await Helpers.ReloadJson();
                     await GetPlatformAsync(Id);
 
                     break;
                 case 2:
                     Id = selector;
-                    // data = await Helpers.ReloadJson();
                     await GetPlatformAsync(Id);
 
                     break;                
                 case 3:
                     Id = selector;
-                    // data = await Helpers.ReloadJson();
                     await Theme.LoadThemeAsync(Id);
 
                     break;
@@ -69,14 +68,14 @@ public static class Platform
             {
                 case 1:
                     Id = id;
-                    var data = await Helpers.ReloadJson();
+                    var data = await Helpers.ReloadJson(id);
                     int check = await Menu.MainMenuAsync(data, id);
 
                     if (check == 3) continued = false;
                     break;
                 case 2:
                     Id = id;
-                    data = await Helpers.ReloadJson();
+                    data = await Helpers.ReloadJson(id);
                     check = await Menu.MainMenuAsync(data, id); 
                     if (check == 3) continued = false;
                     break;
