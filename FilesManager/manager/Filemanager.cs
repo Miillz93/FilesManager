@@ -217,11 +217,14 @@ public static class FileManager
         string parent = "", child = "", parentFull = "",  path = "",  message = "\nFinished................👍", pathFull ="";
         var fileMatching = new Dictionary<string, string>();
 
-        if(pathDestination is null ^ fileMultiPath is null) Console.WriteLine("PathDestination OR FileMultiPath Was Not Set Correctly");
+
+        if(pathDestination is null ^ fileMultiPath.Length == 0) {
+            Console.WriteLine("PathDestination OR FileMultiPath Was Not Set Correctly");
+            return;
+        }
         
         if(! Directory.Exists(pathDestination)) Directory.CreateDirectory(pathDestination);
         
-        if(fileMultiPath != null)
             fileMatching = await GetRootDirectoryWithFileMatching(pathDestination, fileMultiPath);
 
         foreach (var (pathFile, pathSource) in fileMatching)
