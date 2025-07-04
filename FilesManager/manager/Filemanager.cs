@@ -10,7 +10,7 @@ public static class FileManager
 
     public static async Task<(Dictionary<int, string>, Dictionary<int, string>)> ExtractData(string pathSource, string[]? videoPath, string[]? sameSymbol, params string[] CopyrightType) {
 
-        string[] arrayOfListElementFromFile = new string[]{};
+        string[] arrayOfListElementFromFile = [];
 
         if(sameSymbol is null) return new();
         if (!File.Exists(pathSource)) throw new FileNotFoundException();
@@ -644,8 +644,15 @@ public static class FileManager
             }
             else {
                 await Task.Delay(100);
-                fileItems.AddRange(from DirectoryInfo? item in directories
-                                   select item.FullName);
+                IEnumerable<string> collection()
+                {
+                    foreach (DirectoryInfo? item in directories)
+                    {
+                        yield return item.FullName;
+                    }
+                }
+
+                fileItems.AddRange(collection());
             }
 
         }

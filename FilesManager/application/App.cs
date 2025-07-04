@@ -11,7 +11,6 @@ public static class App
         
         if(! File.Exists(root))
             await FileManager.CreateDocument(root);
-        
 
         while (true)
         {
